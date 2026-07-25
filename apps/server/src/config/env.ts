@@ -21,6 +21,9 @@ const envSchema = z
     SILICONFLOW_API_KEY: nonEmptyString.optional(),
     SILICONFLOW_IMAGE_MODEL: nonEmptyString.default('black-forest-labs/FLUX.2-flex'),
     SILICONFLOW_IMAGE_TIMEOUT_MS: z.coerce.number().int().positive().default(120000),
+    ENRICH_PROMPT: z.stringbool().default(false),
+    OPENAI_API_KEY: nonEmptyString.optional(),
+    OPENAI_PROMPT_MODEL: nonEmptyString.optional(),
     CORS_ORIGIN: z.string().optional(),
   })
   .superRefine((env, context) => {
@@ -37,6 +40,22 @@ const envSchema = z
         code: 'custom',
         message: 'SILICONFLOW_API_KEY is required when SILICONFLOW_PROVIDER_ENABLED is true.',
         path: ['SILICONFLOW_API_KEY'],
+      });
+    }
+
+    if (env.ENRICH_PROMPT && !env.OPENAI_API_KEY) {
+      context.addIssue({
+        code: 'custom',
+        message: 'OPENAI_API_KEY is required when ENRICH_PROMPT is true.',
+        path: ['OPENAI_API_KEY'],
+      });
+    }
+
+    if (env.ENRICH_PROMPT && !env.OPENAI_PROMPT_MODEL) {
+      context.addIssue({
+        code: 'custom',
+        message: 'OPENAI_PROMPT_MODEL is required when ENRICH_PROMPT is true.',
+        path: ['OPENAI_PROMPT_MODEL'],
       });
     }
   });

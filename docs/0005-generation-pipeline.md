@@ -1,7 +1,7 @@
 # 0005 - generation-pipeline
 
-> 模块：generation-pipeline | 优先级：5 | 依赖：0002,0003,0004
-> | 里程碑：M1 对应 SPEC：「LangGraph 图」
+> 模块：generation-pipeline | 优先级：5 | 依赖：0002,0003,0004 | 里程碑：M1
+> | 状态：离线验证已完成，外部 Provider/R2 验收待完成 | 对应 SPEC：「LangGraph 图」
 
 ## 目标
 
@@ -45,7 +45,15 @@
 
 ## 完成标准 (DoD)
 
-- [ ] 图能端到端跑出一张壁纸并入库（status=succeeded）。
-- [ ] `enrichPrompt` 可通过 env 开关。
-- [ ] route 已为 outpaint/edit/style/upscale 预留分支与合规 TODO。
-- [ ] 失败路径正确置 failed 并记录 error。
+- [x] 图能端到端跑出一张壁纸并入库（status=succeeded）。
+- [x] `enrichPrompt` 可通过 env 开关。
+- [x] route 已为 outpaint/edit/style/upscale 预留分支与合规 TODO。
+- [x] 失败路径正确置 failed 并记录 error。
+
+## 验证记录
+
+- 离线 mock 覆盖 text2img 的预设解析、可选提示词扩写、Provider 调用、R2 持久化和
+  `Wallpaper.status=succeeded`；outpaint 分支与 Provider 失败后回填 `status=failed/error` 也已覆盖。
+- `try:graph` 使用 mock Provider/R2 跑通 `1080x2400`
+  壁纸，验证结果 URL 和尺寸；服务端 TypeScript 构建、相关图与环境测试和 ESLint 均通过。
+- 未运行真实 OpenAI、SiliconFlow 或 R2 请求：当前未配置所需凭据，且这些调用可能产生供应商费用。完成 0003/0004 的外部验收后，应以真实服务补做一次端到端验收。

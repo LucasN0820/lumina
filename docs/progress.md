@@ -15,7 +15,7 @@
 | [0002](./0002-database.md)                 | database                                | BE     | 0001             | M0     | ☑    |
 | [0003](./0003-image-provider.md)           | image-provider, SiliconFlow FLUX.2 Flex | BE     | 0001             | M0/M1  | ◐    |
 | [0004](./0004-oss-storage.md)              | Cloudflare R2 storage                   | BE     | 0001             | M1     | ◐    |
-| [0005](./0005-generation-pipeline.md)      | generation-pipeline                     | BE     | 0002, 0003, 0004 | M1     | ☐    |
+| [0005](./0005-generation-pipeline.md)      | generation-pipeline                     | BE     | 0002, 0003, 0004 | M1     | ◐    |
 | [0006](./0006-generation-api.md)           | generation-api                          | BE     | 0005, 0002       | M1     | ☐    |
 | [0007](./0007-frontend-foundation.md)      | frontend-foundation                     | FE     | -                | M1     | ☐    |
 | [0008](./0008-wallpaper-preview.md)        | wallpaper-preview                       | FE     | 0007             | M1     | ☐    |
@@ -37,7 +37,8 @@
 - 0003 的真实验收仍需要 `SILICONFLOW_API_KEY`：先验证 `576x1024`
   文生图与临时 URL 下载，再验证目标设备尺寸。该调用会产生供应商费用，因此不会在自动测试中运行。
 - 0004 的 R2 离线能力已完成，真实 bucket 凭据验收仍待完成。
-- 只有 0003 与 0004 的外部验收完成，才进入 0005 -> 0006 的生成任务与 API。
+- 0005 的 LangGraph 流水线已完成离线 mock 验证，覆盖提示词扩写开关、模式分流、R2 持久化以及失败回填；真实 Provider/R2 验收仍依赖 0003 和 0004 的外部凭据。
+- 完成 0003、0004 与 0005 的真实服务验收后，进入 0006 的生成任务 API。
 
 ## 里程碑
 
