@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "postinstall": "prisma generate",
+    "try:codex-image": "tsx scripts/try-codex-image.ts",
+    "try:r2": "tsx scripts/try-r2.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
@@ -15,7 +17,10 @@
     "test": "bun --cwd=../.. run test:server"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1095.0",
+    "@aws-sdk/s3-request-presigner": "^3.1095.0",
     "@hono/node-server": "^2.0.11",
+    "@openai/codex-sdk": "^0.145.0",
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.9.0",
     "dotenv": "^17.4.2",

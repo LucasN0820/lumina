@@ -1,7 +1,8 @@
 # 0003 - image-provider
 
-> 模块：image-provider | 优先级：3 | 依赖：0001 | 里程碑：M0/M1 对应 SPEC：「Provider 抽象」「Codex
-> image provider」
+> 模块：image-provider | 优先级：3 | 依赖：0001 | 里程碑：M0/M1 | 状态：外部 Spike 待完成
+>
+> 对应 SPEC：「Provider 抽象」「Codex image provider」
 
 ## 目标
 
@@ -44,7 +45,17 @@ Plus 额度完成图片生成、编辑、扩图、超分或风格提取能力。
 
 ## 完成标准 (DoD)
 
-- [ ] `getImageProvider()` 能按 env 返回 Codex 或 mock provider。
+- [x] `getImageProvider()` 能按 env 返回 Codex 或 mock provider。
 - [ ] `textToImage` 能返回可持久化的图片产物。
-- [ ] Codex thread/run id 被记录到 `providerTask`。
-- [ ] 超时、额度耗尽、工具失败等错误能结构化抛出。
+- [x] Codex thread/run id 被记录到 `providerTask`。
+- [x] 超时、额度耗尽、工具失败等错误能结构化抛出。
+
+## 验证记录
+
+- `CodexImageProvider`、mock provider、工厂和结构化错误映射均由 7 个离线测试覆盖；mock
+  provider 返回确定性的 SVG 图片字节。
+- 已使用本机 ChatGPT 登录的 Codex CLI 运行真实 `try:codex-image`
+  spike；在 120 秒内没有得到图像产物，Provider 正确抛出
+  `TIMEOUT`。因此真实 Codex 图像工具的可用性仍是 M0.5 阻塞项，不能标记为通过。
+- 当前 `@openai/codex-sdk`
+  支持线程、结构化输出和图像输入；实际图像生成工具的可用性需要在目标Codex 账户/模型中继续确认。

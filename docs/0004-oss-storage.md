@@ -1,6 +1,8 @@
 # 0004 - r2-storage
 
-> 模块：r2-storage | 优先级：4 | 依赖：0001 | 里程碑：M1 对应 SPEC：「persist」「Cloudflare R2」
+> 模块：r2-storage | 优先级：4 | 依赖：0001 | 里程碑：M1 | 状态：外部 R2 验收待完成
+>
+> 对应 SPEC：「persist」「Cloudflare R2」
 
 ## 目标
 
@@ -41,4 +43,12 @@ R2 存取：把 Provider 返回的图片产物持久化到 R2，返回稳定可�
 
 - [ ] 能把 Provider 图片产物落盘到 R2 并返回稳定可访问地址或 object key。
 - [ ] 公共 URL 或签名 URL 可被客户端访问。
-- [ ] R2 配置全部来自 env，无硬编码密钥。
+- [x] R2 配置全部来自 env，无硬编码密钥。
+
+## 验证记录
+
+- 离线测试覆盖 buffer/file/URL 流式上传、按月 key、公共 URL、签名 GET/PUT、内容类型和结构化错误。
+- 实现使用 S3-compatible AWS SDK v3，R2 配置仅来自现有环境变量；`try:r2`
+  可用于后续真实 bucket 验收。
+- 当前工作区没有 R2 环境文件或 bucket 凭据，因此未运行真实上传、浏览器访问或 presigned
+  URL 端到端测试；这两项保持未勾选。
