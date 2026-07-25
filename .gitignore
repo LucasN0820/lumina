@@ -2,6 +2,9 @@
 
 # dependencies
 node_modules/
+.vite/
+.vite-hooks/
+coverage/
 
 # Expo
 .expo/
@@ -31,6 +34,9 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
+.env.*
+!.env.example
 .env*.local
 
 # typescript

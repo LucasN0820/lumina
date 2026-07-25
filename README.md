@@ -1,56 +1,34 @@
-# Welcome to your Expo app 👋
+# Lumina
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Lumina is an Android-first AI wallpaper application. The repository is a Bun workspace:
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```text
+apps/mobile  Expo SDK 56 application
+apps/server  Hono API application
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Vite+ provides the shared formatting, linting, type-checking, test orchestration, task cache, and
+staged-file workflow. Expo/Metro and EAS continue to own mobile development and Android release
+builds.
 
-### Other setup steps
+## Setup
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```powershell
+irm https://viteplus.dev/install.ps1 | iex
+vp install --frozen-lockfile
+vp config --no-agent
+```
 
-## Learn more
+## Commands
 
-To learn more about developing your project with Expo, look at the following resources:
+```powershell
+vp check
+vp run dev:all
+vp run test:all
+vp run build:all
+vp run build:android
+vp staged
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The mobile workspace can also be run directly with `bun --filter=@lumina/mobile run android`. The
+server health endpoint is available at `http://localhost:3000/health` when the server runs.

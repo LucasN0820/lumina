@@ -1,21 +1,27 @@
 # 0004 - r2-storage
 
-> 模块：r2-storage | 优先级：4 | 依赖：0001 | 里程碑：M1
-> 对应 SPEC：「persist」「Cloudflare R2」
+> 模块：r2-storage | 优先级：4 | 依赖：0001 | 里程碑：M1 对应 SPEC：「persist」「Cloudflare R2」
 
 ## 目标
-封装 Cloudflare R2 存取：把 Provider 返回的图片产物持久化到 R2，返回稳定可访问的图片地址，供入库与客户端展示。
+
+封装 Cloudflare
+R2 存取：把 Provider 返回的图片产物持久化到 R2，返回稳定可访问的图片地址，供入库与客户端展示。
 
 ## 范围
-- In：`uploadFromUrl(url, key)`、`uploadBuffer(buf, key, contentType)`、`uploadFile(path, key, contentType)`、presigned PUT/GET URL、key 生成规则。
+
+- In：`uploadFromUrl(url, key)`、`uploadBuffer(buf, key, contentType)`、`uploadFile(path, key, contentType)`、presigned
+  PUT/GET URL、key 生成规则。
 - Out：业务调用时机（在 0005 pipeline 的 persist 节点）。
 
 ## 涉及文件
-- `server/src/lib/r2.ts`（S3-compatible R2 客户端单例 + 上传/签名函数）
-- `server/src/config/env.ts`（追加 `R2_ACCOUNT_ID/R2_BUCKET/R2_ACCESS_KEY_ID/R2_SECRET_ACCESS_KEY/R2_ENDPOINT/R2_PUBLIC_BASE_URL`）
-- `server/scripts/try-r2.ts`
+
+- `apps/server/src/lib/r2.ts`（S3-compatible R2 客户端单例 + 上传/签名函数）
+- `apps/server/src/config/env.ts`（追加
+  `R2_ACCOUNT_ID/R2_BUCKET/R2_ACCESS_KEY_ID/R2_SECRET_ACCESS_KEY/R2_ENDPOINT/R2_PUBLIC_BASE_URL`）
+- `apps/server/scripts/try-r2.ts`
 
 ## 实现要点
+
 - 依赖：`@aws-sdk/client-s3`、`@aws-sdk/s3-request-presigner`。
 - key 规则：`wallpapers/{yyyymm}/{cuid}.png`，避免碰撞；可按用户/匿名设备前缀。
 - `uploadBuffer`/`uploadFile`：把 Codex provider 返回的本地图片产物上传到 R2。
@@ -26,10 +32,13 @@
 - 前端上传已有图片时，优先由后端发 presigned PUT URL，客户端直传 R2，然后把 object key 交回 API。
 
 ## 独立测试
-- 脚本 `server/scripts/try-r2.ts`：上传本地 buffer/file，打印 object key、公共 URL 或签名 GET URL；浏览器/`curl` 能访问且内容正确。
+
+- 脚本 `apps/server/scripts/try-r2.ts`：上传本地 buffer/file，打印 object key、公共 URL 或签名 GET
+  URL；浏览器/`curl` 能访问且内容正确。
 - 测试 presigned PUT：客户端或 curl 上传一张小图，再用签名 GET 读取。
 
 ## 完成标准 (DoD)
+
 - [ ] 能把 Provider 图片产物落盘到 R2 并返回稳定可访问地址或 object key。
 - [ ] 公共 URL 或签名 URL 可被客户端访问。
 - [ ] R2 配置全部来自 env，无硬编码密钥。

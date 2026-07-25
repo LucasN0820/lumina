@@ -1,0 +1,58 @@
+{
+  "name": "@lumina/mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "dev": "expo start",
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build": "expo export --platform all",
+    "build:android": "eas build --platform android",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7",
+    "@expo/ui": "~56.0.18",
+    "expo": "~56.0.12",
+    "expo-constants": "~56.0.18",
+    "expo-device": "~56.0.4",
+    "expo-font": "~56.0.7",
+    "expo-glass-effect": "~56.0.4",
+    "expo-image": "~56.0.11",
+    "expo-linking": "~56.0.14",
+    "expo-router": "~56.2.11",
+    "expo-splash-screen": "~56.0.10",
+    "expo-status-bar": "~56.0.4",
+    "expo-symbols": "~56.0.6",
+    "expo-system-ui": "~56.0.5",
+    "expo-web-browser": "~56.0.5",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.85.3",
+    "react-native-gesture-handler": "~2.31.1",
+    "react-native-reanimated": "4.3.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "4.25.2",
+    "react-native-web": "~0.21.0",
+    "react-native-worklets": "0.8.3"
+  },
+  "devDependencies": {
+    "@react-native/jest-preset": "0.85.3",
+    "@testing-library/react-native": "13.3.3",
+    "@types/jest": "29.5.14",
+    "@types/react": "~19.2.2",
+    "jest-expo": "~56.0.5",
+    "typescript": "~6.0.3"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testMatch": [
+      "<rootDir>/src/**/*.test.ts",
+      "<rootDir>/src/**/*.test.tsx"
+    ],
+    "transformIgnorePatterns": []
+  }
+}

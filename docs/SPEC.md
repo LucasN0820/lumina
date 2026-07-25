@@ -2,7 +2,9 @@
 
 ## Context
 
-Lumina is an Android-first AI wallpaper app for international users. Users choose a preset, add a few ideas, generate a 2K+ wallpaper that matches their device aspect ratio, preview it in a phone mockup, apply it to the Android home/lock screen, save it to photos, and share it.
+Lumina is an Android-first AI wallpaper app for international users. Users choose a preset, add a
+few ideas, generate a 2K+ wallpaper that matches their device aspect ratio, preview it in a phone
+mockup, apply it to the Android home/lock screen, save it to photos, and share it.
 
 | Decision     | New direction                        | Impact                                                                                                                                                |
 | ------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -13,9 +15,17 @@ Lumina is an Android-first AI wallpaper app for international users. Users choos
 | AI images    | **OpenAI Codex SDK provider**        | Replace DashScope/Wanxiang/Qwen/VIAPI with a `CodexImageProvider` backed by `@openai/codex-sdk`, using the existing Codex Plus quota where supported. |
 | Database     | **Neon Postgres or hosted Postgres** | Keep Prisma + PostgreSQL, but target international hosted Postgres instead of Alibaba RDS.                                                            |
 
-Important boundary: the Codex SDK is server-side and controls local/trusted Codex agents. It is not a normal public multi-tenant image REST API. MVP should treat it as a trusted-owner backend path that can use the owner's ChatGPT/Codex entitlement. Before building the full image pipeline, implement a small spike that proves the SDK can programmatically return image artifacts for generation, editing, outpainting-style expansion, and style extraction workflows. If that is not reliable enough for production, keep the same `ImageProvider` interface and swap the backend to OpenAI's Image API later.
+Important boundary: the Codex SDK is server-side and controls local/trusted Codex agents. It is not
+a normal public multi-tenant image REST API. MVP should treat it as a trusted-owner backend path
+that can use the owner's ChatGPT/Codex entitlement. Before building the full image pipeline,
+implement a small spike that proves the SDK can programmatically return image artifacts for
+generation, editing, outpainting-style expansion, and style extraction workflows. If that is not
+reliable enough for production, keep the same `ImageProvider` interface and swap the backend to
+OpenAI's Image API later.
 
-Implementation must still follow `AGENTS.md`: when writing Expo code, check the exact SDK 56 docs at https://docs.expo.dev/versions/v56.0.0/. For OpenAI/Codex, Clerk, and R2 APIs, verify current official docs before hardcoding model names, auth flows, SDK options, or storage behavior.
+Implementation must still follow `AGENTS.md`: when writing Expo code, check the exact SDK 56 docs at
+https://docs.expo.dev/versions/v56.0.0/. For OpenAI/Codex, Clerk, and R2 APIs, verify current
+official docs before hardcoding model names, auth flows, SDK options, or storage behavior.
 
 ---
 
@@ -31,7 +41,7 @@ Expo App (Android-first, @expo/ui native-first)
   |
   | HTTPS (Clerk session token)
   v
-server/ (Node + TypeScript + Hono)
+apps/server/ (Node + TypeScript + Hono)
   |- Clerk auth middleware: verify Clerk session/JWT, map to local User
   |- /generate -> create job, return jobId; /jobs/:id -> poll
   |- /presets, /wallpapers, /uploads/presign
@@ -43,7 +53,9 @@ server/ (Node + TypeScript + Hono)
 OpenAI Codex / GPT Image tools + Cloudflare R2
 ```
 
-**Async generation mode**: `POST /generate` returns a local `jobId` immediately. The server runs the generation in-process for MVP, updates `Wallpaper.status`, stores the final image in R2, and the app polls `GET /jobs/:jobId`. No Redis, queue, or Trigger.dev is required in MVP.
+**Async generation mode**: `POST /generate` returns a local `jobId` immediately. The server runs the
+generation in-process for MVP, updates `Wallpaper.status`, stores the final image in R2, and the app
+polls `GET /jobs/:jobId`. No Redis, queue, or Trigger.dev is required in MVP.
 
 ---
 
@@ -58,10 +70,11 @@ OpenAI Codex / GPT Image tools + Cloudflare R2
 - `@tanstack/react-query` for polling and server state.
 - Optional `zustand` for small local UI state.
 - Local native module `modules/expo-wallpaper` built with Expo Modules API + Kotlin.
-- UI remains **native-first**: `@expo/ui` + `expo-glass-effect` + `expo-symbols` + `StyleSheet`; do **not** add NativeWind.
+- UI remains **native-first**: `@expo/ui` + `expo-glass-effect` + `expo-symbols` + `StyleSheet`; do
+  **not** add NativeWind.
 - Reuse `example/` theme components/hooks as the UI blueprint.
 
-**Backend `server/`**
+**Backend `apps/server/`**
 
 - `hono` + `@hono/node-server`, `typescript`, `tsx`.
 - `prisma` + `@prisma/client`.
@@ -81,9 +94,11 @@ OpenAI Codex / GPT Image tools + Cloudflare R2
 
 ---
 
-## Data Model (Prisma `server/prisma/schema.prisma`)
+## Data Model (Prisma `apps/server/prisma/schema.prisma`)
 
-Naming convention remains mandatory: Prisma model and field names use camelCase; database tables and columns use snake_case. Every scalar field gets `@map("...")`; every model gets `@@map("...")`; every model has `createdAt` and `updatedAt`.
+Naming convention remains mandatory: Prisma model and field names use camelCase; database tables and
+columns use snake_case. Every scalar field gets `@map("...")`; every model gets `@@map("...")`;
+every model has `createdAt` and `updatedAt`.
 
 ```prisma
 model User {
@@ -140,24 +155,31 @@ model Wallpaper {
 }
 ```
 
-MVP can continue using `Wallpaper.status` as the job table. If Clerk anonymous sessions are not enabled, keep a local `deviceId` only for anonymous history and bind it after sign-in.
+MVP can continue using `Wallpaper.status` as the job table. If Clerk anonymous sessions are not
+enabled, keep a local `deviceId` only for anonymous history and bind it after sign-in.
 
 ---
 
-## Backend Design `server/src/`
+## Backend Design `apps/server/src/`
 
-- **Auth** `middleware/auth.ts`: verify Clerk auth on incoming requests. Expose `optionalAuth` for anonymous generation and `requireAuth` for profile/library actions. The backend does not mint primary auth JWTs; it trusts Clerk and maps Clerk users into local `User`.
-- **Provider abstraction** `providers/types.ts`: `interface ImageProvider { textToImage(spec); editImage(spec); outpaint(spec); upscale(spec); extractStyle(spec); }`.
+- **Auth** `middleware/auth.ts`: verify Clerk auth on incoming requests. Expose `optionalAuth` for
+  anonymous generation and `requireAuth` for profile/library actions. The backend does not mint
+  primary auth JWTs; it trusts Clerk and maps Clerk users into local `User`.
+- **Provider abstraction** `providers/types.ts`:
+  `interface ImageProvider { textToImage(spec); editImage(spec); outpaint(spec); upscale(spec); extractStyle(spec); }`.
 - **Codex provider** `providers/codex.ts`: uses `@openai/codex-sdk` server-side. It should:
   - start or resume a Codex thread per job;
   - give Codex a structured instruction to generate/edit/expand/extract style;
   - require a machine-readable final result containing image artifact path/base64/url plus metadata;
   - write the returned image bytes to R2;
   - store the Codex thread/run id in `providerTask`.
-- **Provider fallback boundary**: keep `OpenAIImageApiProvider` as an optional future implementation only if the Codex SDK cannot reliably expose image artifacts or the app needs production multi-user scaling.
+- **Provider fallback boundary**: keep `OpenAIImageApiProvider` as an optional future implementation
+  only if the Codex SDK cannot reliably expose image artifacts or the app needs production
+  multi-user scaling.
 - **LangGraph graph** `graph/wallpaper.graph.ts`:
   1. `resolvePreset` - combine preset template, chips, idea, and target W x H.
-  2. `enrichPrompt` - use Codex/OpenAI text reasoning to rewrite a short idea into a professional image prompt. This is optional via env.
+  2. `enrichPrompt` - use Codex/OpenAI text reasoning to rewrite a short idea into a professional
+     image prompt. This is optional via env.
   3. `route` - branch by `mode`: `text2img`, `outpaint`, `edit`, `style`, `upscale`.
   4. `generate/edit` - call `ImageProvider`.
   5. `persist` - upload final bytes to R2 and update `Wallpaper`.
@@ -174,55 +196,89 @@ MVP can continue using `Wallpaper.status` as the job table. If Clerk anonymous s
 
 ---
 
-## Frontend Design `src/`
+## Frontend Design `apps/mobile/src/`
 
-- **Routes**: `(tabs)/index` for create, `(tabs)/library` for wallpaper library, `(tabs)/profile` for Clerk profile/sign-in.
-- **Root layout** `src/app/_layout.tsx`: wrap the app in `ClerkProvider` and React Query `QueryClientProvider`.
+- **Routes**: `(tabs)/index` for create, `(tabs)/library` for wallpaper library, `(tabs)/profile`
+  for Clerk profile/sign-in.
+- **Root layout** `apps/mobile/src/app/_layout.tsx`: wrap the app in `ClerkProvider` and React Query
+  `QueryClientProvider`.
 - **Auth UI**:
   - Prefer Clerk's Expo native Google SSO path in development builds.
   - For Expo Go/prototyping, use Clerk browser-based OAuth where appropriate.
-  - Use `useAuth()` to obtain a token for backend calls and inject it into `src/lib/api.ts`.
-- **Create** `src/features/create/`: preset grid, chips, one-line idea, generate button, progress state, result state.
-- **Preview** `src/components/WallpaperPreview.tsx`: phone mockup with lock/home preview toggle.
-- **Apply/share/save** `src/features/apply/`: download R2 result locally with `expo-file-system`, call `modules/expo-wallpaper`, save to media library, share with system share sheet.
-- **Library** `src/features/library/`: generated wallpaper grid and custom preset management.
-- **Edit existing image** `src/features/edit/`: pick image, upload to R2 through presigned URL, then run edit/outpaint/upscale/style extraction jobs.
-- **Native wallpaper module** `modules/expo-wallpaper/`: Kotlin Expo module with `setWallpaper(uri, target)` using Android `WallpaperManager`.
+  - Use `useAuth()` to obtain a token for backend calls and inject it into
+    `apps/mobile/src/lib/api.ts`.
+- **Create** `apps/mobile/src/features/create/`: preset grid, chips, one-line idea, generate button,
+  progress state, result state.
+- **Preview** `apps/mobile/src/components/WallpaperPreview.tsx`: phone mockup with lock/home preview
+  toggle.
+- **Apply/share/save** `apps/mobile/src/features/apply/`: download R2 result locally with
+  `expo-file-system`, call `modules/expo-wallpaper`, save to media library, share with system share
+  sheet.
+- **Library** `apps/mobile/src/features/library/`: generated wallpaper grid and custom preset
+  management.
+- **Edit existing image** `apps/mobile/src/features/edit/`: pick image, upload to R2 through
+  presigned URL, then run edit/outpaint/upscale/style extraction jobs.
+- **Native wallpaper module** `modules/expo-wallpaper/`: Kotlin Expo module with
+  `setWallpaper(uri, target)` using Android `WallpaperManager`.
 
 ---
 
 ## Milestones
 
-- **M0 Foundation**: install dependencies; create `server/`; Prisma schema and local migration; env validation for Clerk, R2, Postgres, and Codex; provider interface; R2 client.
-- **M0.5 Codex image spike**: write `server/scripts/try-codex-image.ts` to prove `@openai/codex-sdk` can return a programmatically usable image artifact for text-to-image and one edit flow using the existing Codex Plus entitlement. This milestone gates M1.
-- **M1 Generate -> preview loop**: `CodexImageProvider.textToImage`, minimal graph, R2 upload, `/generate`, `/jobs/:id`, seed presets, app create page, polling, phone preview. Demo: preset -> 2K+ image -> preview.
-- **M2 Apply/share/library**: Kotlin wallpaper module, Android dev build, set home/lock/both, share, save, library grid.
-- **M3 Auth**: Clerk Google SSO, backend Clerk verification, secure token cache, local user mapping, anonymous history binding.
-- **M4 Existing-image tools**: upload source image to R2, edit/outpaint/upscale/style extraction branches, custom preset creation.
-- **M5 Polish**: draft/high-quality modes, filters, favorites, empty/error states, rate limits, retries, cost/credit guardrails.
+- **Pre-M0 Engineering gate (complete)**: `docs/0000-vite-plus-engineering.md` established the Bun
+  workspace monorepo and Vite+ formatting, lint/type checks, task orchestration, caching, hooks, and
+  CI. The mobile/server development and build entry points have passed local acceptance.
+- **M0 Foundation**: install dependencies; create `apps/server/`; Prisma schema and local migration;
+  env validation for Clerk, R2, Postgres, and Codex; provider interface; R2 client.
+- **M0.5 Codex image spike**: write `apps/server/scripts/try-codex-image.ts` to prove
+  `@openai/codex-sdk` can return a programmatically usable image artifact for text-to-image and one
+  edit flow using the existing Codex Plus entitlement. This milestone gates M1.
+- **M1 Generate -> preview loop**: `CodexImageProvider.textToImage`, minimal graph, R2 upload,
+  `/generate`, `/jobs/:id`, seed presets, app create page, polling, phone preview. Demo: preset ->
+  2K+ image -> preview.
+- **M2 Apply/share/library**: Kotlin wallpaper module, Android dev build, set home/lock/both, share,
+  save, library grid.
+- **M3 Auth**: Clerk Google SSO, backend Clerk verification, secure token cache, local user mapping,
+  anonymous history binding.
+- **M4 Existing-image tools**: upload source image to R2, edit/outpaint/upscale/style extraction
+  branches, custom preset creation.
+- **M5 Polish**: draft/high-quality modes, filters, favorites, empty/error states, rate limits,
+  retries, cost/credit guardrails.
 
 ---
 
 ## Key Files
 
-- New: `server/` (`src/index.ts`, `src/app.ts`, `src/config/env.ts`, `src/middleware/auth.ts`, `src/providers/{types,codex,index}.ts`, `src/lib/r2.ts`, `src/graph/*`, `src/routes/*`, `prisma/schema.prisma`, `prisma/seed.ts`).
-- New: `server/scripts/try-codex-image.ts`, `server/scripts/try-r2.ts`.
+- New: `apps/server/` (`src/index.ts`, `src/app.ts`, `src/config/env.ts`, `src/middleware/auth.ts`,
+  `src/providers/{types,codex,index}.ts`, `src/lib/r2.ts`, `src/graph/*`, `src/routes/*`,
+  `prisma/schema.prisma`, `prisma/seed.ts`).
+- New: `apps/server/scripts/try-codex-image.ts`, `apps/server/scripts/try-r2.ts`.
 - New: `modules/expo-wallpaper/`.
-- New: `src/features/{auth,create,apply,library,edit}/`, `src/components/WallpaperPreview.tsx`, `src/lib/api.ts`.
-- Modify: `src/app/_layout.tsx`, `src/app/(tabs)/*`, `app.json`, `package.json`.
+- New: `apps/mobile/src/features/{auth,create,apply,library,edit}/`,
+  `apps/mobile/src/components/WallpaperPreview.tsx`, `apps/mobile/src/lib/api.ts`.
+- Modify: `apps/mobile/src/app/_layout.tsx`, `apps/mobile/src/app/(tabs)/*`, `apps/mobile/app.json`,
+  `apps/mobile/package.json`.
 - Reuse: `example/src/components`, `example/src/hooks`, `example/src/constants/theme.ts`.
 
 ---
 
 ## Verification
 
-1. **Codex provider spike**: run `server/scripts/try-codex-image.ts`; verify it generates or edits an image and returns a file/blob/base64 value that the server can upload to R2.
-2. **Backend**: start local Postgres, run Prisma migration/seed, start server, call `POST /generate`, poll `GET /jobs/:id` until `succeeded`, verify `resultImageUrl` points to R2 and the image meets the requested size.
-3. **Storage**: run `server/scripts/try-r2.ts`; verify upload, signed GET URL, and optional public/custom-domain URL.
-4. **Auth**: sign in with Google through Clerk, call `/me`, verify the server maps the Clerk user into local `User`, and verify protected requests reject missing/invalid auth.
-5. **Frontend + native module**: run a development build; complete preset -> generation -> preview -> apply to Android home/lock screen; verify save/share.
-6. **Existing-image flows**: pick a photo, upload to R2, run edit/outpaint/upscale/style extraction, then reuse the custom preset.
-7. **Failure paths**: invalid auth, R2 failure, Codex usage limit, image blocked/failed, network failure -> task becomes `failed` and app shows an actionable error state.
+1. **Codex provider spike**: run `apps/server/scripts/try-codex-image.ts`; verify it generates or
+   edits an image and returns a file/blob/base64 value that the server can upload to R2.
+2. **Backend**: start local Postgres, run Prisma migration/seed, start server, call
+   `POST /generate`, poll `GET /jobs/:id` until `succeeded`, verify `resultImageUrl` points to R2
+   and the image meets the requested size.
+3. **Storage**: run `apps/server/scripts/try-r2.ts`; verify upload, signed GET URL, and optional
+   public/custom-domain URL.
+4. **Auth**: sign in with Google through Clerk, call `/me`, verify the server maps the Clerk user
+   into local `User`, and verify protected requests reject missing/invalid auth.
+5. **Frontend + native module**: run a development build; complete preset -> generation -> preview
+   -> apply to Android home/lock screen; verify save/share.
+6. **Existing-image flows**: pick a photo, upload to R2, run edit/outpaint/upscale/style extraction,
+   then reuse the custom preset.
+7. **Failure paths**: invalid auth, R2 failure, Codex usage limit, image blocked/failed, network
+   failure -> task becomes `failed` and app shows an actionable error state.
 
 ---
 
@@ -232,11 +288,17 @@ MVP can continue using `Wallpaper.status` as the job table. If Clerk anonymous s
 - Payments or membership tiers.
 - Production-grade multi-tenant image generation using the owner's personal Codex entitlement.
 - iOS one-tap wallpaper setting.
-- Full moderation pipeline, watermarking, or policy enforcement beyond provider-level safeguards and TODO slots.
+- Full moderation pipeline, watermarking, or policy enforcement beyond provider-level safeguards and
+  TODO slots.
 
 ## Risks / Needs Confirmation
 
-- Codex SDK image artifact extraction must be proven before committing to the full provider implementation.
-- Using a personal Codex Plus quota from a backend is suitable for owner-operated MVPs, not public multi-user production unless OpenAI's terms and the technical entitlement model support that usage.
-- R2 public access strategy must be chosen: public bucket/custom domain for simple display, or private bucket plus signed GET URLs for tighter control.
-- Clerk Google SSO requires correct Google OAuth credentials and native app configuration for Android/iOS development builds.
+- Codex SDK image artifact extraction must be proven before committing to the full provider
+  implementation.
+- Using a personal Codex Plus quota from a backend is suitable for owner-operated MVPs, not public
+  multi-user production unless OpenAI's terms and the technical entitlement model support that
+  usage.
+- R2 public access strategy must be chosen: public bucket/custom domain for simple display, or
+  private bucket plus signed GET URLs for tighter control.
+- Clerk Google SSO requires correct Google OAuth credentials and native app configuration for
+  Android/iOS development builds.
