@@ -1,7 +1,8 @@
 # 0001 - backend-foundation
 
-> 模块：backend-foundation | 优先级：1
-> | 依赖：无 | 里程碑：M0 对应 SPEC：「后端设计」「技术栈与新增依赖」
+> 模块：backend-foundation | 优先级：1 | 依赖：无 | 里程碑：M0 | 状态：完成（2026-07-25）
+>
+> 对应 SPEC：「后端设计」「技术栈与新增依赖」
 
 ## 目标
 
@@ -32,7 +33,7 @@ Hono），提供统一配置、日志、错误处理、CORS 与健康检查，�
   - Codex：`CODEX_PROVIDER_ENABLED`、`CODEX_MODEL`、`CODEX_WORKDIR`、`CODEX_IMAGE_TIMEOUT_MS`
 - `.env.example` 列全所有 key（值留空），`.env` 加入 `.gitignore`。
 - 统一响应/错误结构：`{ ok: boolean, data?, error? }`；错误中间件捕获并转 JSON。
-- 脚本：`dev`=`tsx watch src/index.ts`，`build`=`tsc`，`start`=`node dist/index.js`。
+- 脚本：`dev`=`tsx watch src/index.ts`，`build`=`tsc`，`start`=`node dist/src/index.js`。
 
 ## 独立测试
 
@@ -42,7 +43,15 @@ Hono），提供统一配置、日志、错误处理、CORS 与健康检查，�
 
 ## 完成标准 (DoD)
 
-- [ ] `apps/server/` 可独立 `bun --filter=@lumina/server run dev` 启动且无报错。
-- [ ] `/health` 返回 200 + `{ ok: true }`。
-- [ ] env 校验覆盖 Clerk、R2、Postgres、Codex provider 配置。
-- [ ] 统一错误中间件对未捕获异常返回结构化 JSON。
+- [x] `apps/server/` 可独立 `bun --filter=@lumina/server run dev` 启动且无报错。
+- [x] `/health` 返回 200 + `{ ok: true }`。
+- [x] env 校验覆盖 Clerk、R2、Postgres、Codex provider 配置。
+- [x] 统一错误中间件对未捕获异常返回结构化 JSON。
+
+## 验证记录
+
+- 使用临时完整环境变量启动 `bun --filter=@lumina/server run dev`，`GET /health` 返回
+  `{ "ok": true }`；验证进程随后已停止。
+- `bun run lint`、`bun --filter=@lumina/server run build`、`bun run test` 通过。
+- `env.test.ts` 覆盖默认配置、必填环境变量缺失和 Codex 启用时的依赖字段；`app.test.ts`
+  覆盖健康检查及未处理异常的结构化 500 响应。

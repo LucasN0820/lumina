@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client"
+  output   = "generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String      @id @default(cuid()) @map("id")
+  clerkUserId   String      @unique @map("clerk_user_id")
+  googleSubject String?     @unique @map("google_subject")
+  email         String?     @unique @map("email")
+  nickname      String?     @map("nickname")
+  avatarUrl     String?     @map("avatar_url")
+  wallpapers    Wallpaper[]
+  presets       Preset[]
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  @@map("user")
+}
+
+model Preset {
+  id             String      @id @default(cuid()) @map("id")
+  name           String      @map("name")
+  category       String      @map("category")
+  coverImageUrl  String?     @map("cover_image_url")
+  promptTemplate String      @map("prompt_template")
+  negativePrompt String?     @map("negative_prompt")
+  styleRefUrl    String?     @map("style_ref_url")
+  params         Json?       @map("params")
+  isBuiltIn      Boolean     @default(false) @map("is_built_in")
+  ownerUserId    String?     @map("owner_user_id")
+  owner          User?       @relation(fields: [ownerUserId], references: [id])
+  wallpapers     Wallpaper[]
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  @@index([ownerUserId])
+  @@map("preset")
+}
+
+model Wallpaper {
+  id             String   @id @default(cuid()) @map("id")
+  userId         String?  @map("user_id")
+  user           User?    @relation(fields: [userId], references: [id])
+  presetId       String?  @map("preset_id")
+  preset         Preset?  @relation(fields: [presetId], references: [id])
+  mode           String   @map("mode")
+  prompt         String   @map("prompt")
+  sourceImageUrl String?  @map("source_image_url")
+  resultImageUrl String?  @map("result_image_url")
+  width          Int?     @map("width")
+  height         Int?     @map("height")
+  status         String   @default("pending") @map("status")
+  providerTask   String?  @map("provider_task")
+  error          String?  @map("error")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([presetId])
+  @@map("wallpaper")
+}

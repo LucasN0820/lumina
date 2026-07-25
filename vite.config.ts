@@ -77,7 +77,8 @@ export default defineConfig({
     },
     tasks: {
       'dev:all': {
-        command: 'vp run --parallel --no-cache --filter=@lumina/mobile --filter=@lumina/server dev',
+        command:
+          'vp run --parallel --log labeled --no-cache --filter=@lumina/mobile --filter=@lumina/server dev',
         cache: false,
       },
       'test:all': {
@@ -86,7 +87,8 @@ export default defineConfig({
         output: [{ auto: true }, '!apps/mobile/.expo/**', '!apps/mobile/dist/**'],
       },
       'build:all': {
-        command: 'vp run --parallel --filter=@lumina/mobile --filter=@lumina/server build',
+        command:
+          'vp run --parallel --log labeled --filter=@lumina/mobile --filter=@lumina/server build',
         output: ['apps/mobile/dist/**', 'apps/server/dist/**'],
       },
       'build:android': {

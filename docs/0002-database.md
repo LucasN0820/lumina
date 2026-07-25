@@ -1,6 +1,8 @@
 # 0002 — database
 
-> 模块：database ｜ 优先级：2 ｜ 依赖：0001 ｜ 里程碑：M0 对应 SPEC：「数据模型（Prisma）」
+> 模块：database ｜ 优先级：2 ｜ 依赖：0001 ｜ 里程碑：M0 ｜ 状态：完成（2026-07-25）
+>
+> 对应 SPEC：「数据模型（Prisma）」
 
 ## 目标
 
@@ -44,7 +46,14 @@
 
 ## 完成标准 (DoD)
 
-- [ ] 迁移成功，DB 中表名/列名均为 snake_case。
-- [ ] 三个模型均含 `created_at` + `updated_at`。
-- [ ] 种子写入 ≥6 个内置预设且可查询。
-- [ ] `prisma` 单例可被其他模块 import 复用。
+- [x] 迁移成功，DB 中表名/列名均为 snake_case。
+- [x] 三个模型均含 `created_at` + `updated_at`。
+- [x] 种子写入 ≥6 个内置预设且可查询。
+- [x] `prisma` 单例可被其他模块 import 复用。
+
+## 验证记录
+
+- 在临时 PostgreSQL 16 容器中执行 `prisma migrate dev` 和 `prisma db seed`，容器在验收后已删除。
+- `preset` 表查询到 7 个内置预设；`wallpaper` 表确认存在 `created_at` 与 `updated_at`。
+- `prisma validate`、`prisma format --check`、`prisma generate`、初始迁移 diff、server
+  `tsc`、Oxlint 和统一测试均通过。

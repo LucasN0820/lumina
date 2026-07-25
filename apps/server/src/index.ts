@@ -1,7 +1,14 @@
+import 'dotenv/config';
+
 import { serve } from '@hono/node-server';
 
-import { app } from './app.js';
+import { createApp } from './app.js';
+import { getCorsOrigins, loadEnv } from './config/env.js';
+import { logger } from './lib/logger.js';
 
-const port = Number(process.env.PORT ?? 3000);
+const config = loadEnv();
+const app = createApp({ corsOrigins: getCorsOrigins(config) });
 
-serve({ fetch: app.fetch, port });
+serve({ fetch: app.fetch, port: config.PORT });
+
+logger.info('Server listening.', { port: config.PORT });

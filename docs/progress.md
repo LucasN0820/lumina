@@ -20,8 +20,8 @@
 | 步骤                                       | 模块                                                      | 端     | 依赖           | 里程碑 | 状态 |
 | ------------------------------------------ | --------------------------------------------------------- | ------ | -------------- | ------ | ---- |
 | [0000](./0000-vite-plus-engineering.md)    | vite-plus-engineering（Bun monorepo + Vite+ 统一工具链）  | Eng    | —              | Pre-M0 | ☑    |
-| [0001](./0001-backend-foundation.md)       | backend-foundation（Hono 脚手架/配置/健康检查）           | BE     | —              | M0     | ☐    |
-| [0002](./0002-database.md)                 | database（Prisma schema/迁移/种子）                       | BE     | 0001           | M0     | ☐    |
+| [0001](./0001-backend-foundation.md)       | backend-foundation（Hono 脚手架/配置/健康检查）           | BE     | —              | M0     | ☑    |
+| [0002](./0002-database.md)                 | database（Prisma schema/迁移/种子）                       | BE     | 0001           | M0     | ☑    |
 | [0003](./0003-image-provider.md)           | image-provider（ImageProvider 接口 + Codex SDK）          | BE     | 0001           | M0/M1  | ☐    |
 | [0004](./0004-oss-storage.md)              | r2-storage（Cloudflare R2 上传/下载）                     | BE     | 0001           | M1     | ☐    |
 | [0005](./0005-generation-pipeline.md)      | generation-pipeline（LangGraph 编排）                     | BE     | 0002,0003,0004 | M1     | ☐    |
@@ -41,8 +41,8 @@
 
 - **工程化门槛（已完成）**：0000。Bun
   monorepo、Vite+ 质量门禁、测试编排、并行任务、缓存、hooks 与 CI 已通过本地验证；可以开始 M0 模块。
-- **关键路径（0000 完成后）**：0001 → 0002/0003/0004（可并行）→ Codex 图片能力 spike → 0005 →
-  0006。完成后后端核心出图链路即可独立验证。
+- **关键路径（当前）**：0001、0002 已完成；0003 与 0004 可并行推进，完成后进行 Codex 图片能力 spike，再进入 0005
+  → 0006。完成后后端核心出图链路即可独立验证。
 - **前端可并行**：0007 → 0008 与 0009 可与后端并行（先用 mock 数据，0006 就绪后联调）。
 - **M1 完成即可演示**：选预设 → 出 2K 图 → 手机壳预览。对应 0001–0009。
 - 0010 原生模块需 development build（非 Expo Go），可在前端壳就绪后独立开发与真机验证。
@@ -51,7 +51,7 @@
 ## 里程碑映射
 
 - **Pre-M0 工程化门槛**：0000（Bun monorepo、Vite+ 质量门禁、测试编排、并行任务与 CI）
-- **M0 基建**：0001, 0002, 0003, 0004
+- **M0 基建**：0001、0002 已完成；0003、0004 待开始
 - **M0.5 Codex 图片能力 spike**：验证 `@openai/codex-sdk` 能返回可程序化落盘的图片产物
 - **M1 核心生成→预览闭环**：0005, 0006, 0007, 0008, 0009
 - **M2 应用/分享/库**：0010, 0011, 0012

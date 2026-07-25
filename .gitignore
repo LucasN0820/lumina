@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+apps/server/prisma/generated/
 .vite/
 .vite-hooks/
 coverage/
