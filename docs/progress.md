@@ -1,66 +1,58 @@
-# Lumina 实施进度 (progress)
+# Lumina 实施进度
 
-> 来源规格：[SPEC.md](./SPEC.md)
-> 拆分原则：每个模块尽量**独立、可单独测试**；编号越小优先级越高（从 0000 起）。`0000`
-> 是所有功能开发前必须完成的工程化门槛。
-
-## 使用方式
-
-- 每个模块有独立规格文件
-  `000x-<module>.md`，含「目标 / 范围 / 涉及文件 / 实现要点 / 独立测试 / 完成标准」。
-- 开发时按编号顺序推进；同一里程碑内无依赖关系的模块可并行。
-- 完成一个模块后，在下表更新状态，并勾选该模块文件内的 DoD。
+> 来源规格：[SPEC.md](./SPEC.md) 编号越小优先级越高；`0000` 是所有功能开发前必须完成的工程化门槛。
 
 ## 状态图例
 
-`☐ 未开始`　`◐ 进行中`　`☑ 完成`　`⊘ 本期不做`
+`☐ 未开始` | `◐ 进行中或外部验收待完成` | `☑ 完成` | `⊘ 本期不做`
 
 ## 模块清单
 
-| 步骤                                       | 模块                                                      | 端     | 依赖           | 里程碑 | 状态 |
-| ------------------------------------------ | --------------------------------------------------------- | ------ | -------------- | ------ | ---- |
-| [0000](./0000-vite-plus-engineering.md)    | vite-plus-engineering（Bun monorepo + Vite+ 统一工具链）  | Eng    | —              | Pre-M0 | ☑    |
-| [0001](./0001-backend-foundation.md)       | backend-foundation（Hono 脚手架/配置/健康检查）           | BE     | —              | M0     | ☑    |
-| [0002](./0002-database.md)                 | database（Prisma schema/迁移/种子）                       | BE     | 0001           | M0     | ☑    |
-| [0003](./0003-image-provider.md)           | image-provider（ImageProvider 接口 + Codex SDK）          | BE     | 0001           | M0/M1  | ◐    |
-| [0004](./0004-oss-storage.md)              | r2-storage（Cloudflare R2 上传/下载）                     | BE     | 0001           | M1     | ◐    |
-| [0005](./0005-generation-pipeline.md)      | generation-pipeline（LangGraph 编排）                     | BE     | 0002,0003,0004 | M1     | ☐    |
-| [0006](./0006-generation-api.md)           | generation-api（/generate、/jobs、/presets、/wallpapers） | BE     | 0005,0002      | M1     | ☐    |
-| [0007](./0007-frontend-foundation.md)      | frontend-foundation（Tabs/主题/React Query/API client）   | FE     | —              | M1     | ☐    |
-| [0008](./0008-wallpaper-preview.md)        | wallpaper-preview（手机壳预览组件）                       | FE     | 0007           | M1     | ☐    |
-| [0009](./0009-create-flow.md)              | create-flow（创作页：预设+chips+出图+轮询）               | FE     | 0007,0008,0006 | M1     | ☐    |
-| [0010](./0010-native-wallpaper-android.md) | native-wallpaper-android（Kotlin 原生设壁纸模块）         | Native | 0007           | M2     | ☐    |
-| [0011](./0011-apply-share-save.md)         | apply-share-save（应用/分享/存相册）                      | FE     | 0010,0009      | M2     | ☐    |
-| [0012](./0012-library.md)                  | library（壁纸库 + 自定义预设管理）                        | FE     | 0007,0006      | M2     | ☐    |
-| [0013](./0013-auth-backend.md)             | auth-backend（Clerk token 校验 + 用户映射）               | BE     | 0001,0002      | M3     | ☐    |
-| [0014](./0014-auth-frontend.md)            | auth-frontend（Clerk Google SSO + secure-store）          | FE     | 0007,0013      | M3     | ☐    |
-| [0015](./0015-image-edit.md)               | image-edit（选图：扩图/超分/提取风格→自定义预设）         | BE+FE  | 0005,0009      | M4     | ☐    |
-| [0016](./0016-polish.md)                   | polish（草稿/高清两档、分类、收藏、错误态、限流）         | BE+FE  | 多             | M5     | ☐    |
+| 步骤                                       | 模块                                    | 端     | 依赖             | 里程碑 | 状态 |
+| ------------------------------------------ | --------------------------------------- | ------ | ---------------- | ------ | ---- |
+| [0000](./0000-vite-plus-engineering.md)    | vite-plus-engineering                   | Eng    | -                | Pre-M0 | ☑    |
+| [0001](./0001-backend-foundation.md)       | backend-foundation                      | BE     | -                | M0     | ☑    |
+| [0002](./0002-database.md)                 | database                                | BE     | 0001             | M0     | ☑    |
+| [0003](./0003-image-provider.md)           | image-provider, SiliconFlow FLUX.2 Flex | BE     | 0001             | M0/M1  | ◐    |
+| [0004](./0004-oss-storage.md)              | Cloudflare R2 storage                   | BE     | 0001             | M1     | ◐    |
+| [0005](./0005-generation-pipeline.md)      | generation-pipeline                     | BE     | 0002, 0003, 0004 | M1     | ☐    |
+| [0006](./0006-generation-api.md)           | generation-api                          | BE     | 0005, 0002       | M1     | ☐    |
+| [0007](./0007-frontend-foundation.md)      | frontend-foundation                     | FE     | -                | M1     | ☐    |
+| [0008](./0008-wallpaper-preview.md)        | wallpaper-preview                       | FE     | 0007             | M1     | ☐    |
+| [0009](./0009-create-flow.md)              | create-flow                             | FE     | 0007, 0008, 0006 | M1     | ☐    |
+| [0010](./0010-native-wallpaper-android.md) | native-wallpaper-android                | Native | 0007             | M2     | ☐    |
+| [0011](./0011-apply-share-save.md)         | apply-share-save                        | FE     | 0010, 0009       | M2     | ☐    |
+| [0012](./0012-library.md)                  | library                                 | FE     | 0007, 0006       | M2     | ☐    |
+| [0013](./0013-auth-backend.md)             | auth-backend                            | BE     | 0001, 0002       | M3     | ☐    |
+| [0014](./0014-auth-frontend.md)            | auth-frontend                           | FE     | 0007, 0013       | M3     | ☐    |
+| [0015](./0015-image-edit.md)               | image-edit                              | BE+FE  | 0005, 0009       | M4     | ☐    |
+| [0016](./0016-polish.md)                   | polish                                  | BE+FE  | all              | M5     | ☐    |
 
-## 依赖与并行建议
+## 当前关键路径
 
-- **工程化门槛（已完成）**：0000。Bun
-  monorepo、Vite+ 质量门禁、测试编排、并行任务、缓存、hooks 与 CI 已通过本地验证；可以开始 M0 模块。
-- **关键路径（当前）**：0001、0002 已完成；0003、0004 的代码与离线测试已完成，但真实 Codex 图像产物及 R2
-  bucket 验收待完成。两项外部 spike 通过后进入 0005 → 0006。
-- **前端可并行**：0007 → 0008 与 0009 可与后端并行（先用 mock 数据，0006 就绪后联调）。
-- **M1 完成即可演示**：选预设 → 出 2K 图 → 手机壳预览。对应 0001–0009。
-- 0010 原生模块需 development build（非 Expo Go），可在前端壳就绪后独立开发与真机验证。
-- 0013/0014 鉴权可整体后置；MVP 先「设备匿名」跑通生成。
+- 0000、0001、0002 已完成并通过本地工程化校验。
+- 0003 已从不适合作为生产图片后端的 Codex SDK 迁移到 SiliconFlow 的
+  `black-forest-labs/FLUX.2-flex`。离线 provider、环境校验、mock、错误映射和真实 API
+  spike 脚本已完成。
+- 0003 的真实验收仍需要 `SILICONFLOW_API_KEY`：先验证 `576x1024`
+  文生图与临时 URL 下载，再验证目标设备尺寸。该调用会产生供应商费用，因此不会在自动测试中运行。
+- 0004 的 R2 离线能力已完成，真实 bucket 凭据验收仍待完成。
+- 只有 0003 与 0004 的外部验收完成，才进入 0005 -> 0006 的生成任务与 API。
 
-## 里程碑映射
+## 里程碑
 
-- **Pre-M0 工程化门槛**：0000（Bun monorepo、Vite+ 质量门禁、测试编排、并行任务与 CI）
-- **M0 基建**：0001、0002 已完成；0003、0004 实现完成，外部服务验收待完成
-- **M0.5 Codex 图片能力 spike**：验证 `@openai/codex-sdk` 能返回可程序化落盘的图片产物
-- **M1 核心生成→预览闭环**：0005, 0006, 0007, 0008, 0009
-- **M2 应用/分享/库**：0010, 0011, 0012
-- **M3 登录**：0013, 0014
-- **M4 已有图能力**：0015
-- **M5 打磨**：0016
+- **Pre-M0 工程化门槛**：Bun monorepo、Vite+ 质量门禁、测试编排、缓存、hooks 和 CI 已完成。
+- **M0 基建**：后端基础与 Prisma 数据库已完成；图片和对象存储的外部服务验收待完成。
+- **M0.5 SiliconFlow 图片 spike**：验证 `black-forest-labs/FLUX.2-flex`
+  返回可下载的图片 URL，随后写入 R2。
+- **M1 生成到预览闭环**：0005、0006、0007、0008、0009。
+- **M2 应用、分享与图库**：0010、0011、0012。
+- **M3 登录认证**：0013、0014。
+- **M4 已有图片能力**：0015。
+- **M5 打磨**：0016。
 
-## 本期明确不做（⊘）
+## 本期不做
 
-- 完整生产级多租户图片生成额度/计费体系。
-- iOS 一键设壁纸（系统不支持）；iOS 仅后续「存相册 + 引导」。
-- 应用商店上架、支付/会员。
+- 完整生产级多租户图片额度、计费和支付体系。
+- iOS 一键设置系统壁纸。
+- 应用商店上架。

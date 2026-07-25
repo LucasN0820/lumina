@@ -5,6 +5,7 @@ export type ImageOperation =
   | 'upscale'
   | 'extract_style';
 
+// 2k or 4k
 export type ImageQuality = 'standard' | 'high';
 
 export interface ImageSpec {
@@ -12,6 +13,7 @@ export interface ImageSpec {
   negativePrompt?: string;
   width: number;
   height: number;
+  seed?: number;
   mode?: string;
   sourceImageUrl?: string;
   styleRefUrl?: string;
@@ -46,7 +48,8 @@ export type ImageProviderErrorCode =
   | 'PROVIDER_UNAVAILABLE'
   | 'RATE_LIMITED'
   | 'TIMEOUT'
-  | 'TOOL_FAILED';
+  | 'TOOL_FAILED'
+  | 'UNSUPPORTED_OPERATION';
 
 export class ImageProviderError extends Error {
   constructor(

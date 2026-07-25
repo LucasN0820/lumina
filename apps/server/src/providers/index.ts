@@ -1,36 +1,39 @@
 import type { Env } from '../config/env.js';
 
-import { CodexImageProvider, type CodexClient } from './codex.js';
 import { MockImageProvider } from './mock.js';
+import { SiliconFlowImageProvider } from './siliconflow.js';
 import type { ImageProvider } from './types.js';
 
-export * from './codex.js';
 export * from './mock.js';
+export * from './siliconflow.js';
 export * from './types.js';
 
 export interface ImageProviderFactoryOptions {
-  codexClient?: CodexClient;
+  siliconFlowFetch?: typeof globalThis.fetch;
 }
 
 export function getImageProvider(
   env: Pick<
     Env,
-    'CODEX_IMAGE_TIMEOUT_MS' | 'CODEX_MODEL' | 'CODEX_PROVIDER_ENABLED' | 'CODEX_WORKDIR'
+    | 'SILICONFLOW_API_KEY'
+    | 'SILICONFLOW_IMAGE_MODEL'
+    | 'SILICONFLOW_IMAGE_TIMEOUT_MS'
+    | 'SILICONFLOW_PROVIDER_ENABLED'
   >,
   options: ImageProviderFactoryOptions = {},
 ): ImageProvider {
-  if (!env.CODEX_PROVIDER_ENABLED) {
+  if (!env.SILICONFLOW_PROVIDER_ENABLED) {
     return new MockImageProvider();
   }
 
-  if (!env.CODEX_MODEL || !env.CODEX_WORKDIR) {
-    throw new Error('Codex provider requires CODEX_MODEL and CODEX_WORKDIR.');
+  if (!env.SILICONFLOW_API_KEY) {
+    throw new Error('SiliconFlow provider requires SILICONFLOW_API_KEY.');
   }
 
-  return new CodexImageProvider({
-    client: options.codexClient,
-    model: env.CODEX_MODEL,
-    timeoutMs: env.CODEX_IMAGE_TIMEOUT_MS,
-    workingDirectory: env.CODEX_WORKDIR,
+  return new SiliconFlowImageProvider({
+    apiKey: env.SILICONFLOW_API_KEY,
+    fetch: options.siliconFlowFetch,
+    model: env.SILICONFLOW_IMAGE_MODEL,
+    timeoutMs: env.SILICONFLOW_IMAGE_TIMEOUT_MS,
   });
 }

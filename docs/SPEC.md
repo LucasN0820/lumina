@@ -6,25 +6,23 @@ Lumina is an Android-first AI wallpaper app for international users. Users choos
 few ideas, generate a 2K+ wallpaper that matches their device aspect ratio, preview it in a phone
 mockup, apply it to the Android home/lock screen, save it to photos, and share it.
 
-| Decision     | New direction                        | Impact                                                                                                                                                |
-| ------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Target stage | **Lean MVP**                         | Keep compliance, moderation, watermarking, store launch, and payments out of scope for the first build. Leave extension points only.                  |
-| Platform     | **Android first**                    | Android can set wallpaper through `WallpaperManager`; iOS remains save/share only because apps cannot directly set system wallpaper.                  |
-| Auth         | **Clerk + Google SSO**               | Remove custom SMS, WeChat OAuth, and app-issued JWT. The app uses Clerk sessions; the server verifies Clerk auth and stores `clerkUserId`.            |
-| Storage      | **Cloudflare R2**                    | Replace Alibaba OSS with R2 through S3-compatible APIs and presigned URLs or public/custom-domain reads.                                              |
-| AI images    | **OpenAI Codex SDK provider**        | Replace DashScope/Wanxiang/Qwen/VIAPI with a `CodexImageProvider` backed by `@openai/codex-sdk`, using the existing Codex Plus quota where supported. |
-| Database     | **Neon Postgres or hosted Postgres** | Keep Prisma + PostgreSQL, but target international hosted Postgres instead of Alibaba RDS.                                                            |
+| Decision     | New direction                        | Impact                                                                                                                                                                  |
+| ------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Target stage | **Lean MVP**                         | Keep compliance, moderation, watermarking, store launch, and payments out of scope for the first build. Leave extension points only.                                    |
+| Platform     | **Android first**                    | Android can set wallpaper through `WallpaperManager`; iOS remains save/share only because apps cannot directly set system wallpaper.                                    |
+| Auth         | **Clerk + Google SSO**               | Remove custom SMS, WeChat OAuth, and app-issued JWT. The app uses Clerk sessions; the server verifies Clerk auth and stores `clerkUserId`.                              |
+| Storage      | **Cloudflare R2**                    | Replace Alibaba OSS with R2 through S3-compatible APIs and presigned URLs or public/custom-domain reads.                                                                |
+| AI images    | **SiliconFlow FLUX.2 Flex provider** | Replace DashScope/Wanxiang/Qwen/VIAPI with a server-side `SiliconFlowImageProvider` using `black-forest-labs/FLUX.2-flex`; persist each short-lived provider URL to R2. |
+| Database     | **Neon Postgres or hosted Postgres** | Keep Prisma + PostgreSQL, but target international hosted Postgres instead of Alibaba RDS.                                                                              |
 
-Important boundary: the Codex SDK is server-side and controls local/trusted Codex agents. It is not
-a normal public multi-tenant image REST API. MVP should treat it as a trusted-owner backend path
-that can use the owner's ChatGPT/Codex entitlement. Before building the full image pipeline,
-implement a small spike that proves the SDK can programmatically return image artifacts for
-generation, editing, outpainting-style expansion, and style extraction workflows. If that is not
-reliable enough for production, keep the same `ImageProvider` interface and swap the backend to
-OpenAI's Image API later.
+Important boundary: SiliconFlow API keys are server-only secrets. The image-generation response URL
+is short-lived, so the server must download it immediately, validate it, and store the final asset
+in R2 before exposing a URL to the mobile client. The first real API spike proves FLUX.2 Flex
+text-to-image and temporary-URL download only; editing, outpainting, upscaling, and style extraction
+remain separate later milestones until their provider-specific contracts are verified.
 
 Implementation must still follow `AGENTS.md`: when writing Expo code, check the exact SDK 56 docs at
-https://docs.expo.dev/versions/v56.0.0/. For OpenAI/Codex, Clerk, and R2 APIs, verify current
+https://docs.expo.dev/versions/v56.0.0/. For SiliconFlow, Clerk, and R2 APIs, verify current
 official docs before hardcoding model names, auth flows, SDK options, or storage behavior.
 
 ---
@@ -47,10 +45,10 @@ apps/server/ (Node + TypeScript + Hono)
   |- /presets, /wallpapers, /uploads/presign
   |- LangGraph.js: resolvePreset -> enrichPrompt -> route -> generate/edit -> persist
   |- Prisma -> PostgreSQL (local / Neon / hosted Postgres)
-  |- ImageProvider: CodexImageProvider using @openai/codex-sdk
+  |- ImageProvider: SiliconFlowImageProvider using FLUX.2 Flex
   |- Object storage: Cloudflare R2 through S3-compatible client
   v
-OpenAI Codex / GPT Image tools + Cloudflare R2
+SiliconFlow FLUX.2 Flex + Cloudflare R2
 ```
 
 **Async generation mode**: `POST /generate` returns a local `jobId` immediately. The server runs the
@@ -80,7 +78,7 @@ polls `GET /jobs/:jobId`. No Redis, queue, or Trigger.dev is required in MVP.
 - `prisma` + `@prisma/client`.
 - `@langchain/langgraph` + `@langchain/core`.
 - `@clerk/backend` or Clerk JWT/JWKS verification.
-- `@openai/codex-sdk` for the Codex-backed image provider.
+- Server-side `fetch` for the SiliconFlow image-generation API.
 - `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` for Cloudflare R2.
 - `zod` for input/env validation.
 
@@ -146,7 +144,7 @@ model Wallpaper {
   width          Int?     @map("width")
   height         Int?     @map("height")
   status         String   @default("pending") @map("status")
-  providerTask   String?  @map("provider_task") // Codex thread/run id or image call id
+  providerTask   String?  @map("provider_task") // SiliconFlow seed or image call id
   error          String?  @map("error")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
@@ -167,19 +165,17 @@ enabled, keep a local `deviceId` only for anonymous history and bind it after si
   primary auth JWTs; it trusts Clerk and maps Clerk users into local `User`.
 - **Provider abstraction** `providers/types.ts`:
   `interface ImageProvider { textToImage(spec); editImage(spec); outpaint(spec); upscale(spec); extractStyle(spec); }`.
-- **Codex provider** `providers/codex.ts`: uses `@openai/codex-sdk` server-side. It should:
-  - start or resume a Codex thread per job;
-  - give Codex a structured instruction to generate/edit/expand/extract style;
-  - require a machine-readable final result containing image artifact path/base64/url plus metadata;
-  - write the returned image bytes to R2;
-  - store the Codex thread/run id in `providerTask`.
-- **Provider fallback boundary**: keep `OpenAIImageApiProvider` as an optional future implementation
-  only if the Codex SDK cannot reliably expose image artifacts or the app needs production
-  multi-user scaling.
+- **SiliconFlow provider** `providers/siliconflow.ts`: calls `POST /v1/images/generations` with a
+  server-side Bearer API key, defaults to `black-forest-labs/FLUX.2-flex`, and returns the
+  short-lived image URL plus model, seed, and timing metadata. The generation pipeline downloads and
+  writes the image bytes to R2 immediately.
+- **Provider capability boundary**: M1 only enables text-to-image. The existing-image operations
+  remain explicit unsupported operations until SiliconFlow's FLUX.2 image-input contracts are
+  verified and implemented in M4.
 - **LangGraph graph** `graph/wallpaper.graph.ts`:
   1. `resolvePreset` - combine preset template, chips, idea, and target W x H.
-  2. `enrichPrompt` - use Codex/OpenAI text reasoning to rewrite a short idea into a professional
-     image prompt. This is optional via env.
+  2. `enrichPrompt` - optional future prompt-enrichment implementation that rewrites a short idea
+     into a professional image prompt.
   3. `route` - branch by `mode`: `text2img`, `outpaint`, `edit`, `style`, `upscale`.
   4. `generate/edit` - call `ImageProvider`.
   5. `persist` - upload final bytes to R2 and update `Wallpaper`.
@@ -229,11 +225,11 @@ enabled, keep a local `deviceId` only for anonymous history and bind it after si
   workspace monorepo and Vite+ formatting, lint/type checks, task orchestration, caching, hooks, and
   CI. The mobile/server development and build entry points have passed local acceptance.
 - **M0 Foundation**: install dependencies; create `apps/server/`; Prisma schema and local migration;
-  env validation for Clerk, R2, Postgres, and Codex; provider interface; R2 client.
-- **M0.5 Codex image spike**: write `apps/server/scripts/try-codex-image.ts` to prove
-  `@openai/codex-sdk` can return a programmatically usable image artifact for text-to-image and one
-  edit flow using the existing Codex Plus entitlement. This milestone gates M1.
-- **M1 Generate -> preview loop**: `CodexImageProvider.textToImage`, minimal graph, R2 upload,
+  env validation for Clerk, R2, Postgres, and SiliconFlow; provider interface; R2 client.
+- **M0.5 SiliconFlow image spike**: write `apps/server/scripts/try-siliconflow-image.ts` to prove
+  `black-forest-labs/FLUX.2-flex` can return a programmatically downloadable text-to-image result
+  through the SiliconFlow API. This milestone gates M1.
+- **M1 Generate -> preview loop**: `SiliconFlowImageProvider.textToImage`, minimal graph, R2 upload,
   `/generate`, `/jobs/:id`, seed presets, app create page, polling, phone preview. Demo: preset ->
   2K+ image -> preview.
 - **M2 Apply/share/library**: Kotlin wallpaper module, Android dev build, set home/lock/both, share,
@@ -250,9 +246,9 @@ enabled, keep a local `deviceId` only for anonymous history and bind it after si
 ## Key Files
 
 - New: `apps/server/` (`src/index.ts`, `src/app.ts`, `src/config/env.ts`, `src/middleware/auth.ts`,
-  `src/providers/{types,codex,index}.ts`, `src/lib/r2.ts`, `src/graph/*`, `src/routes/*`,
+  `src/providers/{types,siliconflow,index}.ts`, `src/lib/r2.ts`, `src/graph/*`, `src/routes/*`,
   `prisma/schema.prisma`, `prisma/seed.ts`).
-- New: `apps/server/scripts/try-codex-image.ts`, `apps/server/scripts/try-r2.ts`.
+- New: `apps/server/scripts/try-siliconflow-image.ts`, `apps/server/scripts/try-r2.ts`.
 - New: `modules/expo-wallpaper/`.
 - New: `apps/mobile/src/features/{auth,create,apply,library,edit}/`,
   `apps/mobile/src/components/WallpaperPreview.tsx`, `apps/mobile/src/lib/api.ts`.
@@ -264,8 +260,8 @@ enabled, keep a local `deviceId` only for anonymous history and bind it after si
 
 ## Verification
 
-1. **Codex provider spike**: run `apps/server/scripts/try-codex-image.ts`; verify it generates or
-   edits an image and returns a file/blob/base64 value that the server can upload to R2.
+1. **SiliconFlow provider spike**: run `apps/server/scripts/try-siliconflow-image.ts`; verify FLUX.2
+   Flex returns a downloadable text-to-image URL and the server can upload its bytes to R2.
 2. **Backend**: start local Postgres, run Prisma migration/seed, start server, call
    `POST /generate`, poll `GET /jobs/:id` until `succeeded`, verify `resultImageUrl` points to R2
    and the image meets the requested size.
@@ -277,8 +273,8 @@ enabled, keep a local `deviceId` only for anonymous history and bind it after si
    -> apply to Android home/lock screen; verify save/share.
 6. **Existing-image flows**: pick a photo, upload to R2, run edit/outpaint/upscale/style extraction,
    then reuse the custom preset.
-7. **Failure paths**: invalid auth, R2 failure, Codex usage limit, image blocked/failed, network
-   failure -> task becomes `failed` and app shows an actionable error state.
+7. **Failure paths**: invalid auth, R2 failure, SiliconFlow rate limit, image blocked/failed,
+   network failure -> task becomes `failed` and app shows an actionable error state.
 
 ---
 
@@ -286,18 +282,17 @@ enabled, keep a local `deviceId` only for anonymous history and bind it after si
 
 - App Store / Play Store launch.
 - Payments or membership tiers.
-- Production-grade multi-tenant image generation using the owner's personal Codex entitlement.
+- Production-grade multi-tenant image generation quotas, billing, or user-visible credit system.
 - iOS one-tap wallpaper setting.
 - Full moderation pipeline, watermarking, or policy enforcement beyond provider-level safeguards and
   TODO slots.
 
 ## Risks / Needs Confirmation
 
-- Codex SDK image artifact extraction must be proven before committing to the full provider
-  implementation.
-- Using a personal Codex Plus quota from a backend is suitable for owner-operated MVPs, not public
-  multi-user production unless OpenAI's terms and the technical entitlement model support that
-  usage.
+- SiliconFlow FLUX.2 Flex availability, allowed dimensions, and model-specific controls must be
+  proven with a real API key before committing to the M1 pipeline.
+- SiliconFlow API quotas, billing, and content restrictions need a production policy before public
+  multi-user launch.
 - R2 public access strategy must be chosen: public bucket/custom domain for simple display, or
   private bucket plus signed GET URLs for tighter control.
 - Clerk Google SSO requires correct Google OAuth credentials and native app configuration for

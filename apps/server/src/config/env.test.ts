@@ -19,7 +19,8 @@ describe('loadEnv', () => {
     const config = loadEnv(validEnv);
 
     expect(config.PORT).toBe(3000);
-    expect(config.CODEX_PROVIDER_ENABLED).toBe(false);
+    expect(config.SILICONFLOW_PROVIDER_ENABLED).toBe(false);
+    expect(config.SILICONFLOW_IMAGE_MODEL).toBe('black-forest-labs/FLUX.2-flex');
     expect(getCorsOrigins(config)).toEqual([]);
   });
 
@@ -30,9 +31,9 @@ describe('loadEnv', () => {
     expect(() => loadEnv(missingDatabaseUrl)).toThrow('DATABASE_URL');
   });
 
-  it('requires Codex configuration when the provider is enabled', () => {
-    expect(() => loadEnv({ ...validEnv, CODEX_PROVIDER_ENABLED: 'true' })).toThrow(
-      'CODEX_MODEL is required',
+  it('requires a SiliconFlow API key when the provider is enabled', () => {
+    expect(() => loadEnv({ ...validEnv, SILICONFLOW_PROVIDER_ENABLED: 'true' })).toThrow(
+      'SILICONFLOW_API_KEY is required',
     );
   });
 });

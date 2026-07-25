@@ -17,10 +17,10 @@ const envSchema = z
     R2_SECRET_ACCESS_KEY: nonEmptyString,
     R2_ENDPOINT: z.url(),
     R2_PUBLIC_BASE_URL: z.url().optional(),
-    CODEX_PROVIDER_ENABLED: z.stringbool().default(false),
-    CODEX_MODEL: nonEmptyString.optional(),
-    CODEX_WORKDIR: nonEmptyString.optional(),
-    CODEX_IMAGE_TIMEOUT_MS: z.coerce.number().int().positive().default(120000),
+    SILICONFLOW_PROVIDER_ENABLED: z.stringbool().default(false),
+    SILICONFLOW_API_KEY: nonEmptyString.optional(),
+    SILICONFLOW_IMAGE_MODEL: nonEmptyString.default('black-forest-labs/FLUX.2-flex'),
+    SILICONFLOW_IMAGE_TIMEOUT_MS: z.coerce.number().int().positive().default(120000),
     CORS_ORIGIN: z.string().optional(),
   })
   .superRefine((env, context) => {
@@ -32,19 +32,11 @@ const envSchema = z
       });
     }
 
-    if (env.CODEX_PROVIDER_ENABLED && !env.CODEX_MODEL) {
+    if (env.SILICONFLOW_PROVIDER_ENABLED && !env.SILICONFLOW_API_KEY) {
       context.addIssue({
         code: 'custom',
-        message: 'CODEX_MODEL is required when CODEX_PROVIDER_ENABLED is true.',
-        path: ['CODEX_MODEL'],
-      });
-    }
-
-    if (env.CODEX_PROVIDER_ENABLED && !env.CODEX_WORKDIR) {
-      context.addIssue({
-        code: 'custom',
-        message: 'CODEX_WORKDIR is required when CODEX_PROVIDER_ENABLED is true.',
-        path: ['CODEX_WORKDIR'],
+        message: 'SILICONFLOW_API_KEY is required when SILICONFLOW_PROVIDER_ENABLED is true.',
+        path: ['SILICONFLOW_API_KEY'],
       });
     }
   });

@@ -1,36 +1,31 @@
 import { describe, expect, it } from 'vite-plus/test';
 
-import { CodexImageProvider, type CodexClient } from './codex.js';
 import { getImageProvider } from './index.js';
 import { MockImageProvider } from './mock.js';
+import { SiliconFlowImageProvider } from './siliconflow.js';
 
 describe('getImageProvider', () => {
-  it('returns the deterministic mock provider when Codex is disabled', () => {
+  it('returns the deterministic mock provider when SiliconFlow is disabled', () => {
     const provider = getImageProvider({
-      CODEX_IMAGE_TIMEOUT_MS: 120_000,
-      CODEX_PROVIDER_ENABLED: false,
+      SILICONFLOW_IMAGE_MODEL: 'black-forest-labs/FLUX.2-flex',
+      SILICONFLOW_IMAGE_TIMEOUT_MS: 120_000,
+      SILICONFLOW_PROVIDER_ENABLED: false,
     });
 
     expect(provider).toBeInstanceOf(MockImageProvider);
   });
 
-  it('returns the Codex provider when enabled', () => {
-    const codexClient: CodexClient = {
-      startThread: () => ({
-        id: 'thread_factory_test',
-        run: async () => ({ finalResponse: '{}', items: [], usage: null }),
-      }),
-    };
+  it('returns the SiliconFlow provider when enabled', () => {
     const provider = getImageProvider(
       {
-        CODEX_IMAGE_TIMEOUT_MS: 120_000,
-        CODEX_MODEL: 'gpt-5',
-        CODEX_PROVIDER_ENABLED: true,
-        CODEX_WORKDIR: 'C:/work/lumina',
+        SILICONFLOW_API_KEY: 'test-api-key',
+        SILICONFLOW_IMAGE_MODEL: 'black-forest-labs/FLUX.2-flex',
+        SILICONFLOW_IMAGE_TIMEOUT_MS: 120_000,
+        SILICONFLOW_PROVIDER_ENABLED: true,
       },
-      { codexClient },
+      { siliconFlowFetch: fetch },
     );
 
-    expect(provider).toBeInstanceOf(CodexImageProvider);
+    expect(provider).toBeInstanceOf(SiliconFlowImageProvider);
   });
 });
