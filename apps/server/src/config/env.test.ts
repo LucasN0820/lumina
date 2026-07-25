@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vite-plus/test';
 
-import { EnvValidationError, getCorsOrigins, loadEnv } from './env.js';
+import { EnvValidationError, getCorsOrigins, loadEnv, loadSiliconFlowEnv } from './env.js';
 
 const validEnv = {
   CLERK_JWT_ISSUER: 'https://clerk.example.com',
@@ -35,6 +35,25 @@ describe('loadEnv', () => {
   it('requires a SiliconFlow API key when the provider is enabled', () => {
     expect(() => loadEnv({ ...validEnv, SILICONFLOW_PROVIDER_ENABLED: 'true' })).toThrow(
       'SILICONFLOW_API_KEY is required',
+    );
+  });
+
+  it('loads the standalone SiliconFlow spike without unrelated server configuration', () => {
+    const config = loadSiliconFlowEnv({
+      SILICONFLOW_API_KEY: 'siliconflow-test-key',
+      SILICONFLOW_PROVIDER_ENABLED: 'true',
+    });
+
+    expect(config.SILICONFLOW_PROVIDER_ENABLED).toBe(true);
+    expect(config.SILICONFLOW_IMAGE_MODEL).toBe('black-forest-labs/FLUX.2-flex');
+  });
+
+  it('requires an enabled SiliconFlow provider and API key for the standalone spike', () => {
+    expect(() => loadSiliconFlowEnv({ SILICONFLOW_API_KEY: 'siliconflow-test-key' })).toThrow(
+      'SILICONFLOW_PROVIDER_ENABLED',
+    );
+    expect(() => loadSiliconFlowEnv({ SILICONFLOW_PROVIDER_ENABLED: 'true' })).toThrow(
+      'SILICONFLOW_API_KEY',
     );
   });
 

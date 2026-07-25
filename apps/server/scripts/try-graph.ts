@@ -1,11 +1,12 @@
+import 'dotenv/config';
 import assert from 'node:assert/strict';
 
 import type { Wallpaper } from '../prisma/generated/prisma/client.js';
-import { MockImageProvider } from '../src/providers/mock.js';
 import {
   runWallpaperGraph,
   type WallpaperGraphDependencies,
 } from '../src/graph/wallpaper.graph.js';
+import { MockImageProvider } from '../src/providers/mock.js';
 
 let wallpaper: Wallpaper | undefined;
 

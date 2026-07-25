@@ -2,6 +2,18 @@ import { z } from 'zod';
 
 const nonEmptyString = z.string().trim().min(1);
 
+const siliconFlowEnvSchema = z
+  .object({
+    SILICONFLOW_PROVIDER_ENABLED: z.literal('true'),
+    SILICONFLOW_API_KEY: nonEmptyString,
+    SILICONFLOW_IMAGE_MODEL: nonEmptyString.default('black-forest-labs/FLUX.2-flex'),
+    SILICONFLOW_IMAGE_TIMEOUT_MS: z.coerce.number().int().positive().default(120000),
+  })
+  .transform((env) => ({
+    ...env,
+    SILICONFLOW_PROVIDER_ENABLED: true,
+  }));
+
 const envSchema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -61,6 +73,7 @@ const envSchema = z
   });
 
 export type Env = z.infer<typeof envSchema>;
+export type SiliconFlowEnv = z.infer<typeof siliconFlowEnvSchema>;
 
 export class EnvValidationError extends Error {
   constructor(readonly issues: z.core.$ZodIssue[]) {
@@ -71,6 +84,20 @@ export class EnvValidationError extends Error {
 
 export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   const result = envSchema.safeParse(source);
+
+  if (!result.success) {
+    throw new EnvValidationError(result.error.issues);
+  }
+
+  return result.data;
+}
+
+/**
+ * Loads the minimal configuration needed by the standalone SiliconFlow spike.
+ * It intentionally does not require the server's database, Clerk, or R2 settings.
+ */
+export function loadSiliconFlowEnv(source: NodeJS.ProcessEnv = process.env): SiliconFlowEnv {
+  const result = siliconFlowEnvSchema.safeParse(source);
 
   if (!result.success) {
     throw new EnvValidationError(result.error.issues);

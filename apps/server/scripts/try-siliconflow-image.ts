@@ -1,13 +1,9 @@
-import { loadEnv } from '../src/config/env.js';
+import 'dotenv/config';
+
+import { loadSiliconFlowEnv } from '../src/config/env.js';
 import { getImageProvider } from '../src/providers/index.js';
 
-const env = loadEnv();
-
-if (!env.SILICONFLOW_PROVIDER_ENABLED) {
-  throw new Error(
-    'Set SILICONFLOW_PROVIDER_ENABLED=true before running the SiliconFlow image spike.',
-  );
-}
+const env = loadSiliconFlowEnv();
 
 const provider = getImageProvider(env);
 const result = await provider.textToImage({
