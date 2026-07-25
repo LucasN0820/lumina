@@ -6,17 +6,14 @@ import {
   WallpaperGraphAnnotation,
   type WallpaperGraphInput,
   type WallpaperGraphState,
+  type WallpaperMode,
+  type WallpaperUserInputs,
 } from './state.js';
 import { createWallpaperNodes } from './nodes/wallpaper.nodes.js';
 import type { PromptEnricher, WallpaperGraphDependencies } from './nodes/types.js';
 
-export type { WallpaperGraphDependencies } from './nodes/types.js';
-export type {
-  WallpaperGraphInput,
-  WallpaperGraphState,
-  WallpaperMode,
-  WallpaperUserInputs,
-} from './state.js';
+export type { WallpaperGraphDependencies };
+export type { WallpaperGraphInput, WallpaperGraphState, WallpaperMode, WallpaperUserInputs };
 
 type GraphWithInvoke = {
   invoke(input: WallpaperGraphInput): Promise<WallpaperGraphState>;

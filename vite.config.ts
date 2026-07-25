@@ -1,5 +1,12 @@
 import { defineConfig } from 'vite-plus';
 
+import {
+  mobileReactPreset,
+  serverNodePreset,
+  serverTestPreset,
+  strictCodeQualityPreset,
+} from './config/oxlint-presets.js';
+
 export default defineConfig({
   fmt: {
     ignorePatterns: [
@@ -39,28 +46,30 @@ export default defineConfig({
       '**/coverage/**',
       '**/.vite/**',
     ],
-    plugins: ['typescript'],
+    plugins: [...strictCodeQualityPreset.plugins],
     options: {
       typeAware: true,
       typeCheck: true,
     },
+    rules: strictCodeQualityPreset.rules,
     overrides: [
       {
         files: ['apps/mobile/**/*.{ts,tsx}'],
-        plugins: ['typescript', 'react'],
+        plugins: [...mobileReactPreset.plugins],
+        rules: mobileReactPreset.rules,
       },
       {
         files: ['apps/server/**/*.ts'],
+        plugins: [...serverNodePreset.plugins],
         env: {
           node: true,
         },
-        rules: {
-          'no-console': 'off',
-        },
+        rules: serverNodePreset.rules,
       },
       {
         files: ['apps/server/**/*.test.ts'],
-        plugins: ['typescript', 'vitest'],
+        plugins: [...serverTestPreset.plugins],
+        rules: serverTestPreset.rules,
       },
     ],
   },

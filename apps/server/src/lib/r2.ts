@@ -1,6 +1,7 @@
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { Readable } from 'node:stream';
+import type { ReadableStream } from 'node:stream/web';
 
 import {
   GetObjectCommand,
@@ -143,7 +144,7 @@ export class R2Storage {
 
     return this.upload(
       key,
-      Readable.fromWeb(response.body as unknown as import('node:stream/web').ReadableStream),
+      Readable.fromWeb(response.body as unknown as ReadableStream),
       contentType ?? sourceContentType ?? DEFAULT_CONTENT_TYPE,
     );
   }

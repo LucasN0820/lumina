@@ -1,8 +1,7 @@
+import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-
-import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { describe, expect, it, vi } from 'vite-plus/test';
 
 import {
@@ -10,6 +9,7 @@ import {
   generateWallpaperKey,
   R2StorageError,
   type R2Config,
+  type R2StorageDependencies,
   type S3CommandClient,
 } from './r2.js';
 
@@ -21,8 +21,11 @@ const config: R2Config = {
   secretAccessKey: 'test-secret-key',
 };
 
-function createClient(): { client: S3CommandClient; send: ReturnType<typeof vi.fn> } {
-  const send = vi.fn().mockResolvedValue({});
+function createClient(): {
+  client: S3CommandClient;
+  send: ReturnType<typeof vi.fn<S3CommandClient['send']>>;
+} {
+  const send = vi.fn<S3CommandClient['send']>().mockResolvedValue({});
   return { client: { send }, send };
 }
 
@@ -70,7 +73,7 @@ describe('R2Storage', () => {
   it('streams a remote image into a put command', async () => {
     const { client, send } = createClient();
     const fetch = vi
-      .fn()
+      .fn<typeof globalThis.fetch>()
       .mockResolvedValue(
         new Response('image bytes', { headers: { 'content-type': 'image/webp; charset=binary' } }),
       );
@@ -107,6 +110,9 @@ describe('R2Storage', () => {
 
     const command = send.mock.calls[0]?.[0];
     expect(command).toBeInstanceOf(PutObjectCommand);
+    if (!(command instanceof PutObjectCommand)) {
+      throw new Error('Expected the upload to send a PutObjectCommand.');
+    }
     expect(command.input.Body).toBeTruthy();
     await rm(folder, { force: true, recursive: true });
   });
@@ -114,7 +120,7 @@ describe('R2Storage', () => {
   it('uses a signed GET URL for private buckets and signs browser PUT uploads', async () => {
     const { client } = createClient();
     const getSignedUrl = vi
-      .fn()
+      .fn<NonNullable<R2StorageDependencies['getSignedUrl']>>()
       .mockResolvedValueOnce('https://signed.example.com/get')
       .mockResolvedValueOnce('https://signed.example.com/put');
     const storage = createR2Storage(config, { client, getSignedUrl });
@@ -128,8 +134,12 @@ describe('R2Storage', () => {
 
     expect(getSignedUrl.mock.calls[0]?.[1]).toBeInstanceOf(GetObjectCommand);
     expect(getSignedUrl.mock.calls[0]?.[2]).toEqual({ expiresIn: 120, signableHeaders: undefined });
-    expect(getSignedUrl.mock.calls[1]?.[1]).toBeInstanceOf(PutObjectCommand);
-    expect(getSignedUrl.mock.calls[1]?.[1].input).toMatchObject({
+    const putCommand = getSignedUrl.mock.calls[1]?.[1];
+    expect(putCommand).toBeInstanceOf(PutObjectCommand);
+    if (!(putCommand instanceof PutObjectCommand)) {
+      throw new Error('Expected the second signing call to receive a PutObjectCommand.');
+    }
+    expect(putCommand.input).toMatchObject({
       Bucket: 'lumina-images',
       ContentType: 'image/png',
       Key: 'wallpapers/202607/image.png',
@@ -142,7 +152,9 @@ describe('R2Storage', () => {
 
   it('exposes failed downloads and uploads as structured storage errors', async () => {
     const { client } = createClient();
-    const fetch = vi.fn().mockResolvedValue(new Response(null, { status: 502 }));
+    const fetch = vi
+      .fn<typeof globalThis.fetch>()
+      .mockResolvedValue(new Response(null, { status: 502 }));
     const storage = createR2Storage(config, { client, fetch });
 
     await expect(

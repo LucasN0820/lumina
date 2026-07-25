@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vite-plus/test';
 
 import { SiliconFlowImageProvider, mapSiliconFlowError } from './siliconflow.js';
 
-function createProvider(fetch = vi.fn()): SiliconFlowImageProvider {
+function createProvider(fetch = vi.fn<typeof globalThis.fetch>()): SiliconFlowImageProvider {
   return new SiliconFlowImageProvider({
     apiKey: 'test-api-key',
     fetch,
@@ -13,7 +13,7 @@ function createProvider(fetch = vi.fn()): SiliconFlowImageProvider {
 
 describe('SiliconFlowImageProvider', () => {
   it('calls FLUX.2 Flex and returns a temporary image URL', async () => {
-    const fetch = vi.fn().mockResolvedValue(
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(
       new Response(
         JSON.stringify({
           images: [{ url: 'https://provider.example.com/generated.png' }],

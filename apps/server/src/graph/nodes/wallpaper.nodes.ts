@@ -103,7 +103,7 @@ export function createWallpaperNodes(dependencies: WallpaperGraphDependencies) {
 function resolvePrompt(template: string | undefined, state: WallpaperGraphState): string {
   const values: Record<string, string> = {
     ...Object.fromEntries(
-      Object.entries(state.userInputs).map(([key, value]) => [key, value?.trim() || '']),
+      Object.entries(state.userInputs).map(([key, value]) => [key, value.trim() || '']),
     ),
     height: String(state.height),
     width: String(state.width),
