@@ -5,7 +5,7 @@ import {
   type ImageSpec,
 } from './types.js';
 
-export const DEFAULT_SILICONFLOW_IMAGE_MODEL = 'black-forest-labs/FLUX.2-flex';
+export const DEFAULT_SILICONFLOW_IMAGE_MODEL = 'black-forest-labs/FLUX.2-pro';
 const SILICONFLOW_IMAGE_ENDPOINT = 'https://api.siliconflow.com/v1/images/generations';
 
 type SiliconFlowImageResponse = {

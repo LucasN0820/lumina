@@ -32,7 +32,7 @@
 
 - 0000、0001、0002 已完成并通过本地工程化校验。
 - 0003 已从不适合作为生产图片后端的 Codex SDK 迁移到 SiliconFlow 的
-  `black-forest-labs/FLUX.2-flex`。离线 provider、环境校验、mock、错误映射和真实 API
+  `black-forest-labs/FLUX.2-pro`。离线 provider、环境校验、mock、错误映射和真实 API
   spike 脚本已完成。
 - 0003 的真实验收仍需要 `SILICONFLOW_API_KEY`：先验证 `576x1024`
   文生图与临时 URL 下载，再验证目标设备尺寸。该调用会产生供应商费用，因此不会在自动测试中运行。
@@ -44,7 +44,7 @@
 
 - **Pre-M0 工程化门槛**：Bun monorepo、Vite+ 质量门禁、测试编排、缓存、hooks 和 CI 已完成。
 - **M0 基建**：后端基础与 Prisma 数据库已完成；图片和对象存储的外部服务验收待完成。
-- **M0.5 SiliconFlow 图片 spike**：验证 `black-forest-labs/FLUX.2-flex`
+- **M0.5 SiliconFlow 图片 spike**：验证 `black-forest-labs/FLUX.2-pro`
   返回可下载的图片 URL，随后写入 R2。
 - **M1 生成到预览闭环**：0005、0006、0007、0008、0009。
 - **M2 应用、分享与图库**：0010、0011、0012。

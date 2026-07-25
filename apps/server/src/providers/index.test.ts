@@ -7,7 +7,7 @@ import { SiliconFlowImageProvider } from './siliconflow.js';
 describe('getImageProvider', () => {
   it('returns the deterministic mock provider when SiliconFlow is disabled', () => {
     const provider = getImageProvider({
-      SILICONFLOW_IMAGE_MODEL: 'black-forest-labs/FLUX.2-flex',
+      SILICONFLOW_IMAGE_MODEL: 'black-forest-labs/FLUX.2-pro',
       SILICONFLOW_IMAGE_TIMEOUT_MS: 120_000,
       SILICONFLOW_PROVIDER_ENABLED: false,
     });
@@ -19,7 +19,7 @@ describe('getImageProvider', () => {
     const provider = getImageProvider(
       {
         SILICONFLOW_API_KEY: 'test-api-key',
-        SILICONFLOW_IMAGE_MODEL: 'black-forest-labs/FLUX.2-flex',
+        SILICONFLOW_IMAGE_MODEL: 'black-forest-labs/FLUX.2-pro',
         SILICONFLOW_IMAGE_TIMEOUT_MS: 120_000,
         SILICONFLOW_PROVIDER_ENABLED: true,
       },

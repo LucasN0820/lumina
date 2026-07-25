@@ -6,7 +6,7 @@ const siliconFlowEnvSchema = z
   .object({
     SILICONFLOW_PROVIDER_ENABLED: z.literal('true'),
     SILICONFLOW_API_KEY: nonEmptyString,
-    SILICONFLOW_IMAGE_MODEL: nonEmptyString.default('black-forest-labs/FLUX.2-flex'),
+    SILICONFLOW_IMAGE_MODEL: nonEmptyString.default('black-forest-labs/FLUX.2-pro'),
     SILICONFLOW_IMAGE_TIMEOUT_MS: z.coerce.number().int().positive().default(120000),
   })
   .transform((env) => ({
@@ -31,7 +31,7 @@ const envSchema = z
     R2_PUBLIC_BASE_URL: z.url().optional(),
     SILICONFLOW_PROVIDER_ENABLED: z.stringbool().default(false),
     SILICONFLOW_API_KEY: nonEmptyString.optional(),
-    SILICONFLOW_IMAGE_MODEL: nonEmptyString.default('black-forest-labs/FLUX.2-flex'),
+    SILICONFLOW_IMAGE_MODEL: nonEmptyString.default('black-forest-labs/FLUX.2-pro'),
     SILICONFLOW_IMAGE_TIMEOUT_MS: z.coerce.number().int().positive().default(120000),
     ENRICH_PROMPT: z.stringbool().default(false),
     OPENAI_API_KEY: nonEmptyString.optional(),

@@ -21,7 +21,7 @@ describe('loadEnv', () => {
     expect(config.PORT).toBe(3000);
     expect(config.ENRICH_PROMPT).toBe(false);
     expect(config.SILICONFLOW_PROVIDER_ENABLED).toBe(false);
-    expect(config.SILICONFLOW_IMAGE_MODEL).toBe('black-forest-labs/FLUX.2-flex');
+    expect(config.SILICONFLOW_IMAGE_MODEL).toBe('black-forest-labs/FLUX.2-pro');
     expect(getCorsOrigins(config)).toEqual([]);
   });
 
@@ -45,7 +45,7 @@ describe('loadEnv', () => {
     });
 
     expect(config.SILICONFLOW_PROVIDER_ENABLED).toBe(true);
-    expect(config.SILICONFLOW_IMAGE_MODEL).toBe('black-forest-labs/FLUX.2-flex');
+    expect(config.SILICONFLOW_IMAGE_MODEL).toBe('black-forest-labs/FLUX.2-pro');
   });
 
   it('requires an enabled SiliconFlow provider and API key for the standalone spike', () => {

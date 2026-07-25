@@ -6,7 +6,7 @@
 ## 目标
 
 定义统一图片能力接口 `ImageProvider`，并实现使用 SiliconFlow 聚合平台的
-`SiliconFlowImageProvider`。服务端以 `black-forest-labs/FLUX.2-flex` 作为默认高质量文生图模型，调用
+`SiliconFlowImageProvider`。服务端以 `black-forest-labs/FLUX.2-pro` 作为默认高质量文生图模型，调用
 `POST /v1/images/generations`，立即将供应商一小时有效的结果 URL 持久化到 Cloudflare R2。
 
 ## 范围
@@ -30,7 +30,7 @@
 
 - 服务端向 `https://api.siliconflow.com/v1/images/generations` 发起 Bearer Token 请求；API Key 只从
   `SILICONFLOW_API_KEY` 读取，绝不进入 Expo 客户端或日志。
-- 默认模型为 `black-forest-labs/FLUX.2-flex`；`SILICONFLOW_IMAGE_MODEL` 可显式覆盖，且不做静默降级。
+- 默认模型为 `black-forest-labs/FLUX.2-pro`；`SILICONFLOW_IMAGE_MODEL` 可显式覆盖，且不做静默降级。
 - 请求固定 `batch_size: 1`、`output_format: "png"`，将 `ImageSpec`
   的 prompt、负向 prompt、尺寸、seed/quality 映射到平台请求。
 - 当前公开 API 文档列举的尺寸与模型公告的“自定义尺寸”表述不完全一致。实现不得假定 `1080x2400`
@@ -55,7 +55,7 @@
 ## 完成标准 (DoD)
 
 - [x] `getImageProvider()` 能按 env 返回 SiliconFlow 或 mock provider。
-- [x] `textToImage` 能调用 `black-forest-labs/FLUX.2-flex` 并返回可持久化的临时图像 URL。
+- [x] `textToImage` 能调用 `black-forest-labs/FLUX.2-pro` 并返回可持久化的临时图像 URL。
 - [ ] 供应商短期 URL 的下载和 R2 持久化链路经真实凭据验证。
 - [x] 不支持的编辑类操作返回结构化错误。
 - [x] 认证、限流、过载、超时和供应商失败能结构化抛出。
@@ -66,6 +66,6 @@
 - 已调研 SiliconFlow `POST /v1/images/generations`：使用 Bearer API Key，返回 `images[].url`、
   `timings` 和 `seed`，且生成 URL 需在一小时内下载并持久化。
 - 已确认 SiliconFlow 提供
-  `black-forest-labs/FLUX.2-flex`；平台将其定位为可调推理步数与提示词遵循度、偏重文字和细节表现的高质量模型。
+  `black-forest-labs/FLUX.2-pro`；平台将其定位为可调推理步数与提示词遵循度、偏重文字和细节表现的高质量模型。
 - 尚未配置
   `SILICONFLOW_API_KEY`，因此真实模型与 R2 联调仍是 M0 外部验收项；离线实现和测试完成后，必须保持本模块为待验收状态，不能错误标为完成。

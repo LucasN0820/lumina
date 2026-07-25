@@ -6,14 +6,14 @@ Lumina is an Android-first AI wallpaper app for international users. Users choos
 few ideas, generate a 2K+ wallpaper that matches their device aspect ratio, preview it in a phone
 mockup, apply it to the Android home/lock screen, save it to photos, and share it.
 
-| Decision     | New direction                        | Impact                                                                                                                                                                  |
-| ------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Target stage | **Lean MVP**                         | Keep compliance, moderation, watermarking, store launch, and payments out of scope for the first build. Leave extension points only.                                    |
-| Platform     | **Android first**                    | Android can set wallpaper through `WallpaperManager`; iOS remains save/share only because apps cannot directly set system wallpaper.                                    |
-| Auth         | **Clerk + Google SSO**               | Remove custom SMS, WeChat OAuth, and app-issued JWT. The app uses Clerk sessions; the server verifies Clerk auth and stores `clerkUserId`.                              |
-| Storage      | **Cloudflare R2**                    | Replace Alibaba OSS with R2 through S3-compatible APIs and presigned URLs or public/custom-domain reads.                                                                |
-| AI images    | **SiliconFlow FLUX.2 Flex provider** | Replace DashScope/Wanxiang/Qwen/VIAPI with a server-side `SiliconFlowImageProvider` using `black-forest-labs/FLUX.2-flex`; persist each short-lived provider URL to R2. |
-| Database     | **Neon Postgres or hosted Postgres** | Keep Prisma + PostgreSQL, but target international hosted Postgres instead of Alibaba RDS.                                                                              |
+| Decision     | New direction                        | Impact                                                                                                                                                                 |
+| ------------ | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Target stage | **Lean MVP**                         | Keep compliance, moderation, watermarking, store launch, and payments out of scope for the first build. Leave extension points only.                                   |
+| Platform     | **Android first**                    | Android can set wallpaper through `WallpaperManager`; iOS remains save/share only because apps cannot directly set system wallpaper.                                   |
+| Auth         | **Clerk + Google SSO**               | Remove custom SMS, WeChat OAuth, and app-issued JWT. The app uses Clerk sessions; the server verifies Clerk auth and stores `clerkUserId`.                             |
+| Storage      | **Cloudflare R2**                    | Replace Alibaba OSS with R2 through S3-compatible APIs and presigned URLs or public/custom-domain reads.                                                               |
+| AI images    | **SiliconFlow FLUX.2 Flex provider** | Replace DashScope/Wanxiang/Qwen/VIAPI with a server-side `SiliconFlowImageProvider` using `black-forest-labs/FLUX.2-pro`; persist each short-lived provider URL to R2. |
+| Database     | **Neon Postgres or hosted Postgres** | Keep Prisma + PostgreSQL, but target international hosted Postgres instead of Alibaba RDS.                                                                             |
 
 Important boundary: SiliconFlow API keys are server-only secrets. The image-generation response URL
 is short-lived, so the server must download it immediately, validate it, and store the final asset
@@ -166,7 +166,7 @@ enabled, keep a local `deviceId` only for anonymous history and bind it after si
 - **Provider abstraction** `providers/types.ts`:
   `interface ImageProvider { textToImage(spec); editImage(spec); outpaint(spec); upscale(spec); extractStyle(spec); }`.
 - **SiliconFlow provider** `providers/siliconflow.ts`: calls `POST /v1/images/generations` with a
-  server-side Bearer API key, defaults to `black-forest-labs/FLUX.2-flex`, and returns the
+  server-side Bearer API key, defaults to `black-forest-labs/FLUX.2-pro`, and returns the
   short-lived image URL plus model, seed, and timing metadata. The generation pipeline downloads and
   writes the image bytes to R2 immediately.
 - **Provider capability boundary**: M1 only enables text-to-image. The existing-image operations
@@ -227,7 +227,7 @@ enabled, keep a local `deviceId` only for anonymous history and bind it after si
 - **M0 Foundation**: install dependencies; create `apps/server/`; Prisma schema and local migration;
   env validation for Clerk, R2, Postgres, and SiliconFlow; provider interface; R2 client.
 - **M0.5 SiliconFlow image spike**: write `apps/server/scripts/try-siliconflow-image.ts` to prove
-  `black-forest-labs/FLUX.2-flex` can return a programmatically downloadable text-to-image result
+  `black-forest-labs/FLUX.2-pro` can return a programmatically downloadable text-to-image result
   through the SiliconFlow API. This milestone gates M1.
 - **M1 Generate -> preview loop**: `SiliconFlowImageProvider.textToImage`, minimal graph, R2 upload,
   `/generate`, `/jobs/:id`, seed presets, app create page, polling, phone preview. Demo: preset ->

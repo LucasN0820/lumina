@@ -6,7 +6,7 @@ function createProvider(fetch = vi.fn<typeof globalThis.fetch>()): SiliconFlowIm
   return new SiliconFlowImageProvider({
     apiKey: 'test-api-key',
     fetch,
-    model: 'black-forest-labs/FLUX.2-flex',
+    model: 'black-forest-labs/FLUX.2-pro',
     timeoutMs: 1_000,
   });
 }
@@ -41,7 +41,7 @@ describe('SiliconFlowImageProvider', () => {
     });
     expect(result.metadata).toMatchObject({
       inferenceMs: 1_234,
-      model: 'black-forest-labs/FLUX.2-flex',
+      model: 'black-forest-labs/FLUX.2-pro',
       seed: 42,
     });
     expect(fetch).toHaveBeenCalledWith(
@@ -55,7 +55,7 @@ describe('SiliconFlowImageProvider', () => {
       batch_size: 1,
       image_size: '576x1024',
       inference_steps: 50,
-      model: 'black-forest-labs/FLUX.2-flex',
+      model: 'black-forest-labs/FLUX.2-pro',
       negative_prompt: 'watermark',
       output_format: 'png',
       prompt: 'A moonlit lake wallpaper',
