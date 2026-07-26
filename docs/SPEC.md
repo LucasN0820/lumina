@@ -82,14 +82,6 @@ polls `GET /jobs/:jobId`. No Redis, queue, or Trigger.dev is required in MVP.
 - `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` for Cloudflare R2.
 - `zod` for input/env validation.
 
-**Removed from the plan**
-
-- Alibaba DashScope / Tongyi Wanxiang / Tongyi Qianwen / qwen-vl / VIAPI.
-- Alibaba OSS.
-- Alibaba SMS.
-- WeChat OAuth.
-- Custom app-issued JWT for primary auth.
-
 ---
 
 ## Data Model (Prisma `apps/server/prisma/schema.prisma`)
