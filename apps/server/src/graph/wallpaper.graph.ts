@@ -56,7 +56,7 @@ export async function runWallpaperGraph(
   input: WallpaperGraphInput,
   suppliedDependencies?: Partial<WallpaperGraphDependencies>,
 ): Promise<Wallpaper> {
-  let wallpaperId: string | undefined;
+  let wallpaperId = input.wallpaperId;
   const startedAt = performance.now();
   const dependencies = await resolveDependencies(suppliedDependencies ?? {}, (id) => {
     wallpaperId = id;

@@ -12,6 +12,7 @@ export type PresetRecord = {
 
 export type WallpaperRepository = {
   create(data: {
+    deviceId?: string;
     mode: string;
     presetId?: string;
     prompt: string;

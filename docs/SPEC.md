@@ -134,6 +134,7 @@ model Preset {
 
 model Wallpaper {
   id             String   @id @default(cuid()) @map("id")
+  deviceId       String?  @map("device_id") // anonymous history before Clerk binding
   userId         String?  @map("user_id")
   user           User?    @relation(fields: [userId], references: [id])
   presetId       String?  @map("preset_id")
@@ -149,6 +150,7 @@ model Wallpaper {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
+  @@index([deviceId])
   @@map("wallpaper")
 }
 ```

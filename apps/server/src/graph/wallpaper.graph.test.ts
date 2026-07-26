@@ -50,6 +50,23 @@ describe('runWallpaperGraph', () => {
     expect(harness.wallpaper.status).toBe('succeeded');
   });
 
+  it('generates from a tone-only input without a preset', async () => {
+    const harness = createHarness();
+
+    const wallpaper = await runWallpaperGraph(
+      {
+        height: 2400,
+        mode: 'text2img',
+        userInputs: { tone: 'warm' },
+        width: 1080,
+      },
+      harness.dependencies,
+    );
+
+    expect(wallpaper.prompt).toBe('warm');
+    expect(wallpaper.status).toBe('succeeded');
+  });
+
   it('marks the created wallpaper as failed when a provider node throws', async () => {
     const harness = createHarness({ providerError: new Error('provider quota exhausted') });
 
@@ -68,10 +85,32 @@ describe('runWallpaperGraph', () => {
     expect(harness.wallpaper.status).toBe('failed');
     expect(harness.wallpaper.error).toBe('provider quota exhausted');
   });
+
+  it('uses an existing job record and marks that job as failed when generation throws', async () => {
+    const harness = createHarness({ providerError: new Error('provider quota exhausted') });
+
+    await expect(
+      runWallpaperGraph(
+        {
+          height: 2400,
+          mode: 'text2img',
+          userInputs: { idea: 'a calm night sky' },
+          wallpaperId: 'wallpaper-1',
+          width: 1080,
+        },
+        harness.dependencies,
+      ),
+    ).rejects.toThrow('provider quota exhausted');
+
+    expect(harness.createCalls()).toBe(0);
+    expect(harness.wallpaper.status).toBe('failed');
+    expect(harness.wallpaper.error).toBe('provider quota exhausted');
+  });
 });
 
 function createHarness(options: { providerError?: Error } = {}) {
   const calls: string[] = [];
+  let createCalls = 0;
   const uploads: { contentType: string; key: string }[] = [];
   const wallpaper = {
     createdAt: new Date(),
@@ -118,6 +157,7 @@ function createHarness(options: { providerError?: Error } = {}) {
     },
     wallpapers: {
       async create(data) {
+        createCalls += 1;
         Object.assign(wallpaper, data);
         return wallpaper;
       },
@@ -128,7 +168,7 @@ function createHarness(options: { providerError?: Error } = {}) {
     },
   };
 
-  return { calls, dependencies, uploads, wallpaper };
+  return { calls, createCalls: () => createCalls, dependencies, uploads, wallpaper };
 }
 
 function createProvider(calls: string[], providerError?: Error): ImageProvider {
