@@ -1,6 +1,8 @@
 # 0007 — frontend-foundation
 
 > 模块：frontend-foundation ｜ 优先级：7 ｜ 依赖：无（现有 Expo 工程） ｜ 里程碑：M1 对应 SPEC：「前端设计」「技术栈」
+>
+> 状态：本地实现、测试与三平台导出完成；Expo Go 真机与局域网后端手动联调待执行。
 
 ## 目标
 
@@ -18,9 +20,10 @@ client。坚持 native-first（`@expo/ui`），不引入 nativewind。
 - `apps/mobile/src/app/(tabs)/_layout.tsx`、`apps/mobile/src/app/(tabs)/index.tsx`(创作占位)、`library.tsx`、`profile.tsx`
 - `apps/mobile/src/lib/api.ts`（`apiFetch`、baseURL 来自
   `expo-constants`/env）、`apps/mobile/src/lib/queryClient.ts`
-- `apps/mobile/src/lib/useDeviceSize.ts`（用 `Dimensions`/`expo-device` 推算目标壁纸 W×H）
-- 复用
-  `example/src/components`(ThemedText/View)、`example/src/hooks`(use-theme)、`example/src/constants/theme.ts`
+- `apps/mobile/src/lib/useDeviceSize.ts`（用响应式窗口尺寸和像素比推算目标壁纸 W×H）
+- `apps/mobile/src/components/`、`apps/mobile/src/constants/theme.ts`、`apps/mobile/src/hooks/`
+  （主题、可复用文本/容器、加载/错误状态与健康检查 query）
+- `apps/mobile/.env.example`（真机使用局域网 API URL）
 
 ## 实现要点
 
@@ -38,7 +41,17 @@ client。坚持 native-first（`@expo/ui`），不引入 nativewind。
 
 ## 完成标准 (DoD)
 
-- [ ] 三 Tab 导航可用，主题/字体正常。
-- [ ] `QueryClientProvider` 就位，能成功请求一个后端接口。
-- [ ] `apiFetch` 统一处理 baseURL/JSON/错误。
-- [ ] `useDeviceSize` 返回正确的目标出图尺寸。
+- [x] 三 Tab 导航可用，主题/系统字体正常。
+- [x] `QueryClientProvider` 就位；配置 `EXPO_PUBLIC_API_URL` 后通过 React Query 请求 `/health`。
+- [x] `apiFetch` 统一处理 baseURL、JSON 与结构化服务端错误。
+- [x] `useDeviceSize` 返回保留屏幕比例、长边不小于 2K 的目标出图尺寸。
+
+## 验证记录
+
+- 移动端 Jest 覆盖 API
+  baseURL 优先级、成功 JSON 响应、结构化 HTTP 错误，以及常见与低密度屏幕的壁纸尺寸推算（5 项测试）。
+- `bun run check` 通过格式、lint 与类型检查；`bun --filter=@lumina/mobile run build`
+  成功导出 iOS、Android 与 Web，包含 `/`、`/library`、`/profile` 三个 Tab 路由。
+- 通过 `.env.example` 提供局域网 API URL 示例；不会为真机回退到 `localhost`。
+- 未进行 Expo Go/真机人工操作：配置真实 `EXPO_PUBLIC_API_URL` 后，应执行一次三个 Tab 切换与
+  `/health` 联调，以验证设备网络可达性。

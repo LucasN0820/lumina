@@ -17,7 +17,7 @@
 | [0004](./0004-oss-storage.md)              | Cloudflare R2 storage                   | BE     | 0001             | M1     | ◐    |
 | [0005](./0005-generation-pipeline.md)      | generation-pipeline                     | BE     | 0002, 0003, 0004 | M1     | ◐    |
 | [0006](./0006-generation-api.md)           | generation-api                          | BE     | 0005, 0002       | M1     | ◐    |
-| [0007](./0007-frontend-foundation.md)      | frontend-foundation                     | FE     | -                | M1     | ☐    |
+| [0007](./0007-frontend-foundation.md)      | frontend-foundation                     | FE     | -                | M1     | ◐    |
 | [0008](./0008-wallpaper-preview.md)        | wallpaper-preview                       | FE     | 0007             | M1     | ☐    |
 | [0009](./0009-create-flow.md)              | create-flow                             | FE     | 0007, 0008, 0006 | M1     | ☐    |
 | [0010](./0010-native-wallpaper-android.md) | native-wallpaper-android                | Native | 0007             | M2     | ☐    |
@@ -41,6 +41,9 @@
 - 0006 的生成任务 API 已完成本地实现与 mock 验证：`POST /generate` 先创建 pending
   job 并异步运行图，`GET /jobs/:id` 供轮询，`GET /presets` 返回内置预设，`GET /wallpapers` 按匿名
   `deviceId` 分页查询；真实生成验收仍依赖 0003/0004 的外部凭据。
+- 0007 的 Expo Router 基础已完成：三 Tab、主题/系统字体、React Query、可配置 API
+  client、加载/错误状态与 ≥2K 尺寸推算均通过本地测试和三平台导出。真机需配置局域网
+  `EXPO_PUBLIC_API_URL` 后补做 Tab 切换与 `/health` 连通性验收。
 
 ## 里程碑
 
