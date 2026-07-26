@@ -41,6 +41,31 @@ export type PresetListItem = {
 
 export type PresetsResponse = { presets: PresetListItem[] };
 
+export type WallpaperListItem = {
+  createdAt: string;
+  height: number | null;
+  id: string;
+  mode: GenerationMode;
+  resultImageUrl: string | null;
+  status: GenerationJobStatus;
+  width: number | null;
+};
+
+export type WallpapersResponse = {
+  hasMore: boolean;
+  items: WallpaperListItem[];
+  limit: number;
+  page: number;
+};
+
+export type WallpapersRequest = {
+  deviceId: string;
+  limit?: number;
+  page?: number;
+};
+
+export type BindDeviceResponse = { bound: number };
+
 type ErrorPayload = { error?: { code?: unknown; message?: unknown } };
 
 export class ApiError extends Error {
@@ -57,9 +82,11 @@ export class ApiError extends Error {
 export type ApiClientOptions = {
   baseUrl?: string;
   fetchImpl?: FetchLike;
+  getToken?: ApiTokenProvider;
 };
 
 export type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+export type ApiTokenProvider = () => Promise<string | null | undefined>;
 
 export function resolveApiBaseUrl(
   env: Record<string, string | undefined> = process.env,
@@ -73,8 +100,17 @@ export const apiBaseUrl = resolveApiBaseUrl();
 export const hasApiBaseUrl = Boolean(apiBaseUrl);
 
 const defaultFetch: FetchLike = (input, init) => fetch(input, init);
+let defaultTokenProvider: ApiTokenProvider | undefined;
 
-export function createApiClient({ baseUrl, fetchImpl = defaultFetch }: ApiClientOptions = {}) {
+export function setApiTokenProvider(provider: ApiTokenProvider | undefined): void {
+  defaultTokenProvider = provider;
+}
+
+export function createApiClient({
+  baseUrl,
+  fetchImpl = defaultFetch,
+  getToken = async () => defaultTokenProvider?.(),
+}: ApiClientOptions = {}) {
   return async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     if (!baseUrl) {
       throw new ApiError('EXPO_PUBLIC_API_URL is not configured.', 0, 'API_URL_NOT_CONFIGURED');
@@ -82,6 +118,10 @@ export function createApiClient({ baseUrl, fetchImpl = defaultFetch }: ApiClient
 
     const headers = new Headers(init?.headers);
     headers.set('Accept', 'application/json');
+    const token = await getToken();
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
     const response = await fetchImpl(`${baseUrl}${path.startsWith('/') ? path : `/${path}`}`, {
       ...init,
       headers,
@@ -120,6 +160,28 @@ export function createGeneration(request: GenerateRequest): Promise<GenerateResp
 
 export function getGenerationJob(jobId: string): Promise<GenerationJob> {
   return apiFetch<GenerationJob>(`/jobs/${encodeURIComponent(jobId)}`);
+}
+
+export function getWallpapers({ deviceId, limit = 20, page = 1 }: WallpapersRequest) {
+  const query = new URLSearchParams({
+    deviceId,
+    limit: String(limit),
+    page: String(page),
+  });
+
+  return apiFetch<WallpapersResponse>(`/wallpapers?${query.toString()}`);
+}
+
+export function bindDevice(
+  deviceId: string,
+  getToken?: ApiTokenProvider,
+): Promise<BindDeviceResponse> {
+  const client = getToken ? createApiClient({ baseUrl: apiBaseUrl, getToken }) : apiFetch;
+  return client<BindDeviceResponse>('/me/bind-device', {
+    body: JSON.stringify({ deviceId }),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+  });
 }
 
 async function parseJson(response: Response): Promise<unknown> {

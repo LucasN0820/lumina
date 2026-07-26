@@ -2,6 +2,9 @@
 
 > 模块：auth-frontend | 优先级：14 | 依赖：0007,0013 | 里程碑：M3 对应 SPEC：「我的/登录」「Clerk +
 > Google SSO」
+>
+> 状态：本地 Provider、token 注入、界面和 mock 验证完成；真实 Google
+> OAuth 与跨设备历史同步待 Clerk 配置/设备验收。
 
 ## 目标
 
@@ -42,7 +45,20 @@ token 注入后端 API 请求。MVP 允许匿名使用，仅在需要同步历�
 
 ## 完成标准 (DoD)
 
-- [ ] ClerkProvider + SecureStore token cache 生效。
-- [ ] Google SSO 登录/退出闭环可用。
-- [ ] API 请求自动注入 Clerk token。
-- [ ] 匿名 -> 登录的历史绑定生效。
+- [x] ClerkProvider + SecureStore token cache 已接入。
+- [x] Google SSO 登录/退出界面与 session 激活流程已实现。
+- [x] API 请求可自动注入 Clerk token。
+- [x] 匿名 -> 登录的历史绑定请求已接入。
+
+## 验证记录
+
+- Root layout 使用 `ClerkProvider` 与官方 SecureStore token cache；`ApiTokenBridge` 将 Clerk
+  `getToken` 注册给 API client，请求在 token 可用时自动附加 `Authorization: Bearer ...`。
+- Profile 提供匿名说明、Google
+  SSO 登录、头像/账号、历史同步状态、错误与退出；Google 流程使用 Clerk 的 browser-based
+  `useSSO({ strategy: 'oauth_google' })`，兼容 Expo Go。登录完成后复用匿名 SecureStore deviceId 调用
+  `/me/bind-device`。
+- API token provider 与 Google 按钮的 Jest 测试已通过；后续移动端全量 12 个套件、29 项断言和
+  `vp check` 均通过。
+- 必须设置 `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY`、Clerk Dashboard redirect URL 和 Google
+  OAuth 后，才能在 Expo Go/ development build 真正验证登录、会话恢复和跨设备历史同步。

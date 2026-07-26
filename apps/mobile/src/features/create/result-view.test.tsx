@@ -11,6 +11,10 @@ jest.mock('expo-image', () => {
   };
 });
 
+jest.mock('@/features/apply/ApplySheet', () => ({
+  ApplySheet: () => null,
+}));
+
 describe('ResultView', () => {
   const job = {
     height: 2400,
@@ -28,5 +32,6 @@ describe('ResultView', () => {
     expect(screen.getByLabelText('Home screen wallpaper preview')).toBeTruthy();
     fireEvent.press(screen.getByTestId('regenerate-button'));
     expect(onRegenerate).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('open-apply-sheet')).toBeTruthy();
   });
 });

@@ -25,6 +25,8 @@
     },
     "plugins": [
       "expo-router",
+      "expo-secure-store",
+      "./modules/expo-wallpaper/app.plugin.js",
       [
         "expo-splash-screen",
         {

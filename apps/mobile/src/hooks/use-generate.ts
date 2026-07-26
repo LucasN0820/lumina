@@ -7,6 +7,7 @@ import {
   type GenerateRequest,
   type GenerationJob,
 } from '@/lib/api';
+import { getAnonymousDeviceId } from '@/lib/device-id';
 
 const terminalStatuses = new Set<GenerationJob['status']>(['failed', 'succeeded']);
 
@@ -18,7 +19,11 @@ export function useGenerate() {
   const [jobId, setJobId] = useState<string>();
   const [lastRequest, setLastRequest] = useState<GenerateRequest>();
   const createMutation = useMutation({
-    mutationFn: createGeneration,
+    mutationFn: async (request: GenerateRequest) =>
+      createGeneration({
+        ...request,
+        deviceId: request.deviceId ?? (await getAnonymousDeviceId()),
+      }),
     onSuccess: ({ jobId: nextJobId }) => setJobId(nextJobId),
   });
   const jobQuery = useQuery({

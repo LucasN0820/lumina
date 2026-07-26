@@ -3,6 +3,7 @@ import { Pressable, useWindowDimensions, View } from 'react-native';
 
 import { WallpaperPreview, type WallpaperPreviewMode } from '@/components/WallpaperPreview';
 import { ThemedText } from '@/components/themed-text';
+import { ApplySheet } from '@/features/apply/ApplySheet';
 import { useTheme } from '@/hooks/use-theme';
 import type { GenerationJob } from '@/lib/api';
 
@@ -13,6 +14,7 @@ type ResultViewProps = {
 
 export function ResultView({ job, onRegenerate }: ResultViewProps) {
   const [mode, setMode] = useState<WallpaperPreviewMode>('lock-screen');
+  const [isApplySheetVisible, setIsApplySheetVisible] = useState(false);
   const { width: windowWidth } = useWindowDimensions();
   const theme = useTheme();
 
@@ -73,9 +75,27 @@ export function ResultView({ job, onRegenerate }: ResultViewProps) {
           重新生成
         </ThemedText>
       </Pressable>
-      <ThemedText style={{ color: theme.mutedText, textAlign: 'center' }} variant="caption">
-        应用、保存与分享将在下一步提供。
-      </ThemedText>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => setIsApplySheetVisible(true)}
+        style={{
+          backgroundColor: theme.accent,
+          borderCurve: 'continuous',
+          borderRadius: 14,
+          paddingHorizontal: 20,
+          paddingVertical: 12,
+        }}
+        testID="open-apply-sheet"
+      >
+        <ThemedText style={{ color: theme.surface }} variant="body">
+          应用、保存或分享
+        </ThemedText>
+      </Pressable>
+      <ApplySheet
+        imageUrl={job.resultImageUrl}
+        onDismiss={() => setIsApplySheetVisible(false)}
+        visible={isApplySheetVisible}
+      />
     </View>
   );
 }

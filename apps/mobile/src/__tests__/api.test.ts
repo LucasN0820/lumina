@@ -1,9 +1,11 @@
 import {
   ApiError,
+  bindDevice,
   createApiClient,
   createGeneration,
   getGenerationJob,
   getPresets,
+  getWallpapers,
   resolveApiBaseUrl,
 } from '../lib/api';
 
@@ -47,6 +49,34 @@ describe('api client', () => {
     await expect(apiFetch('/jobs/missing')).rejects.toEqual(
       new ApiError('Job was not found.', 404, 'JOB_NOT_FOUND'),
     );
+  });
+
+  it('adds a Clerk token when a token provider is supplied', async () => {
+    const fetchImpl = jest
+      .fn<Promise<Response>, [RequestInfo | URL, RequestInit?]>()
+      .mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200 }));
+    const apiFetch = createApiClient({
+      baseUrl: 'https://api.example',
+      fetchImpl,
+      getToken: async () => 'clerk-session-token',
+    });
+
+    await apiFetch('/me');
+
+    const request = fetchImpl.mock.calls[0]?.[1];
+    expect(new Headers(request?.headers).get('Authorization')).toBe('Bearer clerk-session-token');
+  });
+
+  it('keeps anonymous requests free of an Authorization header', async () => {
+    const fetchImpl = jest
+      .fn<Promise<Response>, [RequestInfo | URL, RequestInit?]>()
+      .mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200 }));
+    const apiFetch = createApiClient({ baseUrl: 'https://api.example', fetchImpl });
+
+    await apiFetch('/generate');
+
+    const request = fetchImpl.mock.calls[0]?.[1];
+    expect(new Headers(request?.headers).has('Authorization')).toBe(false);
   });
 
   it('creates generation jobs and retrieves presets and jobs through the typed client', async () => {
@@ -111,8 +141,10 @@ describe('api client', () => {
   });
 
   it('exposes typed helpers for generation endpoints', () => {
+    expect(bindDevice).toBeInstanceOf(Function);
     expect(createGeneration).toBeInstanceOf(Function);
     expect(getGenerationJob).toBeInstanceOf(Function);
     expect(getPresets).toBeInstanceOf(Function);
+    expect(getWallpapers).toBeInstanceOf(Function);
   });
 });
