@@ -2,6 +2,45 @@ import Constants from 'expo-constants';
 
 export type HealthResponse = { ok: boolean };
 
+export type GenerationMode = 'text2img' | 'outpaint' | 'edit' | 'style' | 'upscale';
+
+export type GenerationUserInputs = {
+  idea?: string;
+  mood?: string;
+  theme?: string;
+  tone?: string;
+};
+
+export type GenerateRequest = {
+  deviceId?: string;
+  height: number;
+  mode: GenerationMode;
+  presetId?: string;
+  userInputs: GenerationUserInputs;
+  width: number;
+};
+
+export type GenerateResponse = { jobId: string };
+
+export type GenerationJobStatus = 'failed' | 'pending' | 'processing' | 'succeeded';
+
+export type GenerationJob = {
+  error?: string;
+  height?: number;
+  resultImageUrl?: string;
+  status: GenerationJobStatus;
+  width?: number;
+};
+
+export type PresetListItem = {
+  category: string;
+  coverImageUrl: string | null;
+  id: string;
+  name: string;
+};
+
+export type PresetsResponse = { presets: PresetListItem[] };
+
 type ErrorPayload = { error?: { code?: unknown; message?: unknown } };
 
 export class ApiError extends Error {
@@ -65,6 +104,22 @@ export const apiFetch = createApiClient({ baseUrl: apiBaseUrl });
 
 export function getHealth(): Promise<HealthResponse> {
   return apiFetch<HealthResponse>('/health');
+}
+
+export function getPresets(): Promise<PresetsResponse> {
+  return apiFetch<PresetsResponse>('/presets');
+}
+
+export function createGeneration(request: GenerateRequest): Promise<GenerateResponse> {
+  return apiFetch<GenerateResponse>('/generate', {
+    body: JSON.stringify(request),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+  });
+}
+
+export function getGenerationJob(jobId: string): Promise<GenerationJob> {
+  return apiFetch<GenerationJob>(`/jobs/${encodeURIComponent(jobId)}`);
 }
 
 async function parseJson(response: Response): Promise<unknown> {

@@ -1,4 +1,11 @@
-import { ApiError, createApiClient, resolveApiBaseUrl } from '../lib/api';
+import {
+  ApiError,
+  createApiClient,
+  createGeneration,
+  getGenerationJob,
+  getPresets,
+  resolveApiBaseUrl,
+} from '../lib/api';
 
 describe('api client', () => {
   it('uses the public environment URL ahead of the Expo config URL', () => {
@@ -40,5 +47,72 @@ describe('api client', () => {
     await expect(apiFetch('/jobs/missing')).rejects.toEqual(
       new ApiError('Job was not found.', 404, 'JOB_NOT_FOUND'),
     );
+  });
+
+  it('creates generation jobs and retrieves presets and jobs through the typed client', async () => {
+    const fetchImpl = jest
+      .fn<Promise<Response>, [RequestInfo | URL, RequestInit?]>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ jobId: 'job-1' }), { status: 202 }))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            presets: [
+              {
+                category: 'minimal',
+                coverImageUrl: null,
+                id: 'preset-1',
+                name: 'Minimal',
+              },
+            ],
+          }),
+          { status: 200 },
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            height: 2400,
+            resultImageUrl: 'https://images.example/job-1.jpg',
+            status: 'succeeded',
+            width: 1080,
+          }),
+          { status: 200 },
+        ),
+      );
+    const apiFetch = createApiClient({ baseUrl: 'https://api.example', fetchImpl });
+
+    await expect(
+      apiFetch('/generate', {
+        body: JSON.stringify({
+          height: 2400,
+          mode: 'text2img',
+          userInputs: { idea: 'night city' },
+          width: 1080,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      }),
+    ).resolves.toEqual({ jobId: 'job-1' });
+    await expect(apiFetch('/presets')).resolves.toEqual({
+      presets: [{ category: 'minimal', coverImageUrl: null, id: 'preset-1', name: 'Minimal' }],
+    });
+    await expect(apiFetch('/jobs/job-1')).resolves.toEqual({
+      height: 2400,
+      resultImageUrl: 'https://images.example/job-1.jpg',
+      status: 'succeeded',
+      width: 1080,
+    });
+
+    expect(fetchImpl).toHaveBeenNthCalledWith(
+      1,
+      'https://api.example/generate',
+      expect.objectContaining({ method: 'POST' }),
+    );
+  });
+
+  it('exposes typed helpers for generation endpoints', () => {
+    expect(createGeneration).toBeInstanceOf(Function);
+    expect(getGenerationJob).toBeInstanceOf(Function);
+    expect(getPresets).toBeInstanceOf(Function);
   });
 });

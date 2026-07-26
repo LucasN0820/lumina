@@ -18,8 +18,8 @@
 | [0005](./0005-generation-pipeline.md)      | generation-pipeline                     | BE     | 0002, 0003, 0004 | M1     | ◐    |
 | [0006](./0006-generation-api.md)           | generation-api                          | BE     | 0005, 0002       | M1     | ◐    |
 | [0007](./0007-frontend-foundation.md)      | frontend-foundation                     | FE     | -                | M1     | ◐    |
-| [0008](./0008-wallpaper-preview.md)        | wallpaper-preview                       | FE     | 0007             | M1     | ☐    |
-| [0009](./0009-create-flow.md)              | create-flow                             | FE     | 0007, 0008, 0006 | M1     | ☐    |
+| [0008](./0008-wallpaper-preview.md)        | wallpaper-preview                       | FE     | 0007             | M1     | ◐    |
+| [0009](./0009-create-flow.md)              | create-flow                             | FE     | 0007, 0008, 0006 | M1     | ◐    |
 | [0010](./0010-native-wallpaper-android.md) | native-wallpaper-android                | Native | 0007             | M2     | ☐    |
 | [0011](./0011-apply-share-save.md)         | apply-share-save                        | FE     | 0010, 0009       | M2     | ☐    |
 | [0012](./0012-library.md)                  | library                                 | FE     | 0007, 0006       | M2     | ☐    |
@@ -44,6 +44,8 @@
 - 0007 的 Expo Router 基础已完成：三 Tab、主题/系统字体、React Query、可配置 API
   client、加载/错误状态与 ≥2K 尺寸推算均通过本地测试和三平台导出。真机需配置局域网
   `EXPO_PUBLIC_API_URL` 后补做 Tab 切换与 `/health` 连通性验收。
+- 0008 的静态壁纸预览已完成：手机壳裁切、状态栏、锁屏时钟与桌面图标 overlay 可独立测试。0009 的创作闭环已接入预设、chips、想法、生成 job 轮询、失败重试和结果预览，使用 0007 的 ≥2K 目标尺寸。真实设备联调仍依赖局域网
+  `EXPO_PUBLIC_API_URL`，真实图像则另依赖 0003/0004 的外部凭据。
 
 ## 里程碑
 
