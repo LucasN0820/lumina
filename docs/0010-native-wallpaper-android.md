@@ -1,6 +1,9 @@
 # 0010 — native-wallpaper-android
 
 > 模块：native-wallpaper-android ｜ 优先级：10 ｜ 依赖：0007 ｜ 里程碑：M2 对应 SPEC：「原生壁纸模块」
+>
+> 状态：本地 Expo Module、权限插件和单元验证完成；Android development
+> build 与真机系统壁纸验收待执行。
 
 ## 目标
 
@@ -43,3 +46,15 @@
 - [ ] `npx expo run:android` 能编译含该原生模块的 dev build。
 - [ ] `setWallpaper` 三种 target 均能真正改变系统壁纸。
 - [ ] 权限经 config plugin 自动注入。
+
+## 验证记录
+
+- 已新增本地 `expo-wallpaper` Android Expo Module：Kotlin API 支持 `file://`、content
+  URI 和本地路径，按 `home` / `lock` / `both` 调用
+  `WallpaperManager`，并在解码时按屏幕尺寸下采样以降低 OOM 风险。
+- `app.plugin.js` 幂等注入 `android.permission.SET_WALLPAPER`，并已在 `apps/mobile/app.json`
+  注册；Android autolinking可发现 `expo.modules.wallpaper.ExpoWallpaperModule`。TypeScript
+  API 会在调用原生层前校验 URI 与 target。
+- Jest 覆盖三种 target、非法入参与权限去重；后续全仓 `vp check` 和移动端全部 29 项测试已通过。
+- 尚未执行 `expo prebuild` /
+  `expo run:android`，因此开发构建可编译性和三种 target 的实际系统壁纸效果仍需在 Android 模拟器和真机验收后才可勾选 DoD。

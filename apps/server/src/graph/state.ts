@@ -14,12 +14,14 @@ export type WallpaperUserInputs = {
 };
 
 export type WallpaperGraphInput = {
+  deviceId?: string;
   height: number;
   mode: WallpaperMode;
   presetId?: string;
   sourceImageUrl?: string;
   userId?: string;
   userInputs: WallpaperUserInputs;
+  wallpaperId?: string;
   width: number;
 };
 
@@ -34,6 +36,7 @@ export type WallpaperGraphState = WallpaperGraphInput & {
 };
 
 export const WallpaperGraphAnnotation = Annotation.Root({
+  deviceId: Annotation<string | undefined>,
   presetId: Annotation<string | undefined>,
   userId: Annotation<string | undefined>,
   userInputs: Annotation<WallpaperUserInputs>,

@@ -14,24 +14,31 @@ export function createWallpaperNodes(dependencies: WallpaperGraphDependencies) {
       }
 
       const prompt = resolvePrompt(preset?.promptTemplate, state);
-      const wallpaper = await dependencies.wallpapers.create({
-        height: state.height,
-        mode: state.mode,
-        presetId: state.presetId,
-        prompt,
-        sourceImageUrl: state.sourceImageUrl,
-        status: 'pending',
-        userId: state.userId,
-        width: state.width,
-      });
+      let wallpaperId = state.wallpaperId;
+      if (wallpaperId) {
+        await dependencies.wallpapers.update(wallpaperId, { prompt, status: 'processing' });
+      } else {
+        const wallpaper = await dependencies.wallpapers.create({
+          deviceId: state.deviceId,
+          height: state.height,
+          mode: state.mode,
+          presetId: state.presetId,
+          prompt,
+          sourceImageUrl: state.sourceImageUrl,
+          status: 'pending',
+          userId: state.userId,
+          width: state.width,
+        });
 
-      dependencies.onWallpaperCreated?.(wallpaper.id);
+        wallpaperId = wallpaper.id;
+        dependencies.onWallpaperCreated?.(wallpaper.id);
+      }
 
       return {
         negativePrompt: preset?.negativePrompt ?? undefined,
         prompt,
         styleRefUrl: preset?.styleRefUrl ?? undefined,
-        wallpaperId: wallpaper.id,
+        wallpaperId,
       };
     },
     enrichPrompt: async (state: WallpaperGraphState) => {
@@ -108,7 +115,12 @@ function resolvePrompt(template: string | undefined, state: WallpaperGraphState)
     height: String(state.height),
     width: String(state.width),
   };
-  const fallback = [state.userInputs.idea, state.userInputs.theme, state.userInputs.mood]
+  const fallback = [
+    state.userInputs.idea,
+    state.userInputs.theme,
+    state.userInputs.mood,
+    state.userInputs.tone,
+  ]
     .filter((value): value is string => Boolean(value?.trim()))
     .join(', ');
   const prompt = (template ?? fallback).replace(

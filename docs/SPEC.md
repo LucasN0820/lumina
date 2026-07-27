@@ -82,14 +82,6 @@ polls `GET /jobs/:jobId`. No Redis, queue, or Trigger.dev is required in MVP.
 - `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` for Cloudflare R2.
 - `zod` for input/env validation.
 
-**Removed from the plan**
-
-- Alibaba DashScope / Tongyi Wanxiang / Tongyi Qianwen / qwen-vl / VIAPI.
-- Alibaba OSS.
-- Alibaba SMS.
-- WeChat OAuth.
-- Custom app-issued JWT for primary auth.
-
 ---
 
 ## Data Model (Prisma `apps/server/prisma/schema.prisma`)
@@ -134,6 +126,7 @@ model Preset {
 
 model Wallpaper {
   id             String   @id @default(cuid()) @map("id")
+  deviceId       String?  @map("device_id") // anonymous history before Clerk binding
   userId         String?  @map("user_id")
   user           User?    @relation(fields: [userId], references: [id])
   presetId       String?  @map("preset_id")
@@ -149,6 +142,7 @@ model Wallpaper {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
+  @@index([deviceId])
   @@map("wallpaper")
 }
 ```

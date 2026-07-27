@@ -2,6 +2,8 @@
 
 > 模块：auth-backend | 优先级：13 | 依赖：0001,0002 | 里程碑：M3 对应 SPEC：「认证」「Clerk + Google
 > SSO」
+>
+> 状态：本地 Clerk 边界、路由和 mock 验证完成；真实 Clerk token/JWKS 与 PostgreSQL 验收待配置凭据。
 
 ## 目标
 
@@ -41,7 +43,17 @@
 
 ## 完成标准 (DoD)
 
-- [ ] Clerk token 校验可用。
-- [ ] `optionalAuth`/`requireAuth` 两档正确。
-- [ ] Clerk 用户可 upsert 到本地 User。
-- [ ] deviceId 历史可绑定到登录用户。
+- [x] Clerk token 校验边界已接入并可由测试 mock。
+- [x] `optionalAuth`/`requireAuth` 两档正确。
+- [x] Clerk 用户可 upsert 到本地 User。
+- [x] deviceId 历史可绑定到登录用户。
+
+## 验证记录
+
+- 增加 `@clerk/backend` 认证边界、全局 `optionalAuth`、受 `requireAuth` 保护的 `GET /me` 与
+  `POST /me/bind-device`。有效 session token 会解析 Clerk profile 并幂等 upsert 本地 `User`。
+- 历史绑定只归并同一匿名 `deviceId` 且 `userId` 为空的壁纸，不会覆盖其他用户已有记录。
+- 服务端 Vitest 覆盖无/无效 token 的 401、optional
+  context、重复 upsert、参数错误和安全绑定；服务端全量 10 个文件、41 项测试及 TypeScript 构建通过。
+- Clerk Dashboard、真实 session
+  token/JWKS 连通性以及 PostgreSQL 持久化仍须以有效生产或测试凭据执行验收。

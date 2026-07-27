@@ -19,6 +19,7 @@
 - `apps/server/prisma/schema.prisma`
 - `apps/server/prisma/seed.ts`
 - `apps/server/src/lib/db.ts`（导出单例 `prisma`）
+- `apps/server/prisma/migrations/20260726000000_add_wallpaper_device_id/`（0006 为匿名历史补充）
 
 ## 实现要点（强制命名约定）
 
@@ -33,6 +34,8 @@
   editorial」等国际化分类，含
   `promptTemplate`（含占位符）、`negativePrompt`、`coverImageUrl`、`isBuiltIn=true`。
 - `db.ts` 用全局单例避免 dev 热重载重复连接。
+- `Wallpaper.deviceId`
+  是未登录 MVP 设备历史的可空归属字段；0006 已为其建索引，0013 登录后可将其绑定到 `userId`。
 - 脚本：`prisma migrate dev`、`prisma generate`、`prisma db seed`（在 `package.json` 配
   `prisma.seed`）。
 

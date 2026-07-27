@@ -1,6 +1,8 @@
 # 0006 — generation-api
 
 > 模块：generation-api ｜ 优先级：6 ｜ 依赖：0005,0002 ｜ 里程碑：M1 对应 SPEC：「路由」「异步出图模式」
+>
+> 状态：本地实现与 mock 验证完成；真实 SiliconFlow/R2 验收待 0003/0004 凭据。
 
 ## 目标
 
@@ -16,6 +18,8 @@
 - `apps/server/src/routes/generate.ts`、`apps/server/src/routes/presets.ts`、`apps/server/src/routes/wallpapers.ts`
 - `apps/server/src/jobs/runner.ts`（触发 `runWallpaperGraph` 异步执行，不阻塞响应）
 - `apps/server/src/app.ts`（挂载路由）
+- `apps/server/prisma/schema.prisma`、`apps/server/prisma/migrations/20260726000000_add_wallpaper_device_id/`
+  （匿名历史的 `deviceId` 归属与索引）
 
 ## 实现要点
 
@@ -37,7 +41,20 @@
 
 ## 完成标准 (DoD)
 
-- [ ] 三类查询接口 + 生成/轮询接口可用。
-- [ ] 出图异步、`/generate` 立即返回 jobId。
-- [ ] 入参用 zod 校验，非法入参返回 4xx。
-- [ ] 端到端 curl 跑通「建任务→轮询→出图」。
+- [x] 三类查询接口 + 生成/轮询接口可用。
+- [x] 出图异步、`/generate` 立即返回 jobId。
+- [x] 入参用 zod 校验，非法入参返回 4xx。
+- [x] 使用 mock 图执行路径跑通「建任务→轮询→出图」；真实外部服务验收待凭据。
+
+## 验证记录
+
+- Hono 路由测试覆盖 `POST /generate` 的 `202 { jobId }`
+  异步响应、非法 JSON/参数的 4xx、任务轮询的成功与不存在任务路径、内置预设列表，以及按 `deviceId`
+  的分页壁纸历史。
+- `runWallpaperGraph`
+  已覆盖把既有 job 交由 runner 执行：不会二次创建记录，Provider 失败会回写原 job 为 `failed`
+  并保存 error。
+- 已执行 `bun run prisma:generate`、`bun run test:server`（36 个测试）与
+  `bun --filter=@lumina/server run build`。
+- 未执行真实 `curl` 到 SiliconFlow/R2：当前工作区未提供相关凭据，且调用可能产生供应商费用。配置
+  `SILICONFLOW_API_KEY` 和 R2 凭据后，应按「独立测试」补做一次真实生成、轮询及结果 URL 验收。

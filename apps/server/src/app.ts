@@ -1,16 +1,34 @@
 import { cors } from 'hono/cors';
 import { Hono } from 'hono';
 
+import { createClerkAuthService, type ClerkAuthService } from './lib/clerk.js';
+import { type AuthVariables, optionalAuth } from './middleware/auth.js';
 import { errorHandler } from './middleware/error.js';
+import { createGenerateRoutes, type GenerateRouteDependencies } from './routes/generate.js';
+import { createMeRoutes, type MeRepository } from './routes/me.js';
+import { createPresetRoutes, type PresetRepository } from './routes/presets.js';
+import { createWallpaperRoutes, type WallpaperRepository } from './routes/wallpapers.js';
 
 const defaultCorsOrigins = ['http://localhost:8081', 'http://127.0.0.1:8081'];
 
 export type AppOptions = {
+  clerk?: ClerkAuthService;
   corsOrigins?: string[];
+  generation?: GenerateRouteDependencies;
+  me?: MeRepository;
+  presets?: PresetRepository;
+  wallpapers?: WallpaperRepository;
 };
 
-export function createApp({ corsOrigins = defaultCorsOrigins }: AppOptions = {}) {
-  const app = new Hono();
+export function createApp({
+  clerk = createClerkAuthService({ secretKey: process.env.CLERK_SECRET_KEY }),
+  corsOrigins = defaultCorsOrigins,
+  generation,
+  me,
+  presets,
+  wallpapers,
+}: AppOptions = {}) {
+  const app = new Hono<{ Variables: AuthVariables }>();
 
   app.use(
     '*',
@@ -21,8 +39,13 @@ export function createApp({ corsOrigins = defaultCorsOrigins }: AppOptions = {})
   );
 
   app.onError(errorHandler);
+  app.use('*', optionalAuth(clerk));
 
   app.get('/health', (context) => context.json({ ok: true }));
+  app.route('/', createGenerateRoutes(generation));
+  app.route('/', createMeRoutes({ clerk, users: me }));
+  app.route('/', createPresetRoutes(presets));
+  app.route('/', createWallpaperRoutes(wallpapers));
 
   return app;
 }
