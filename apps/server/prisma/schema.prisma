@@ -56,6 +56,8 @@ model Wallpaper {
   width          Int?     @map("width")
   height         Int?     @map("height")
   status         String   @default("pending") @map("status")
+  quality        String   @default("hd") @map("quality")
+  favorite       Boolean  @default(false) @map("favorite")
   providerTask   String?  @map("provider_task")
   error          String?  @map("error")
   createdAt      DateTime @default(now()) @map("created_at")
@@ -64,5 +66,6 @@ model Wallpaper {
   @@index([userId])
   @@index([deviceId])
   @@index([presetId])
+  @@index([deviceId, favorite])
   @@map("wallpaper")
 }

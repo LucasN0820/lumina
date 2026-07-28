@@ -22,6 +22,15 @@ export interface ImageSpec {
 
 export type ImageMetadataValue = boolean | number | string | null;
 
+export type ExtractedStyle = {
+  category: string;
+  colorKeywords: string[];
+  compositionKeywords: string[];
+  materialKeywords: string[];
+  name: string;
+  promptTemplate: string;
+};
+
 export interface ImageResult {
   imageBytes?: Uint8Array;
   imagePath?: string;
@@ -30,6 +39,7 @@ export interface ImageResult {
   height?: number;
   providerTask: string;
   metadata?: Record<string, ImageMetadataValue>;
+  style?: ExtractedStyle;
 }
 
 export interface ImageProvider {

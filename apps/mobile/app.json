@@ -8,7 +8,8 @@
     "scheme": "lumina",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.lucasni.lumina"
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +18,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.lucasni.lumina"
     },
     "web": {
       "output": "static",
@@ -26,6 +28,14 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
+      "@clerk/expo",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Lumina to access a photo to create an edited wallpaper.",
+          "microphonePermission": false
+        }
+      ],
       "./modules/expo-wallpaper/app.plugin.js",
       [
         "expo-splash-screen",

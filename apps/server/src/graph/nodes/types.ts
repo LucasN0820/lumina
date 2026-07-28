@@ -10,12 +10,24 @@ export type PresetRecord = {
   styleRefUrl: string | null;
 };
 
+export type CustomPresetData = {
+  category: string;
+  colorKeywords: string[];
+  compositionKeywords: string[];
+  materialKeywords: string[];
+  name: string;
+  ownerClerkUserId: string;
+  promptTemplate: string;
+  styleRefUrl: string;
+};
+
 export type WallpaperRepository = {
   create(data: {
     deviceId?: string;
     mode: string;
     presetId?: string;
     prompt: string;
+    quality?: string;
     sourceImageUrl?: string;
     status: string;
     userId?: string;
@@ -43,7 +55,8 @@ export type WallpaperGraphDependencies = {
   imageProvider: ImageProvider;
   onWallpaperCreated?: (wallpaperId: string) => void;
   presets: {
-    findById(id: string): Promise<PresetRecord | null>;
+    createCustom?(data: CustomPresetData): Promise<PresetRecord>;
+    findById(id: string, clerkUserId?: string): Promise<PresetRecord | null>;
   };
   storage: Pick<R2Storage, 'uploadBuffer' | 'uploadFile' | 'uploadFromUrl'>;
   wallpapers: WallpaperRepository;

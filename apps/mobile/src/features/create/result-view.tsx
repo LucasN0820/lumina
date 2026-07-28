@@ -28,6 +28,9 @@ export function ResultView({ job, onRegenerate }: ResultViewProps) {
   return (
     <View style={{ alignItems: 'center', gap: 16 }}>
       <ThemedText variant="title">你的壁纸已生成</ThemedText>
+      <ThemedText selectable style={{ color: theme.mutedText }} variant="caption">
+        {job.quality === 'draft' ? '快速预览 · 低分辨率' : '高清出图 · 2K+ 全分辨率'}
+      </ThemedText>
       <View style={{ flexDirection: 'row', gap: 8 }}>
         {(
           [

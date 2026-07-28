@@ -5,6 +5,7 @@ import type { ImageResult } from '../providers/types.js';
 export const wallpaperModes = ['text2img', 'outpaint', 'edit', 'style', 'upscale'] as const;
 
 export type WallpaperMode = (typeof wallpaperModes)[number];
+export type WallpaperQuality = 'draft' | 'hd';
 
 export type WallpaperUserInputs = {
   idea?: string;
@@ -14,9 +15,11 @@ export type WallpaperUserInputs = {
 };
 
 export type WallpaperGraphInput = {
+  clerkUserId?: string;
   deviceId?: string;
   height: number;
   mode: WallpaperMode;
+  quality?: WallpaperQuality;
   presetId?: string;
   sourceImageUrl?: string;
   userId?: string;
@@ -36,11 +39,13 @@ export type WallpaperGraphState = WallpaperGraphInput & {
 };
 
 export const WallpaperGraphAnnotation = Annotation.Root({
+  clerkUserId: Annotation<string | undefined>,
   deviceId: Annotation<string | undefined>,
   presetId: Annotation<string | undefined>,
   userId: Annotation<string | undefined>,
   userInputs: Annotation<WallpaperUserInputs>,
   mode: Annotation<WallpaperMode>,
+  quality: Annotation<WallpaperQuality | undefined>,
   width: Annotation<number>,
   height: Annotation<number>,
   prompt: Annotation<string | undefined>,

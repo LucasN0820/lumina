@@ -57,6 +57,8 @@ export type GenerateWallpaperKeyOptions = {
   now?: Date;
 };
 
+export type GenerateSourceImageKeyOptions = GenerateWallpaperKeyOptions;
+
 type S3Command = GetObjectCommand | PutObjectCommand;
 
 export type S3CommandClient = {
@@ -87,6 +89,10 @@ export function generateWallpaperKey(options: GenerateWallpaperKeyOptions = {}):
 
   const month = `${now.getUTCFullYear()}${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
   return `wallpapers/${month}/${id}.${extension}`;
+}
+
+export function generateSourceImageKey(options: GenerateSourceImageKeyOptions = {}): string {
+  return generateWallpaperKey(options).replace(/^wallpapers\//, 'sources/');
 }
 
 export class R2Storage {

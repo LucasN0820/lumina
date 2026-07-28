@@ -7,13 +7,20 @@ import {
   type WallpaperGraphInput,
   type WallpaperGraphState,
   type WallpaperMode,
+  type WallpaperQuality,
   type WallpaperUserInputs,
 } from './state.js';
 import { createWallpaperNodes } from './nodes/wallpaper.nodes.js';
 import type { PromptEnricher, WallpaperGraphDependencies } from './nodes/types.js';
 
 export type { WallpaperGraphDependencies };
-export type { WallpaperGraphInput, WallpaperGraphState, WallpaperMode, WallpaperUserInputs };
+export type {
+  WallpaperGraphInput,
+  WallpaperGraphState,
+  WallpaperMode,
+  WallpaperQuality,
+  WallpaperUserInputs,
+};
 
 type GraphWithInvoke = {
   invoke(input: WallpaperGraphInput): Promise<WallpaperGraphState>;
@@ -127,7 +134,38 @@ async function resolveDependencies(
     imageProvider: supplied.imageProvider ?? getImageProvider(env),
     onWallpaperCreated,
     presets: supplied.presets ?? {
-      findById: (id) => prisma.preset.findUnique({ where: { id } }),
+      createCustom: ({
+        category,
+        colorKeywords,
+        compositionKeywords,
+        materialKeywords,
+        name,
+        ownerClerkUserId,
+        promptTemplate,
+        styleRefUrl,
+      }) =>
+        prisma.preset.create({
+          data: {
+            category,
+            name,
+            owner: {
+              connectOrCreate: {
+                create: { clerkUserId: ownerClerkUserId },
+                where: { clerkUserId: ownerClerkUserId },
+              },
+            },
+            params: { colorKeywords, compositionKeywords, materialKeywords },
+            promptTemplate,
+            styleRefUrl,
+          },
+        }),
+      findById: (id, clerkUserId) =>
+        prisma.preset.findFirst({
+          where: {
+            id,
+            OR: [{ isBuiltIn: true }, ...(clerkUserId ? [{ owner: { clerkUserId } }] : [])],
+          },
+        }),
     },
     storage:
       supplied.storage ??

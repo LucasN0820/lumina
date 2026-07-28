@@ -6,6 +6,7 @@ import { ErrorState } from '@/components/feedback';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { PresetManager } from '@/features/library/PresetManager';
+import { LibraryFilters } from '@/features/library/library-filters';
 import { WallpaperDetail } from '@/features/library/WallpaperDetail';
 import { WallpaperGrid } from '@/features/library/WallpaperGrid';
 import { useWallpapers } from '@/features/library/use-wallpapers';
@@ -18,8 +19,17 @@ export default function LibraryTab() {
   const theme = useTheme();
   const [selectedWallpaper, setSelectedWallpaper] = useState<WallpaperListItem>();
   const [previewMode, setPreviewMode] = useState<WallpaperPreviewMode>('lock-screen');
-  const wallpapers = useWallpapers();
-  const error = wallpapers.deviceIdError ?? wallpapers.error;
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const wallpapers = useWallpapers({ category: selectedCategory, favoritesOnly });
+  const error = wallpapers.deviceIdError ?? wallpapers.error ?? wallpapers.favoriteError;
+  const categories = [
+    ...new Set(
+      wallpapers.wallpapers.flatMap((wallpaper) =>
+        wallpaper.category ? [wallpaper.category] : [],
+      ),
+    ),
+  ];
 
   if (selectedWallpaper) {
     return (
@@ -48,6 +58,13 @@ export default function LibraryTab() {
                 你的生成记录会按当前设备保存，可随时预览。
               </ThemedText>
             </ThemedView>
+            <LibraryFilters
+              categories={categories}
+              favoritesOnly={favoritesOnly}
+              onCategoryChange={setSelectedCategory}
+              onFavoritesOnlyChange={setFavoritesOnly}
+              selectedCategory={selectedCategory}
+            />
             <PresetManager />
           </View>
         }
@@ -67,6 +84,7 @@ export default function LibraryTab() {
           setPreviewMode('lock-screen');
           setSelectedWallpaper(wallpaper);
         }}
+        onToggleFavorite={wallpapers.toggleFavorite}
       />
     </View>
   );

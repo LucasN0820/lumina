@@ -50,6 +50,32 @@ describe('runWallpaperGraph', () => {
     expect(harness.wallpaper.status).toBe('succeeded');
   });
 
+  it('extracts a style into an owned custom preset', async () => {
+    const harness = createHarness();
+
+    await runWallpaperGraph(
+      {
+        clerkUserId: 'user_clerk_123',
+        height: 2400,
+        mode: 'style',
+        sourceImageUrl: 'https://source.example/image.png',
+        userInputs: {},
+        width: 1080,
+      },
+      harness.dependencies,
+    );
+
+    expect(harness.calls).toEqual(['style']);
+    expect(harness.customPresets).toEqual([
+      expect.objectContaining({
+        name: 'Source Style',
+        ownerClerkUserId: 'user_clerk_123',
+        styleRefUrl: 'https://source.example/image.png',
+      }),
+    ]);
+    expect(harness.wallpaper.resultImageUrl).toBe('https://source.example/image.png');
+  });
+
   it('generates from a tone-only input without a preset', async () => {
     const harness = createHarness();
 
@@ -65,6 +91,23 @@ describe('runWallpaperGraph', () => {
 
     expect(wallpaper.prompt).toBe('warm');
     expect(wallpaper.status).toBe('succeeded');
+  });
+
+  it('uses a lower-resolution standard provider request for draft generation', async () => {
+    const harness = createHarness();
+
+    await runWallpaperGraph(
+      {
+        height: 2400,
+        mode: 'text2img',
+        quality: 'draft',
+        userInputs: { idea: 'quick preview' },
+        width: 1080,
+      },
+      harness.dependencies,
+    );
+
+    expect(harness.specs[0]).toMatchObject({ height: 1280, quality: 'standard', width: 576 });
   });
 
   it('marks the created wallpaper as failed when a provider node throws', async () => {
@@ -110,7 +153,9 @@ describe('runWallpaperGraph', () => {
 
 function createHarness(options: { providerError?: Error } = {}) {
   const calls: string[] = [];
+  const specs: ImageSpec[] = [];
   let createCalls = 0;
+  const customPresets: unknown[] = [];
   const uploads: { contentType: string; key: string }[] = [];
   const wallpaper = {
     createdAt: new Date(),
@@ -127,11 +172,20 @@ function createHarness(options: { providerError?: Error } = {}) {
     updatedAt: new Date(),
     userId: null,
   } as Wallpaper;
-  const provider = createProvider(calls, options.providerError);
+  const provider = createProvider(calls, options.providerError, specs);
 
   const dependencies: WallpaperGraphDependencies = {
     imageProvider: provider,
     presets: {
+      async createCustom(data) {
+        customPresets.push(data);
+        return {
+          id: 'custom-preset-1',
+          negativePrompt: null,
+          promptTemplate: data.promptTemplate,
+          styleRefUrl: data.styleRefUrl,
+        };
+      },
       async findById(id) {
         return id === 'preset-minimal'
           ? {
@@ -168,11 +222,19 @@ function createHarness(options: { providerError?: Error } = {}) {
     },
   };
 
-  return { calls, createCalls: () => createCalls, dependencies, uploads, wallpaper };
+  return {
+    calls,
+    createCalls: () => createCalls,
+    customPresets,
+    dependencies,
+    specs,
+    uploads,
+    wallpaper,
+  };
 }
 
-function createProvider(calls: string[], providerError?: Error): ImageProvider {
-  const result = (): ImageResult => {
+function createProvider(calls: string[], providerError?: Error, specs: ImageSpec[] = []): ImageProvider {
+  const result = (operation: string): ImageResult => {
     if (providerError) {
       throw providerError;
     }
@@ -183,11 +245,24 @@ function createProvider(calls: string[], providerError?: Error): ImageProvider {
       providerTask: 'mock-task',
       width: 1080,
       height: 2400,
+      ...(operation === 'style'
+        ? {
+            style: {
+              category: 'minimal',
+              colorKeywords: ['blue'],
+              compositionKeywords: ['centered'],
+              materialKeywords: ['paper'],
+              name: 'Source Style',
+              promptTemplate: 'A minimal {{idea}}',
+            },
+          }
+        : {}),
     };
   };
-  const invoke = (operation: string) => async (_spec: ImageSpec) => {
+  const invoke = (operation: string) => async (spec: ImageSpec) => {
     calls.push(operation);
-    return result();
+    specs.push(spec);
+    return result(operation);
   };
 
   return {

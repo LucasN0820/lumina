@@ -2,8 +2,8 @@ import type { ReactElement } from 'react';
 import { Image } from 'expo-image';
 import { ActivityIndicator, FlatList, Pressable, View } from 'react-native';
 
+import { EmptyState, Skeleton } from '@/components/feedback';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { useTheme } from '@/hooks/use-theme';
 import type { WallpaperListItem } from '@/lib/api';
 
@@ -16,6 +16,7 @@ type WallpaperGridProps = {
   onEndReached: () => void;
   onRefresh: () => void;
   onSelect: (wallpaper: WallpaperListItem) => void;
+  onToggleFavorite?: (wallpaper: WallpaperListItem) => void;
 };
 
 export function WallpaperGrid({
@@ -27,6 +28,7 @@ export function WallpaperGrid({
   onEndReached,
   onRefresh,
   onSelect,
+  onToggleFavorite = () => {},
 }: WallpaperGridProps) {
   const theme = useTheme();
 
@@ -39,26 +41,27 @@ export function WallpaperGrid({
       keyExtractor={(item) => item.id}
       ListEmptyComponent={
         isLoading ? (
-          <View style={{ alignItems: 'center', gap: 10, paddingVertical: 56 }}>
-            <ActivityIndicator color={theme.accent} />
-            <ThemedText variant="body">正在加载壁纸库…</ThemedText>
+          <View
+            style={{ flexDirection: 'row', gap: 12, paddingVertical: 16 }}
+            testID="wallpaper-skeleton"
+          >
+            <View style={{ flex: 1, gap: 8 }}>
+              <Skeleton height={220} />
+              <Skeleton width="60%" />
+            </View>
+            <View style={{ flex: 1, gap: 8 }}>
+              <Skeleton height={220} />
+              <Skeleton width="60%" />
+            </View>
           </View>
         ) : (
-          <ThemedView style={{ alignItems: 'center', gap: 10, paddingVertical: 32 }} variant="card">
-            <ThemedText variant="subtitle">还没有壁纸</ThemedText>
-            <ThemedText style={{ color: theme.mutedText, textAlign: 'center' }} variant="body">
-              去创作一张属于你的壁纸，它会自动保存在这里。
-            </ThemedText>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onCreate}
-              testID="create-wallpaper-button"
-            >
-              <ThemedText style={{ color: theme.accent }} variant="body">
-                去创作
-              </ThemedText>
-            </Pressable>
-          </ThemedView>
+          <EmptyState
+            actionLabel="去创作"
+            actionTestId="create-wallpaper-button"
+            description="去创作一张属于你的壁纸，它会自动保存在这里。"
+            onAction={onCreate}
+            title="还没有壁纸"
+          />
         )
       }
       ListFooterComponent={
@@ -74,13 +77,27 @@ export function WallpaperGrid({
       onEndReachedThreshold={0.5}
       onRefresh={onRefresh}
       refreshing={isRefreshing}
-      renderItem={({ item }) => <WallpaperGridItem item={item} onPress={() => onSelect(item)} />}
+      renderItem={({ item }) => (
+        <WallpaperGridItem
+          item={item}
+          onPress={() => onSelect(item)}
+          onToggleFavorite={() => onToggleFavorite(item)}
+        />
+      )}
       testID="wallpaper-grid"
     />
   );
 }
 
-function WallpaperGridItem({ item, onPress }: { item: WallpaperListItem; onPress: () => void }) {
+function WallpaperGridItem({
+  item,
+  onPress,
+  onToggleFavorite,
+}: {
+  item: WallpaperListItem;
+  onPress: () => void;
+  onToggleFavorite: () => void;
+}) {
   const theme = useTheme();
   const imageUri = item.resultImageUrl;
 
@@ -123,6 +140,25 @@ function WallpaperGridItem({ item, onPress }: { item: WallpaperListItem; onPress
       <ThemedText numberOfLines={1} style={{ color: theme.mutedText }} variant="caption">
         {formatDate(item.createdAt)}
       </ThemedText>
+      <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <ThemedText numberOfLines={1} style={{ color: theme.mutedText }} variant="caption">
+          {item.category ?? '未分类'} · {item.quality === 'draft' ? '预览' : '高清'}
+        </ThemedText>
+        <Pressable
+          accessibilityLabel={item.favorite ? '取消收藏壁纸' : '收藏壁纸'}
+          accessibilityRole="button"
+          onPress={onToggleFavorite}
+          hitSlop={8}
+          testID={`favorite-wallpaper-${item.id}`}
+        >
+          <ThemedText
+            style={{ color: item.favorite ? theme.accent : theme.mutedText }}
+            variant="body"
+          >
+            {item.favorite ? '♥' : '♡'}
+          </ThemedText>
+        </Pressable>
+      </View>
     </Pressable>
   );
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vite-plus/test';
 
 import { createApp } from '../app.js';
+import { createGenerationRateLimiter } from '../lib/generation-rate-limiter.js';
 import type { GenerationJobRepository, JobRecord } from './generate.js';
 
 describe('generation API', () => {
@@ -42,6 +43,7 @@ describe('generation API', () => {
       deviceId: 'device-123',
       height: 2400,
       prompt: 'a calm night sky',
+      quality: 'hd',
       status: 'pending',
       width: 1080,
     });
@@ -77,6 +79,38 @@ describe('generation API', () => {
     });
   });
 
+  it('accepts drafts and rate limits repeated requests from one device', async () => {
+    const jobs = createJobRepository();
+    const app = createApp({
+      generation: {
+        jobs,
+        rateLimiter: createGenerationRateLimiter({ limit: 1 }),
+        runner: { async run() {} },
+      },
+    });
+    const request = () =>
+      app.request('/generate', {
+        body: JSON.stringify({
+          deviceId: 'device-rate-limited',
+          height: 2400,
+          mode: 'text2img',
+          quality: 'draft',
+          userInputs: { idea: 'draft idea' },
+          width: 1080,
+        }),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      });
+
+    expect((await request()).status).toBe(202);
+    const limited = await request();
+
+    expect(jobs.records[0]?.quality).toBe('draft');
+    expect(limited.status).toBe(429);
+    expect(limited.headers.get('Retry-After')).toBeTruthy();
+    await expect(limited.json()).resolves.toMatchObject({ error: { code: 'RATE_LIMITED' } });
+  });
+
   it('rejects malformed JSON before creating a job', async () => {
     const jobs = createJobRepository();
     const app = createApp({ generation: { jobs } });
@@ -103,6 +137,7 @@ describe('generation API', () => {
         height: 2400,
         id: 'job-1',
         resultImageUrl: 'https://images.example/job-1.png',
+        quality: 'hd',
         status: 'succeeded',
         width: 1080,
       },
@@ -114,6 +149,7 @@ describe('generation API', () => {
     await expect(successful.json()).resolves.toEqual({
       height: 2400,
       resultImageUrl: 'https://images.example/job-1.png',
+      quality: 'hd',
       status: 'succeeded',
       width: 1080,
     });
@@ -129,7 +165,7 @@ describe('generation API', () => {
   it('lists built-in presets and device-scoped wallpapers with pagination', async () => {
     const app = createApp({
       presets: {
-        async listBuiltIn() {
+        async listVisible() {
           return [
             {
               category: 'minimal',
@@ -145,24 +181,33 @@ describe('generation API', () => {
           expect({ deviceId, limit, page }).toEqual({ deviceId: 'device-123', limit: 1, page: 2 });
           return [
             {
+              category: 'minimal',
               createdAt: new Date('2026-07-26T00:00:00.000Z'),
+              favorite: false,
               height: 2400,
               id: 'job-2',
               mode: 'text2img',
+              quality: 'hd',
               resultImageUrl: 'https://images.example/job-2.png',
               status: 'succeeded',
               width: 1080,
             },
             {
+              category: 'minimal',
               createdAt: new Date('2026-07-25T00:00:00.000Z'),
+              favorite: false,
               height: 2400,
               id: 'job-1',
               mode: 'text2img',
+              quality: 'hd',
               resultImageUrl: 'https://images.example/job-1.png',
               status: 'succeeded',
               width: 1080,
             },
           ];
+        },
+        async setFavorite() {
+          return null;
         },
       },
     });
@@ -186,10 +231,13 @@ describe('generation API', () => {
       hasMore: true,
       items: [
         {
+          category: 'minimal',
           createdAt: '2026-07-26T00:00:00.000Z',
+          favorite: false,
           height: 2400,
           id: 'job-2',
           mode: 'text2img',
+          quality: 'hd',
           resultImageUrl: 'https://images.example/job-2.png',
           status: 'succeeded',
           width: 1080,
@@ -215,6 +263,7 @@ function createJobRepository(initialRecords: JobRecord[] = []): GenerationJobRep
         height: data.height,
         id: `job-${records.length + 1}`,
         prompt: data.prompt,
+        quality: data.quality,
         resultImageUrl: null,
         status: data.status,
         width: data.width,

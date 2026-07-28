@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, Pressable, type DimensionValue, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
@@ -9,7 +9,9 @@ export function LoadingState({ label = '加载中…' }: { label?: string }) {
   return (
     <View style={{ alignItems: 'center', flexDirection: 'row', gap: 8 }}>
       <ActivityIndicator color={theme.accent} />
-      <ThemedText variant="body">{label}</ThemedText>
+      <ThemedText selectable variant="body">
+        {label}
+      </ThemedText>
     </View>
   );
 }
@@ -19,7 +21,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
 
   return (
     <View style={{ gap: 8 }}>
-      <ThemedText style={{ color: theme.error }} variant="body">
+      <ThemedText selectable style={{ color: theme.error }} variant="body">
         {message}
       </ThemedText>
       {onRetry ? (
@@ -30,5 +32,67 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
         </Pressable>
       ) : null}
     </View>
+  );
+}
+
+export function EmptyState({
+  actionLabel,
+  actionTestId,
+  description,
+  onAction,
+  title,
+}: {
+  actionLabel?: string;
+  actionTestId?: string;
+  description: string;
+  onAction?: () => void;
+  title: string;
+}) {
+  const theme = useTheme();
+
+  return (
+    <View style={{ alignItems: 'center', gap: 10, paddingVertical: 32 }}>
+      <ThemedText selectable variant="subtitle">
+        {title}
+      </ThemedText>
+      <ThemedText selectable style={{ color: theme.mutedText, textAlign: 'center' }} variant="body">
+        {description}
+      </ThemedText>
+      {onAction && actionLabel ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onAction}
+          testID={actionTestId ?? 'empty-state-action'}
+        >
+          <ThemedText style={{ color: theme.accent }} variant="body">
+            {actionLabel}
+          </ThemedText>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
+export function Skeleton({
+  height = 16,
+  width = '100%',
+}: {
+  height?: number;
+  width?: DimensionValue;
+}) {
+  const theme = useTheme();
+
+  return (
+    <View
+      accessibilityLabel="加载占位"
+      style={{
+        backgroundColor: theme.border,
+        borderCurve: 'continuous',
+        borderRadius: 8,
+        height,
+        opacity: 0.65,
+        width,
+      }}
+    />
   );
 }
