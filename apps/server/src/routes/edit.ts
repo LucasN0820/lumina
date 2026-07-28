@@ -18,11 +18,17 @@ export function createEditRoutes(dependencies: EditRouteDependencies = {}) {
   routes.post('/uploads/presign', async (context) => {
     const parsed = presignUploadSchema.safeParse(await parseRequestBody(context.req.raw));
     if (!parsed.success) {
-      throw new AppError('Upload content type must be JPEG, PNG, or WebP.', 400, 'VALIDATION_ERROR');
+      throw new AppError(
+        'Upload content type must be JPEG, PNG, or WebP.',
+        400,
+        'VALIDATION_ERROR',
+      );
     }
 
     const storage = dependencies.storage ?? (await createStorage());
-    const key = generateSourceImageKey({ extension: extensionForContentType(parsed.data.contentType) });
+    const key = generateSourceImageKey({
+      extension: extensionForContentType(parsed.data.contentType),
+    });
     const [uploadUrl, sourceImageUrl] = await Promise.all([
       storage.createPresignedPutUrl(key, parsed.data.contentType),
       storage.getUrl(key),
@@ -58,6 +64,8 @@ async function parseRequestBody(request: Request): Promise<unknown> {
   }
 }
 
-function extensionForContentType(contentType: z.infer<typeof presignUploadSchema>['contentType']): string {
+function extensionForContentType(
+  contentType: z.infer<typeof presignUploadSchema>['contentType'],
+): string {
   return { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[contentType];
 }

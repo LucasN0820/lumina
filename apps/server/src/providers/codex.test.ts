@@ -16,7 +16,9 @@ describe('CodexImageProvider', () => {
         }),
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ data: [{ b64_json: Buffer.from('image').toString('base64') }] })),
+        new Response(
+          JSON.stringify({ data: [{ b64_json: Buffer.from('image').toString('base64') }] }),
+        ),
       );
     const provider = createProvider(fetch);
 

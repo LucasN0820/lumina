@@ -43,6 +43,7 @@
 
 ## 实施记录（2026-07-28）
 
-- 已实现 draft / hd 两档、客户端与服务端限流、provider 指数退避重试，以及统一 Empty / Error / Skeleton 状态。
+- 已实现 draft / hd 两档、客户端与服务端限流、provider 指数退避重试，以及统一 Empty / Error /
+  Skeleton 状态。
 - 已新增 Wallpaper 收藏字段与迁移；图库现支持分类及「已收藏」筛选、收藏切换。
 - 已通过服务端构建、移动端 TypeScript、ESLint 与全量测试。

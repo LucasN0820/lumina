@@ -25,7 +25,8 @@ export function ExistingImageEditor({ deviceSize }: ExistingImageEditorProps) {
   const generation = useGenerate();
   const queryClient = useQueryClient();
   const theme = useTheme();
-  const hasResult = generation.job?.status === 'succeeded' && Boolean(generation.job.resultImageUrl);
+  const hasResult =
+    generation.job?.status === 'succeeded' && Boolean(generation.job.resultImageUrl);
   const isStyleComplete = hasResult && mode === 'style';
 
   useEffect(() => {

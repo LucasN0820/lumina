@@ -151,12 +151,18 @@ export class CodexImageProvider implements ImageProvider {
     return toImageResult(await readJson<ImageResponse>(response, 'image edit'), dimensions);
   }
 
-  private async downloadSource(sourceImageUrl: string): Promise<{ bytes: Uint8Array; mimeType: string }> {
+  private async downloadSource(
+    sourceImageUrl: string,
+  ): Promise<{ bytes: Uint8Array; mimeType: string }> {
     let response: Response;
     try {
       response = await this.fetcher(sourceImageUrl);
     } catch (error) {
-      throw new ImageProviderError('INVALID_ARTIFACT', 'Could not download the source image.', error);
+      throw new ImageProviderError(
+        'INVALID_ARTIFACT',
+        'Could not download the source image.',
+        error,
+      );
     }
 
     if (!response.ok) {
@@ -194,7 +200,9 @@ export class CodexImageProvider implements ImageProvider {
       }
       throw new ImageProviderError(
         controller.signal.aborted ? 'TIMEOUT' : 'PROVIDER_UNAVAILABLE',
-        controller.signal.aborted ? 'OpenAI image request timed out.' : 'OpenAI image request failed.',
+        controller.signal.aborted
+          ? 'OpenAI image request timed out.'
+          : 'OpenAI image request failed.',
         error,
       );
     } finally {
@@ -227,9 +235,10 @@ const styleSchema = {
 function toSupportedDimensions(width: number, height: number): { height: number; width: number } {
   const ratio = width / height;
   const longEdge = Math.min(3840, Math.max(2048, Math.max(width, height)));
-  const shorterEdge = Math.round((longEdge / Math.max(ratio, 1 / ratio)) / 16) * 16;
+  const shorterEdge = Math.round(longEdge / Math.max(ratio, 1 / ratio) / 16) * 16;
   const longEdgeRounded = Math.round(longEdge / 16) * 16;
-  const [outputWidth, outputHeight] = width >= height ? [longEdgeRounded, shorterEdge] : [shorterEdge, longEdgeRounded];
+  const [outputWidth, outputHeight] =
+    width >= height ? [longEdgeRounded, shorterEdge] : [shorterEdge, longEdgeRounded];
   return { height: outputHeight, width: outputWidth };
 }
 
@@ -280,7 +289,11 @@ async function readJson<T>(response: Response, operation: string): Promise<T> {
   try {
     return (await response.json()) as T;
   } catch (error) {
-    throw new ImageProviderError('INVALID_ARTIFACT', `OpenAI ${operation} returned invalid JSON.`, error);
+    throw new ImageProviderError(
+      'INVALID_ARTIFACT',
+      `OpenAI ${operation} returned invalid JSON.`,
+      error,
+    );
   }
 }
 
@@ -311,7 +324,11 @@ function parseStyle(value: string | undefined): ExtractedStyle {
         : `${parsed.promptTemplate}, {{idea}}`,
     };
   } catch (error) {
-    throw new ImageProviderError('INVALID_ARTIFACT', 'OpenAI returned an invalid style extraction.', error);
+    throw new ImageProviderError(
+      'INVALID_ARTIFACT',
+      'OpenAI returned an invalid style extraction.',
+      error,
+    );
   }
 }
 
@@ -334,7 +351,10 @@ function validateOptions(options: CodexImageProviderOptions): void {
     throw new ImageProviderError('CONFIGURATION_ERROR', 'OpenAI API key must not be empty.');
   }
   if (!Number.isInteger(options.timeoutMs) || options.timeoutMs <= 0) {
-    throw new ImageProviderError('CONFIGURATION_ERROR', 'OpenAI timeout must be a positive integer.');
+    throw new ImageProviderError(
+      'CONFIGURATION_ERROR',
+      'OpenAI timeout must be a positive integer.',
+    );
   }
 }
 
@@ -342,7 +362,12 @@ function validateSpec(spec: ImageSpec): void {
   if (!spec.prompt.trim()) {
     throw new ImageProviderError('INVALID_INPUT', 'Image prompt must not be empty.');
   }
-  if (!Number.isInteger(spec.width) || !Number.isInteger(spec.height) || spec.width <= 0 || spec.height <= 0) {
+  if (
+    !Number.isInteger(spec.width) ||
+    !Number.isInteger(spec.height) ||
+    spec.width <= 0 ||
+    spec.height <= 0
+  ) {
     throw new ImageProviderError('INVALID_INPUT', 'Image dimensions must be positive integers.');
   }
 }

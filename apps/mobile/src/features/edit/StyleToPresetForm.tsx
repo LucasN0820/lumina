@@ -45,7 +45,9 @@ export function StyleToPresetForm({
       <Pressable
         accessibilityRole="button"
         disabled={isSubmitting}
-        onPress={() => onSubmit(instruction || 'Extract a reusable wallpaper style from this image.')}
+        onPress={() =>
+          onSubmit(instruction || 'Extract a reusable wallpaper style from this image.')
+        }
         style={{
           alignSelf: 'flex-start',
           backgroundColor: theme.accent,

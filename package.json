@@ -17,6 +17,9 @@
     "staged": "vp staged",
     "setup:hooks": "vp config --no-agent"
   },
+  "dependencies": {
+    "expo-image-picker": "~56.0.22"
+  },
   "devDependencies": {
     "@voidzero-dev/vite-plus-core": "^0.2.6",
     "vite-plus": "^0.2.6",
@@ -25,8 +28,5 @@
   "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@latest"
   },
-  "packageManager": "bun@1.3.11",
-  "dependencies": {
-    "expo-image-picker": "~56.0.22"
-  }
+  "packageManager": "bun@1.3.11"
 }

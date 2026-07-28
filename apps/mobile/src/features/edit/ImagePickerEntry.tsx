@@ -42,7 +42,12 @@ export function ImagePickerEntry({ onUploaded, sourceImageUrl }: ImagePickerEntr
     setLocalUri(asset.uri);
     setIsUploading(true);
     try {
-      onUploaded(await uploadSourceImage(asset.uri, contentType as 'image/jpeg' | 'image/png' | 'image/webp'));
+      onUploaded(
+        await uploadSourceImage(
+          asset.uri,
+          contentType as 'image/jpeg' | 'image/png' | 'image/webp',
+        ),
+      );
     } catch (reason) {
       setError(reason instanceof Error ? reason : new Error('图片上传失败，请重试。'));
     } finally {

@@ -233,7 +233,11 @@ function createHarness(options: { providerError?: Error } = {}) {
   };
 }
 
-function createProvider(calls: string[], providerError?: Error, specs: ImageSpec[] = []): ImageProvider {
+function createProvider(
+  calls: string[],
+  providerError?: Error,
+  specs: ImageSpec[] = [],
+): ImageProvider {
   const result = (operation: string): ImageResult => {
     if (providerError) {
       throw providerError;
