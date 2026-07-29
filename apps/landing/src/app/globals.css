@@ -738,7 +738,7 @@ button {
   }
 
   .workflow-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .workflow-card {
@@ -774,6 +774,10 @@ button {
 
   .hero__device {
     width: 292px;
+  }
+
+  .workflow-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .workflow-card {
