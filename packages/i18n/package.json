@@ -9,8 +9,8 @@
     "./mobile": "./src/mobile.ts"
   },
   "scripts": {
-    "compile": "lingui compile --config packages/i18n/lingui.config.ts --strict --typescript --output-prefix '/* oxlint-disable */'",
-    "extract": "lingui extract --config packages/i18n/lingui.config.ts"
+    "compile": "node scripts/lingui.mjs compile",
+    "extract": "node scripts/lingui.mjs extract"
   },
   "dependencies": {
     "@lingui/core": "^6.0.0",

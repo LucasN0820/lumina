@@ -2,7 +2,7 @@ import { defineConfig } from '@lingui/cli';
 import { formatter } from '@lingui/format-po';
 
 export default defineConfig({
-  rootDir: '.',
+  rootDir: '../..',
   catalogs: [
     {
       include: ['<rootDir>/apps/landing/src'],
