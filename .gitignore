@@ -6,6 +6,7 @@ apps/server/prisma/generated/
 .vite/
 .vite-hooks/
 .superpowers/
+.worktrees/
 coverage/
 
 # Expo
