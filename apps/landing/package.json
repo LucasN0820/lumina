@@ -6,7 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
-    "test": "bun --cwd=../.. x vitest run apps/landing/src",
+    "test": "bun x vitest run --root ../.. apps/landing/src",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
