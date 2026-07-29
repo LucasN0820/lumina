@@ -73,6 +73,8 @@ export const mobileReactPreset = {
   },
 } satisfies OxlintPreset;
 
+export const webReactPreset = mobileReactPreset;
+
 export const serverNodePreset = {
   plugins: ['typescript', 'import', 'node', 'promise', 'unicorn'],
   rules: {

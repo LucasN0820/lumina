@@ -5,6 +5,7 @@ Lumina is an Android-first AI wallpaper application. The repository is a Bun wor
 ```text
 apps/mobile  Expo SDK 56 application
 apps/server  Hono API application
+apps/landing Next.js App Router landing page
 ```
 
 Vite+ provides the shared formatting, linting, type-checking, test orchestration, task cache, and
@@ -31,4 +32,5 @@ vp staged
 ```
 
 The mobile workspace can also be run directly with `bun --filter=@lumina/mobile run android`. The
-server health endpoint is available at `http://localhost:3000/health` when the server runs.
+server health endpoint is available at `http://localhost:3000/health` when the server runs. The
+landing page can be run directly with `bun --filter=@lumina/landing run dev`.

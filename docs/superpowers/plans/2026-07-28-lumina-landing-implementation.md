@@ -111,7 +111,6 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
   {
     "compilerOptions": {
       "allowJs": false,
-      "baseUrl": ".",
       "esModuleInterop": true,
       "incremental": true,
       "jsx": "preserve",

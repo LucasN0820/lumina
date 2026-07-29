@@ -5,6 +5,7 @@ import {
   serverNodePreset,
   serverTestPreset,
   strictCodeQualityPreset,
+  webReactPreset,
 } from './config/oxlint-presets.js';
 
 export default defineConfig({
@@ -14,6 +15,8 @@ export default defineConfig({
       '.claude/**',
       'example/**',
       'apps/mobile/assets/**',
+      'apps/landing/.next/**',
+      'apps/landing/next-env.d.ts',
       '**/node_modules/**',
       '**/.expo/**',
       '**/dist/**',
@@ -59,6 +62,11 @@ export default defineConfig({
         rules: mobileReactPreset.rules,
       },
       {
+        files: ['apps/landing/**/*.{ts,tsx}'],
+        plugins: [...webReactPreset.plugins],
+        rules: webReactPreset.rules,
+      },
+      {
         files: ['apps/server/**/*.ts'],
         plugins: [...serverNodePreset.plugins],
         env: {
@@ -71,10 +79,15 @@ export default defineConfig({
         plugins: [...serverTestPreset.plugins],
         rules: serverTestPreset.rules,
       },
+      {
+        files: ['apps/landing/**/*.test.ts'],
+        plugins: [...serverTestPreset.plugins],
+        rules: serverTestPreset.rules,
+      },
     ],
   },
   test: {
-    include: ['apps/server/src/**/*.test.ts'],
+    include: ['apps/server/src/**/*.test.ts', 'apps/landing/src/**/*.test.ts'],
   },
   staged: {
     '*.{js,cjs,mjs,ts,tsx,json,md,yml,yaml}': 'vp check --fix',
@@ -87,18 +100,28 @@ export default defineConfig({
     tasks: {
       'dev:all': {
         command:
-          'vp run --parallel --log labeled --no-cache --filter=@lumina/mobile --filter=@lumina/server dev',
+          'vp run --parallel --log labeled --no-cache --filter=@lumina/mobile --filter=@lumina/server --filter=@lumina/landing dev',
         cache: false,
       },
       'test:all': {
         command: 'bun --filter=@lumina/mobile run test && vp test run',
-        input: [{ auto: true }, '!apps/mobile/.expo/**', '!apps/mobile/dist/**'],
-        output: [{ auto: true }, '!apps/mobile/.expo/**', '!apps/mobile/dist/**'],
+        input: [
+          { auto: true },
+          '!apps/mobile/.expo/**',
+          '!apps/mobile/dist/**',
+          '!apps/landing/.next/**',
+        ],
+        output: [
+          { auto: true },
+          '!apps/mobile/.expo/**',
+          '!apps/mobile/dist/**',
+          '!apps/landing/.next/**',
+        ],
       },
       'build:all': {
         command:
-          'vp run --parallel --log labeled --filter=@lumina/mobile --filter=@lumina/server build',
-        output: ['apps/mobile/dist/**', 'apps/server/dist/**'],
+          'vp run --parallel --log labeled --filter=@lumina/mobile --filter=@lumina/server --filter=@lumina/landing build',
+        output: ['apps/mobile/dist/**', 'apps/server/dist/**', '!apps/landing/.next/**'],
       },
       'build:android': {
         command: 'bun --filter=@lumina/mobile run build:android',
