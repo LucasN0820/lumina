@@ -259,7 +259,7 @@ button {
 
 .hero__note {
   margin: 14px 0 0;
-  color: rgb(182 184 192 / 55%);
+  color: var(--muted);
   font-size: 0.7rem;
   letter-spacing: 0.06em;
 }
@@ -313,7 +313,7 @@ button {
   writing-mode: vertical-rl;
 }
 
-.hero__visual-note span {
+.hero__visual-note span:last-child {
   margin-top: 14px;
   color: var(--accent);
 }
