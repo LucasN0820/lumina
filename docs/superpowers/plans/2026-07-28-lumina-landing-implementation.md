@@ -1,6 +1,8 @@
 # Lumina Landing Page Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development
+> (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use
+> checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build and deploy a bilingual, minimal Next.js landing page for Lumina in `apps/landing`.
 
@@ -19,10 +21,10 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
 - Chinese is the primary copy and English is concise supporting copy within the same static page.
 - Do not add a CMS, analytics, authentication, API routes, persistence, external images, or a form.
 - Use only CSS and semantic HTML for wallpapers and phone mockups; do not fetch remote imagery.
-- All Android CTAs must visibly promise Android download while `NEXT_PUBLIC_ANDROID_DOWNLOAD_URL`
-  is unset and must then perform no action.
-- Only a valid `https:` value for `NEXT_PUBLIC_ANDROID_DOWNLOAD_URL` may turn a CTA into an
-  external link; add `target="_blank"` and `rel="noreferrer"` to that link.
+- All Android CTAs must visibly promise Android download while `NEXT_PUBLIC_ANDROID_DOWNLOAD_URL` is
+  unset and must then perform no action.
+- Only a valid `https:` value for `NEXT_PUBLIC_ANDROID_DOWNLOAD_URL` may turn a CTA into an external
+  link; add `target="_blank"` and `rel="noreferrer"` to that link.
 - Preserve static rendering: no client components, React state, data fetches, server actions, or
   route handlers are needed.
 - Vercel is configured as a separate project with Root Directory `apps/landing`; use Bun and the
@@ -32,26 +34,26 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
 
 ## File Structure
 
-| Path | Responsibility |
-| --- | --- |
-| `apps/landing/package.json` | Landing workspace identity and dev/build/start/type-check/test scripts. |
-| `apps/landing/tsconfig.json` | Strict Next.js TypeScript settings and `@/*` alias. |
-| `apps/landing/next.config.ts` | Typed, intentionally minimal Next configuration. |
-| `apps/landing/src/app/layout.tsx` | Root document, `lang="zh-CN"`, metadata, font, and body shell. |
-| `apps/landing/src/app/page.tsx` | Static page sections, bilingual copy, and component composition. |
-| `apps/landing/src/app/globals.css` | Tokens, page layout, responsive styles, CSS art, focus, and reduced-motion rules. |
-| `apps/landing/src/components/android-cta.tsx` | Shared inert-or-link Android CTA. |
-| `apps/landing/src/components/device-preview.tsx` | Semantic, decorative phone preview with CSS variant classes. |
-| `apps/landing/src/components/feature-card.tsx` | Presentational product-capability card. |
-| `apps/landing/src/components/section-heading.tsx` | Bilingual section heading and supporting copy. |
-| `apps/landing/src/lib/android-download.ts` | Pure HTTPS URL parsing for the optional public environment variable. |
-| `apps/landing/src/lib/android-download.test.ts` | Unit coverage for accepted and rejected download URLs. |
-| `apps/landing/README.md` | Local commands, Vercel dashboard/CLI setup, and future download-URL activation. |
-| `apps/landing/vercel.json` | Project-local framework, install, and build settings for Vercel. |
-| `config/oxlint-presets.ts` | Reusable browser React lint preset, if the current mobile-only preset cannot be reused cleanly. |
-| `vite.config.ts` | Include landing source/tests in workspace lint, test, dev, and build orchestration. |
-| `README.md` | Add `apps/landing` to the repository overview and its local command. |
-| `.gitignore` | Ignore `apps/landing/.next/` build output. |
+| Path                                              | Responsibility                                                                                  |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `apps/landing/package.json`                       | Landing workspace identity and dev/build/start/type-check/test scripts.                         |
+| `apps/landing/tsconfig.json`                      | Strict Next.js TypeScript settings and `@/*` alias.                                             |
+| `apps/landing/next.config.ts`                     | Typed, intentionally minimal Next configuration.                                                |
+| `apps/landing/src/app/layout.tsx`                 | Root document, `lang="zh-CN"`, metadata, font, and body shell.                                  |
+| `apps/landing/src/app/page.tsx`                   | Static page sections, bilingual copy, and component composition.                                |
+| `apps/landing/src/app/globals.css`                | Tokens, page layout, responsive styles, CSS art, focus, and reduced-motion rules.               |
+| `apps/landing/src/components/android-cta.tsx`     | Shared inert-or-link Android CTA.                                                               |
+| `apps/landing/src/components/device-preview.tsx`  | Semantic, decorative phone preview with CSS variant classes.                                    |
+| `apps/landing/src/components/feature-card.tsx`    | Presentational product-capability card.                                                         |
+| `apps/landing/src/components/section-heading.tsx` | Bilingual section heading and supporting copy.                                                  |
+| `apps/landing/src/lib/android-download.ts`        | Pure HTTPS URL parsing for the optional public environment variable.                            |
+| `apps/landing/src/lib/android-download.test.ts`   | Unit coverage for accepted and rejected download URLs.                                          |
+| `apps/landing/README.md`                          | Local commands, Vercel dashboard/CLI setup, and future download-URL activation.                 |
+| `apps/landing/vercel.json`                        | Project-local framework, install, and build settings for Vercel.                                |
+| `config/oxlint-presets.ts`                        | Reusable browser React lint preset, if the current mobile-only preset cannot be reused cleanly. |
+| `vite.config.ts`                                  | Include landing source/tests in workspace lint, test, dev, and build orchestration.             |
+| `README.md`                                       | Add `apps/landing` to the repository overview and its local command.                            |
+| `.gitignore`                                      | Ignore `apps/landing/.next/` build output.                                                      |
 
 ### Task 1: Create The Next.js Workspace And Integrate It With The Monorepo
 
@@ -111,7 +113,6 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
   {
     "compilerOptions": {
       "allowJs": false,
-      "baseUrl": ".",
       "esModuleInterop": true,
       "incremental": true,
       "jsx": "preserve",
@@ -137,7 +138,8 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
   export default nextConfig;
   ```
 
-- [ ] **Step 3: Add the minimum App Router files and prove the build fails only before dependencies are installed**
+- [ ] **Step 3: Add the minimum App Router files and prove the build fails only before dependencies
+      are installed**
 
   Create the root layout and home page with this minimum valid App Router shape. Import
   `./globals.css` from the layout. The implementation in Task 3 replaces the placeholder page.
@@ -224,9 +226,9 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
 
   describe('getAndroidDownloadUrl', () => {
     it('returns a normalized HTTPS URL', () => {
-      expect(getAndroidDownloadUrl('https://play.google.com/store/apps/details?id=app.lumina')).toBe(
-        'https://play.google.com/store/apps/details?id=app.lumina',
-      );
+      expect(
+        getAndroidDownloadUrl('https://play.google.com/store/apps/details?id=app.lumina'),
+      ).toBe('https://play.google.com/store/apps/details?id=app.lumina');
     });
 
     it.each([undefined, '', '  ', 'http://example.com', 'javascript:alert(1)', 'not a URL'])(
@@ -375,8 +377,8 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
      cards: `描述灵感 / Describe`, `细致调整 / Refine`, and `预览并应用 / Preview & apply`.
   4. Capability section at `id="features"` with cards accurately describing AI creation, editing an
      existing image, device-aware preview, and the save/share/library workflow.
-  5. Closing CTA panel with `让每次解锁，都遇见你喜欢的世界。`, a supporting English translation, and
-     `AndroidCta`.
+  5. Closing CTA panel with `让每次解锁，都遇见你喜欢的世界。`, a supporting English translation,
+     and `AndroidCta`.
   6. Footer with `Lumina — AI wallpaper, made personal.` and the current year.
 
   Keep all copy in module-level readonly arrays where repeated card structures are mapped. Do not
@@ -387,8 +389,8 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
   Expand `layout.tsx` metadata to include a bilingual title, the description
   `用 AI 创建、编辑并应用属于你的 Android 壁纸。 Create and apply AI wallpapers that feel personal.`,
   and a `robots` object allowing indexing. Omit `metadataBase` until a real canonical production URL
-  exists. Use a system font stack rather than `next/font/google` so Latin and Simplified Chinese text
-  receive consistent fallback coverage without an external font dependency.
+  exists. Use a system font stack rather than `next/font/google` so Latin and Simplified Chinese
+  text receive consistent fallback coverage without an external font dependency.
 
 - [ ] **Step 4: Implement the responsive CSS visual system**
 
@@ -406,8 +408,8 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
   }
   ```
 
-  Build the page around a centered `min(100% - 40px, 1120px)` container; give CTA controls a
-  minimum 44px block size, visible `:focus-visible` outlines, and no remote background images. Use
+  Build the page around a centered `min(100% - 40px, 1120px)` container; give CTA controls a minimum
+  44px block size, visible `:focus-visible` outlines, and no remote background images. Use
   radial/linear gradients, pseudo-elements, and clipping inside `.device-preview` for the `aurora`,
   `bloom`, and `night` variants. Add breakpoints at `768px` and `1024px` so the hero/workflow grids
   collapse appropriately. Within `@media (prefers-reduced-motion: reduce)`, set every decorative
@@ -467,7 +469,8 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
   });
   ```
 
-- [ ] **Step 2: Run the focused test to verify it fails before the parser is corrected, if necessary**
+- [ ] **Step 2: Run the focused test to verify it fails before the parser is corrected, if
+      necessary**
 
   Run:
 
@@ -513,8 +516,8 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
 
 - [ ] **Step 5: Exercise both environment states and perform full checks**
 
-  Run the full static test/check sequence with the variable absent, then build with a valid temporary
-  value:
+  Run the full static test/check sequence with the variable absent, then build with a valid
+  temporary value:
 
   ```bash
   bun --filter=@lumina/landing run test
@@ -559,6 +562,6 @@ configured. Vercel deploys the new Bun workspace as an independent monorepo proj
 - [ ] `bun --filter=@lumina/landing run build` passes with and without the optional HTTPS variable.
 - [ ] `bun run check` passes for the full workspace.
 - [ ] Local browser inspection confirms responsive layout, visible focus, semantic heading order,
-  reduced-motion handling, and three inert download controls when no URL is set.
+      reduced-motion handling, and three inert download controls when no URL is set.
 - [ ] The Vercel project is configured to Root Directory `apps/landing`, or the README gives every
-  necessary user-owned step to do so.
+      necessary user-owned step to do so.

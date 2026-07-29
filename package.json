@@ -12,7 +12,7 @@
     "lint": "vp lint",
     "dev": "vp run dev:all",
     "test": "vp run test:all",
-    "test:server": "vp test run",
+    "test:server": "vp test run apps/server/src",
     "build": "vp run build:all",
     "staged": "vp staged",
     "setup:hooks": "vp config --no-agent"
