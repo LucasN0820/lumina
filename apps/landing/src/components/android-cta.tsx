@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { EnglishText } from '@/components/english-text';
+import { Trans } from '@lingui/react/macro';
 import { getAndroidDownloadUrl } from '@/lib/android-download';
 
 export interface AndroidCtaProps {
@@ -17,16 +17,18 @@ export function AndroidCta({ className, compact = false }: AndroidCtaProps): Rea
   if (href) {
     return (
       <a className={ctaClassName} href={href} rel="noreferrer" target="_blank">
-        <span>下载 Android</span>
-        <EnglishText>Download for Android</EnglishText>
+        <span>
+          <Trans id="common.androidCta">Download for Android</Trans>
+        </span>
       </a>
     );
   }
 
   return (
     <button className={ctaClassName} type="button">
-      <span>下载 Android</span>
-      <EnglishText>Download for Android</EnglishText>
+      <span>
+        <Trans id="common.androidCta">Download for Android</Trans>
+      </span>
     </button>
   );
 }

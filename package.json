@@ -15,7 +15,10 @@
     "test:server": "vp test run apps/server/src",
     "build": "vp run build:all",
     "staged": "vp staged",
-    "setup:hooks": "vp config --no-agent"
+    "setup:hooks": "vp config --no-agent",
+    "i18n:extract": "bun --filter=@lumina/i18n run extract",
+    "i18n:compile": "bun --filter=@lumina/i18n run compile",
+    "i18n:check": "bun run i18n:extract && git diff --exit-code -- packages/i18n/locales && bun run i18n:compile"
   },
   "dependencies": {
     "expo-image-picker": "~56.0.22"

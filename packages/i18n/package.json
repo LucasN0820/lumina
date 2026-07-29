@@ -1,0 +1,23 @@
+{
+  "name": "@lumina/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/locales.ts",
+    "./landing": "./src/landing.ts",
+    "./mobile": "./src/mobile.ts"
+  },
+  "scripts": {
+    "compile": "lingui compile --config packages/i18n/lingui.config.ts --strict --typescript --output-prefix '/* oxlint-disable */'",
+    "extract": "lingui extract --config packages/i18n/lingui.config.ts"
+  },
+  "dependencies": {
+    "@lingui/core": "^6.0.0",
+    "@lingui/react": "^6.0.0"
+  },
+  "devDependencies": {
+    "@lingui/cli": "^6.6.0",
+    "@lingui/format-po": "^6.6.0"
+  }
+}
