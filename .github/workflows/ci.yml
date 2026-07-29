@@ -19,7 +19,7 @@ jobs:
           node-version: '24'
           cache: true
       - run: vp install --frozen-lockfile
-      - run: bun run i18n:compile
+      - run: vp run --filter=@lumina/i18n compile
       - run: vp check
       - run: vp run test:all
       - run: vp run build:all
