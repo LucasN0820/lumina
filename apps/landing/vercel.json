@@ -1,0 +1,5 @@
+{
+  "framework": "nextjs",
+  "installCommand": "cd ../.. && bun install --frozen-lockfile",
+  "buildCommand": "cd ../.. && bun --filter=@lumina/landing run build"
+}

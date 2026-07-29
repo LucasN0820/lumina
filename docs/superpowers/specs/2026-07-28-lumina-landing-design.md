@@ -37,13 +37,13 @@ wallpaper imagery, precise typography, and a small number of focused calls to ac
 
 ### Page structure
 
-1. **Header** — Lumina wordmark, compact bilingual navigation, and `下载 Android / Download for
-   Android` CTA.
+1. **Header** — Lumina wordmark, compact bilingual navigation, and
+   `下载 Android / Download for Android` CTA.
 2. **Hero** — Large bilingual value statement, a short supporting line, Android CTA, and one
    prominent phone mockup that frames an abstract wallpaper. The hero explains the promise: make a
    wallpaper that feels personal.
-3. **Workflow** — Three concise steps, each paired with an abstract visual: describe an idea,
-   refine it, then preview and apply it.
+3. **Workflow** — Three concise steps, each paired with an abstract visual: describe an idea, refine
+   it, then preview and apply it.
 4. **Capability grid** — Supports the existing product rather than inventing features: AI-assisted
    generation, edit from existing images, device-aware preview, and save/share/library.
 5. **Closing CTA** — Restates Android availability and the core promise in a high-contrast panel.
@@ -51,11 +51,11 @@ wallpaper imagery, precise typography, and a small number of focused calls to ac
 
 ### CTA behavior
 
-The visible label must state that Android is downloadable: `下载 Android` with `Download for Android`
-as support text. Until a real distribution URL exists, clicking any download CTA deliberately does
-nothing: it must not navigate, submit a form, or display an error. The CTA is visually a button and
-has an accessible button role/label. This preserves the desired launch copy without introducing an
-invalid external link.
+The visible label must state that Android is downloadable: `下载 Android` with
+`Download for Android` as support text. Until a real distribution URL exists, clicking any download
+CTA deliberately does nothing: it must not navigate, submit a form, or display an error. The CTA is
+visually a button and has an accessible button role/label. This preserves the desired launch copy
+without introducing an invalid external link.
 
 When a URL becomes available, a single public environment variable will provide it. The CTA
 component will render a normal external anchor only when that variable is non-empty; otherwise it
@@ -72,8 +72,8 @@ will render the intentionally inert button state. No source edit is needed to en
 ## Architecture
 
 `apps/landing` will be a self-contained Bun workspace package using current stable Next.js with the
-App Router and TypeScript. The landing page is static and needs no client-side data fetching,
-React state, or server actions.
+App Router and TypeScript. The landing page is static and needs no client-side data fetching, React
+state, or server actions.
 
 ```text
 apps/landing/
@@ -103,9 +103,12 @@ command runs from the workspace root via Bun, and its build command runs the lan
 `build` script. The project requires no secrets. A future `NEXT_PUBLIC_ANDROID_DOWNLOAD_URL`
 environment variable enables functional download links in Preview and Production.
 
-The deployment checklist will document Vercel's root directory, Bun version alignment, build command,
-and the optional environment variable. The production deploy itself remains a user-owned Vercel
-account action unless credentials are already configured locally.
+The deployment checklist will document Vercel's root directory, Bun version alignment, build
+command, and the optional environment variable. The production deploy itself remains a user-owned
+Vercel account action unless credentials are already configured locally.
+
+For the precise dashboard, CLI, and future Android-download activation steps, see the
+[landing deployment guide](../../../apps/landing/README.md).
 
 ## Accessibility And Failure Handling
 
@@ -121,8 +124,7 @@ account action unless credentials are already configured locally.
 
 1. Run the landing package's lint/type-check and production build.
 2. Start the local landing app and visually inspect desktop and narrow mobile layouts.
-3. Verify all three CTA locations are inert when
-   `NEXT_PUBLIC_ANDROID_DOWNLOAD_URL` is unset.
+3. Verify all three CTA locations are inert when `NEXT_PUBLIC_ANDROID_DOWNLOAD_URL` is unset.
 4. Verify all three CTA locations become a correctly labeled external link when the variable is a
    valid HTTPS URL.
 5. Check keyboard navigation, focus visibility, heading order, and reduced-motion behavior.
