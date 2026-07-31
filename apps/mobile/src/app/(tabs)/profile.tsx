@@ -1,14 +1,18 @@
 import { Image } from 'expo-image';
 import { Pressable, ScrollView } from 'react-native';
 import { useEffect, useMemo, useState } from 'react';
+import { useLingui } from '@lingui/react/macro';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LoginSheet } from '@/features/auth/LoginSheet';
 import { useAuth } from '@/features/auth/useAuth';
+import { useAppLocale } from '@/features/i18n/i18n-provider';
 
 export default function ProfileTab() {
   const [isLoginVisible, setIsLoginVisible] = useState(false);
+  const { locale, setLocale } = useAppLocale();
+  const { t } = useLingui();
   const {
     authError,
     bindError,
@@ -40,19 +44,31 @@ export default function ProfileTab() {
       contentInsetAdjustmentBehavior="automatic"
     >
       <ThemedView variant="card" style={{ gap: 8 }}>
-        <ThemedText variant="title">我的</ThemedText>
-        {!isLoaded ? <ThemedText variant="body">正在恢复登录状态…</ThemedText> : null}
+        <ThemedText variant="title">
+          {t({ id: 'mobile.profile.title', message: 'Profile' })}
+        </ThemedText>
+        {!isLoaded ? (
+          <ThemedText variant="body">
+            {t({ id: 'mobile.profile.restoring', message: 'Restoring sign-in state…' })}
+          </ThemedText>
+        ) : null}
         {isLoaded && !isSignedIn ? (
           <>
             <ThemedText variant="body">
-              匿名使用已开启。登录后可同步设备历史并跨设备访问壁纸。
+              {t({
+                id: 'mobile.profile.anonymous',
+                message:
+                  'You are using Lumina anonymously. Sign in to sync your history across devices.',
+              })}
             </ThemedText>
             <Pressable
               accessibilityRole="button"
               onPress={() => setIsLoginVisible(true)}
               style={{ alignSelf: 'flex-start', paddingVertical: 8 }}
             >
-              <ThemedText variant="subtitle">登录并同步</ThemedText>
+              <ThemedText variant="subtitle">
+                {t({ id: 'mobile.profile.signIn', message: 'Sign in and sync' })}
+              </ThemedText>
             </Pressable>
           </>
         ) : null}
@@ -69,13 +85,22 @@ export default function ProfileTab() {
               {user?.fullName ??
                 user?.username ??
                 user?.primaryEmailAddress?.emailAddress ??
-                '已登录'}
+                t({ id: 'mobile.profile.signedIn', message: 'Signed in' })}
             </ThemedText>
             <ThemedText variant="body">{user?.primaryEmailAddress?.emailAddress}</ThemedText>
             <ThemedText variant="caption">
-              {googleAccount ? `Google 已连接：${googleAccount.emailAddress}` : '已通过 Clerk 登录'}
+              {googleAccount
+                ? t({
+                    id: 'mobile.profile.googleConnected',
+                    message: `Google connected: ${googleAccount.emailAddress}`,
+                  })
+                : t({ id: 'mobile.profile.clerkConnected', message: 'Signed in with Clerk' })}
             </ThemedText>
-            {isSyncingHistory ? <ThemedText variant="caption">正在同步设备历史…</ThemedText> : null}
+            {isSyncingHistory ? (
+              <ThemedText variant="caption">
+                {t({ id: 'mobile.profile.syncing', message: 'Syncing device history…' })}
+              </ThemedText>
+            ) : null}
             {bindError ? (
               <ThemedText style={{ color: '#D83030' }} variant="caption">
                 {bindError.message}
@@ -86,10 +111,23 @@ export default function ProfileTab() {
               onPress={() => void signOut()}
               style={{ alignSelf: 'flex-start', paddingVertical: 8 }}
             >
-              <ThemedText variant="body">退出登录</ThemedText>
+              <ThemedText variant="body">
+                {t({ id: 'mobile.profile.signOut', message: 'Sign out' })}
+              </ThemedText>
             </Pressable>
           </>
         ) : null}
+      </ThemedView>
+      <ThemedView variant="card" style={{ gap: 8 }}>
+        <ThemedText variant="subtitle">
+          {t({ id: 'mobile.profile.language', message: 'Language' })}
+        </ThemedText>
+        <Pressable accessibilityRole="button" onPress={() => void setLocale('en')}>
+          <ThemedText variant="body">{locale === 'en' ? '✓ ' : ''}English</ThemedText>
+        </Pressable>
+        <Pressable accessibilityRole="button" onPress={() => void setLocale('zh-CN')}>
+          <ThemedText variant="body">{locale === 'zh-CN' ? '✓ ' : ''}简体中文</ThemedText>
+        </Pressable>
       </ThemedView>
       <LoginSheet
         error={authError}

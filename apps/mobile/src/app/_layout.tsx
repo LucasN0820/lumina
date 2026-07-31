@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'react-native';
 
 import { ApiTokenBridge } from '@/features/auth/ApiTokenBridge';
+import { MobileI18nProvider } from '@/features/i18n/i18n-provider';
 import { clerkTokenCache } from '@/lib/clerkTokenCache';
 import { queryClient } from '@/lib/queryClient';
 
@@ -20,18 +21,20 @@ export default function RootLayout() {
   const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
 
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={clerkTokenCache}>
-      <ApiTokenBridge />
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider value={theme}>
-          <Host colorScheme={colorScheme} style={{ flex: 1 }}>
-            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(tabs)" />
-            </Stack>
-          </Host>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </ClerkProvider>
+    <MobileI18nProvider>
+      <ClerkProvider publishableKey={publishableKey} tokenCache={clerkTokenCache}>
+        <ApiTokenBridge />
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider value={theme}>
+            <Host colorScheme={colorScheme} style={{ flex: 1 }}>
+              <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" />
+              </Stack>
+            </Host>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </ClerkProvider>
+    </MobileI18nProvider>
   );
 }

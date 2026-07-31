@@ -1,0 +1,178 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Language: zh-CN\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/components/android-cta.tsx
+msgid "common.androidCta"
+msgstr "下载 Android"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.closing.eyebrow"
+msgstr "你的屏幕，你的世界"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.closing.title"
+msgstr "让每次解锁，都遇见你喜欢的世界。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/components/device-preview.tsx
+msgid "landing.devicePreview.date"
+msgstr "周三 · 7月29日"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.feature.create.description"
+msgstr "从一句文字灵感开始，让色彩、质感和氛围逐渐清晰。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.feature.create.title"
+msgstr "把一句描述，变成一张壁纸。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.feature.edit.description"
+msgstr "选择已有图片并描述想要的变化，让熟悉的素材拥有新的表达。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.feature.edit.title"
+msgstr "从已有画面，继续向前。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.feature.keep.description"
+msgstr "把喜欢的作品保存到设备、分享给朋友，或留在作品库中继续使用。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.feature.keep.title"
+msgstr "保存、分享，也随时回来看看。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.feature.preview.description"
+msgstr "用贴近设备比例的预览检查构图，再决定如何应用到 Android。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.feature.preview.title"
+msgstr "先在屏幕里，看见最终效果。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.features.eyebrow"
+msgstr "你可以做到"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.features.summary"
+msgstr "围绕一张壁纸，保留从创作到应用真正需要的动作。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.features.title"
+msgstr "创作的每一步，都为你的屏幕而存在。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.footer.tagline"
+msgstr "Lumina — 为你而作的 AI 壁纸。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.hero.eyebrow"
+msgstr "AI 壁纸 · 为你而作"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.hero.note"
+msgstr "为 Android 而作"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.hero.summary"
+msgstr "从一句描述开始，创作、调整并预览一张真正属于你的壁纸。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.hero.title"
+msgstr "把想象留在屏幕上。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.nav.features"
+msgstr "功能"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.nav.language"
+msgstr "中文 / English"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.nav.workflow"
+msgstr "创作流程"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.skip"
+msgstr "跳到主要内容"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.workflow.apply.description"
+msgstr "在设备画框中确认效果，再保存、分享或应用到 Android 屏幕。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.workflow.apply.title"
+msgstr "预览并应用"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.workflow.describe.description"
+msgstr "写下颜色、光线与氛围，让一个念头成为壁纸的起点。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.workflow.describe.title"
+msgstr "描述灵感"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.workflow.eyebrow"
+msgstr "创作流程"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.workflow.refine.description"
+msgstr "继续描述变化，或从已有图片出发，把画面调整到更像你。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.workflow.refine.title"
+msgstr "细致调整"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.workflow.summary"
+msgstr "三个清晰的步骤，让灵感从文字走进每天都会看见的屏幕。"
+
+#. js-lingui-explicit-id
+#: apps/landing/src/app/[locale]/page.tsx
+msgid "landing.workflow.title"
+msgstr "从灵感，到每天看见的世界。"

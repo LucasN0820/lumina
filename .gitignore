@@ -48,4 +48,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Lingui compiled catalogs
+packages/i18n/locales/**/*.d.ts
+packages/i18n/locales/**/*.js
+packages/i18n/locales/**/*.ts
+
 example

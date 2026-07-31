@@ -1,0 +1,23 @@
+{
+  "name": "@lumina/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/locales.ts",
+    "./landing": "./src/landing.ts",
+    "./mobile": "./src/mobile.ts"
+  },
+  "scripts": {
+    "compile": "node scripts/lingui.mjs compile",
+    "extract": "node scripts/lingui.mjs extract"
+  },
+  "dependencies": {
+    "@lingui/core": "^6.0.0",
+    "@lingui/react": "^6.0.0"
+  },
+  "devDependencies": {
+    "@lingui/cli": "^6.6.0",
+    "@lingui/format-po": "^6.6.0"
+  }
+}
