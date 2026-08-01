@@ -1,0 +1,78 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+apps/server/prisma/generated/
+.vite/
+.vite-hooks/
+.superpowers/
+.worktrees/
+coverage/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Next.js
+apps/landing/.next/
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env
+.env.*
+!.env.example
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# Lingui compiled catalogs
+packages/i18n/locales/**/*.d.ts
+packages/i18n/locales/**/*.js
+packages/i18n/locales/**/*.ts
+
+example
+
+# Agent tooling is not required by EAS Build. The Claude skill entries are
+# Windows junctions, which cannot be recreated in EAS CLI's temporary archive.
+.agents/
+.claude/
+
+# EAS builds only the mobile workspace. Exclude VCS metadata, documentation,
+# editor settings, and unrelated applications from the upload and Bun install.
+.git
+.github/
+.vscode/
+docs/
+apps/landing/*
+!apps/landing/package.json
+apps/server/*
+!apps/server/package.json
+config/
+AGENTS.md
+CLAUDE.md
+README.md
+skills-lock.json
+vite.config.ts

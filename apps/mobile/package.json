@@ -10,9 +10,11 @@
     "ios": "expo run:ios",
     "prebuild": "expo prebuild --clean",
     "build": "expo export --platform all",
-    "eas:development": "bunx eas-cli@latest build --platform android --profile development",
-    "eas:preview": "bunx eas-cli@latest build --platform android --profile preview",
-    "eas:production": "bunx eas-cli@latest build --platform android --profile production",
+    "eas:init": "bunx eas-cli@latest init",
+    "eas:development": "bunx eas-cli@latest build --platform android --profile development --no-wait",
+    "eas:development:reuse": "bunx eas-cli@latest build:dev --platform android --profile development --skip-bundler",
+    "eas:preview": "bunx eas-cli@latest build --platform android --profile preview --no-wait",
+    "eas:production": "bunx eas-cli@latest build --platform android --profile production --no-wait",
     "test": "jest --runInBand"
   },
   "dependencies": {

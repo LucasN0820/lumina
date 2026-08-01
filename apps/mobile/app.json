@@ -52,6 +52,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e82e4540-2c65-4a81-a95b-5654cccbb4c4"
+      }
+    },
+    "owner": "lucas-beto"
   }
 }

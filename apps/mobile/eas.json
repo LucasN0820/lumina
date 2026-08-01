@@ -1,21 +1,34 @@
 {
   "cli": {
-    "version": ">= 16.0.0"
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "env": {
+        "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1",
+        "EAS_USE_CACHE": "1"
+      },
       "android": {
         "buildType": "apk"
       }
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1",
+        "EAS_USE_CACHE": "1"
+      },
       "android": {
         "buildType": "apk"
       }
     },
-    "production": {}
+    "production": {
+      "env": {
+        "EAS_USE_CACHE": "1"
+      }
+    }
   }
 }
