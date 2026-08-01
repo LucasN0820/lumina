@@ -1,13 +1,41 @@
+import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { create } from 'zustand';
 
 const anonymousDeviceIdKey = 'lumina.anonymous-device-id';
 
 let cachedDeviceId: string | undefined;
 let pendingDeviceId: Promise<string> | undefined;
 
+type AnonymousDeviceState = {
+  deviceId?: string;
+  error?: Error;
+  initialize: () => Promise<void>;
+  isLoading: boolean;
+};
+
+const useAnonymousDeviceStore = create<AnonymousDeviceState>()((set, get) => ({
+  initialize: async () => {
+    if (get().deviceId || get().isLoading) {
+      return;
+    }
+
+    set({ error: undefined, isLoading: true });
+    try {
+      set({ deviceId: await getAnonymousDeviceId(), isLoading: false });
+    } catch (reason) {
+      set({
+        error: reason instanceof Error ? reason : new Error('Unable to identify this device.'),
+        isLoading: false,
+      });
+    }
+  },
+  isLoading: false,
+}));
+
 function createAnonymousDeviceId(): string {
-  return `anonymous-${globalThis.crypto.randomUUID()}`;
+  return `anonymous-${Crypto.randomUUID()}`;
 }
 
 export async function getAnonymousDeviceId(): Promise<string> {
@@ -35,29 +63,14 @@ export async function getAnonymousDeviceId(): Promise<string> {
 }
 
 export function useAnonymousDeviceId() {
-  const [deviceId, setDeviceId] = useState<string>();
-  const [error, setError] = useState<Error>();
+  const deviceId = useAnonymousDeviceStore((state) => state.deviceId);
+  const error = useAnonymousDeviceStore((state) => state.error);
+  const isLoading = useAnonymousDeviceStore((state) => state.isLoading);
+  const initialize = useAnonymousDeviceStore((state) => state.initialize);
 
   useEffect(() => {
-    let active = true;
+    void initialize();
+  }, [initialize]);
 
-    void getAnonymousDeviceId().then(
-      (nextDeviceId) => {
-        if (active) {
-          setDeviceId(nextDeviceId);
-        }
-      },
-      (reason: unknown) => {
-        if (active) {
-          setError(reason instanceof Error ? reason : new Error('Unable to identify this device.'));
-        }
-      },
-    );
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  return { deviceId, error, isLoading: !deviceId && !error };
+  return { deviceId, error, isLoading: isLoading || (!deviceId && !error) };
 }

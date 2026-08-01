@@ -3,6 +3,7 @@ import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 
 import { WallpaperPreview, type WallpaperPreviewMode } from '@/components/WallpaperPreview';
 import { ThemedText } from '@/components/themed-text';
+import { AppIcon } from '@/components/ui/app-icon';
 import { useTheme } from '@/hooks/use-theme';
 import type { WallpaperListItem } from '@/lib/api';
 
@@ -29,14 +30,19 @@ export function WallpaperDetail({
 
   return (
     <ScrollView
-      contentContainerStyle={{ alignItems: 'center', gap: 16, padding: 24 }}
+      contentContainerStyle={{ alignItems: 'center', gap: 18, padding: 20 }}
       contentInsetAdjustmentBehavior="automatic"
     >
       <View style={{ alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Pressable accessibilityRole="button" onPress={onClose} testID="close-wallpaper-detail">
-          <ThemedText style={{ color: theme.accent }} variant="body">
-            返回壁纸库
-          </ThemedText>
+        <Pressable
+          accessibilityLabel="返回壁纸库"
+          accessibilityRole="button"
+          onPress={onClose}
+          style={{ alignItems: 'center', flexDirection: 'row', gap: 6, paddingVertical: 6 }}
+          testID="close-wallpaper-detail"
+        >
+          <AppIcon color={theme.text} name="arrow-left" />
+          <ThemedText variant="body">壁纸库</ThemedText>
         </Pressable>
         <ThemedText style={{ color: theme.mutedText }} variant="caption">
           {formatMode(wallpaper.mode)}
@@ -83,7 +89,7 @@ export function WallpaperDetail({
                 backgroundColor: selected ? theme.accent : theme.surface,
                 borderColor: selected ? theme.accent : theme.border,
                 borderCurve: 'continuous',
-                borderRadius: 999,
+                borderRadius: 9,
                 borderWidth: 1,
                 paddingHorizontal: 16,
                 paddingVertical: 9,
@@ -91,7 +97,7 @@ export function WallpaperDetail({
               testID={`detail-preview-mode-${mode}`}
             >
               <ThemedText
-                style={{ color: selected ? theme.surface : theme.text }}
+                style={{ color: selected ? theme.accentForeground : theme.text }}
                 variant="caption"
               >
                 {label}

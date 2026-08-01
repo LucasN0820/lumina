@@ -1,26 +1,30 @@
-import { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { ErrorState } from '@/components/feedback';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Button } from '@/components/ui/button';
+import { SectionHeading } from '@/components/ui/section-heading';
+import { ApplySheet } from '@/features/apply/ApplySheet';
 import { PresetManager } from '@/features/library/PresetManager';
 import { LibraryFilters } from '@/features/library/library-filters';
 import { WallpaperDetail } from '@/features/library/WallpaperDetail';
 import { WallpaperGrid } from '@/features/library/WallpaperGrid';
 import { useWallpapers } from '@/features/library/use-wallpapers';
-import { useTheme } from '@/hooks/use-theme';
-import type { WallpaperPreviewMode } from '@/components/WallpaperPreview';
-import type { WallpaperListItem } from '@/lib/api';
+import { useLibraryStore } from '@/stores/library-store';
 
 export default function LibraryTab() {
   const router = useRouter();
-  const theme = useTheme();
-  const [selectedWallpaper, setSelectedWallpaper] = useState<WallpaperListItem>();
-  const [previewMode, setPreviewMode] = useState<WallpaperPreviewMode>('lock-screen');
-  const [selectedCategory, setSelectedCategory] = useState<string>();
-  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const selectedWallpaper = useLibraryStore((state) => state.selectedWallpaper);
+  const isApplySheetVisible = useLibraryStore((state) => state.isApplySheetVisible);
+  const previewMode = useLibraryStore((state) => state.previewMode);
+  const selectedCategory = useLibraryStore((state) => state.selectedCategory);
+  const favoritesOnly = useLibraryStore((state) => state.favoritesOnly);
+  const closeWallpaper = useLibraryStore((state) => state.closeWallpaper);
+  const selectWallpaper = useLibraryStore((state) => state.selectWallpaper);
+  const setApplySheetVisible = useLibraryStore((state) => state.setApplySheetVisible);
+  const setPreviewMode = useLibraryStore((state) => state.setPreviewMode);
+  const setSelectedCategory = useLibraryStore((state) => state.setSelectedCategory);
+  const setFavoritesOnly = useLibraryStore((state) => state.setFavoritesOnly);
   const wallpapers = useWallpapers({ category: selectedCategory, favoritesOnly });
   const error = wallpapers.deviceIdError ?? wallpapers.error ?? wallpapers.favoriteError;
   const categories = [
@@ -34,7 +38,23 @@ export default function LibraryTab() {
   if (selectedWallpaper) {
     return (
       <WallpaperDetail
-        onClose={() => setSelectedWallpaper(undefined)}
+        actionSlot={
+          selectedWallpaper.resultImageUrl ? (
+            <>
+              <Button
+                icon="download"
+                label="应用、保存或分享"
+                onPress={() => setApplySheetVisible(true)}
+              />
+              <ApplySheet
+                imageUrl={selectedWallpaper.resultImageUrl}
+                onDismiss={() => setApplySheetVisible(false)}
+                visible={isApplySheetVisible}
+              />
+            </>
+          ) : undefined
+        }
+        onClose={closeWallpaper}
         onModeChange={setPreviewMode}
         previewMode={previewMode}
         wallpaper={selectedWallpaper}
@@ -52,12 +72,11 @@ export default function LibraryTab() {
       <WallpaperGrid
         header={
           <View style={{ gap: 12 }}>
-            <ThemedView variant="card" style={{ gap: 6 }}>
-              <ThemedText variant="title">壁纸库</ThemedText>
-              <ThemedText style={{ color: theme.mutedText }} variant="body">
-                你的生成记录会按当前设备保存，可随时预览。
-              </ThemedText>
-            </ThemedView>
+            <SectionHeading
+              description="所有生成结果都会自动归档。收藏、预览，随时重新使用。"
+              eyebrow="Archive"
+              title="你的壁纸库"
+            />
             <LibraryFilters
               categories={categories}
               favoritesOnly={favoritesOnly}
@@ -81,8 +100,7 @@ export default function LibraryTab() {
         }}
         onRefresh={() => void wallpapers.refetch()}
         onSelect={(wallpaper) => {
-          setPreviewMode('lock-screen');
-          setSelectedWallpaper(wallpaper);
+          selectWallpaper(wallpaper);
         }}
         onToggleFavorite={wallpapers.toggleFavorite}
       />

@@ -2,6 +2,7 @@ import { Modal, Pressable, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useTheme } from '@/hooks/use-theme';
 
 import { GoogleSignInButton } from './GoogleSignInButton';
 
@@ -20,32 +21,54 @@ export function LoginSheet({
   onGoogleSignIn,
   visible,
 }: LoginSheetProps) {
+  const theme = useTheme();
+
   return (
-    <Modal animationType="slide" onRequestClose={onDismiss} transparent visible={visible}>
+    <Modal
+      animationType="slide"
+      onRequestClose={onDismiss}
+      statusBarTranslucent
+      transparent
+      visible={visible}
+    >
       <View
         style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.45)',
+          backgroundColor: theme.overlay,
           flex: 1,
           justifyContent: 'flex-end',
-          padding: 16,
         }}
       >
+        <Pressable accessibilityLabel="关闭登录窗口" onPress={onDismiss} style={{ flex: 1 }} />
         <ThemedView
           variant="card"
-          style={{ borderBottomLeftRadius: 28, borderBottomRightRadius: 28, gap: 16 }}
+          style={{
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0,
+            borderLeftWidth: 0,
+            borderRightWidth: 0,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            gap: 18,
+            padding: 24,
+            paddingBottom: 36,
+          }}
         >
-          <ThemedText variant="subtitle">登录以同步你的壁纸</ThemedText>
-          <ThemedText variant="body">
-            登录后会保留此设备已有的生成历史，并可在新设备上继续使用。
-          </ThemedText>
+          <View style={{ gap: 6 }}>
+            <ThemedText variant="title">连接你的创作空间</ThemedText>
+            <ThemedText style={{ color: theme.mutedText }} variant="body">
+              使用 Google 登录后，此设备的生成历史会安全合并到你的账号。
+            </ThemedText>
+          </View>
           {error ? (
-            <ThemedText style={{ color: '#D83030' }} variant="caption">
+            <ThemedText style={{ color: theme.error }} variant="caption">
               {error.message}
             </ThemedText>
           ) : null}
           <GoogleSignInButton isLoading={isLoading} onPress={onGoogleSignIn} />
           <Pressable accessibilityRole="button" onPress={onDismiss} style={{ alignSelf: 'center' }}>
-            <ThemedText variant="caption">暂不登录</ThemedText>
+            <ThemedText style={{ color: theme.mutedText }} variant="caption">
+              暂不登录
+            </ThemedText>
           </Pressable>
         </ThemedView>
       </View>

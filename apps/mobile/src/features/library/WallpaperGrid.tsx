@@ -4,6 +4,7 @@ import { ActivityIndicator, FlatList, Pressable, View } from 'react-native';
 
 import { EmptyState, Skeleton } from '@/components/feedback';
 import { ThemedText } from '@/components/themed-text';
+import { AppIcon } from '@/components/ui/app-icon';
 import { useTheme } from '@/hooks/use-theme';
 import type { WallpaperListItem } from '@/lib/api';
 
@@ -35,7 +36,7 @@ export function WallpaperGrid({
   return (
     <FlatList
       columnWrapperStyle={items.length > 0 ? { gap: 12 } : undefined}
-      contentContainerStyle={{ gap: 12, padding: 16, paddingBottom: 32 }}
+      contentContainerStyle={{ gap: 16, paddingHorizontal: 20, paddingVertical: 24 }}
       contentInsetAdjustmentBehavior="automatic"
       data={items}
       keyExtractor={(item) => item.id}
@@ -115,7 +116,7 @@ function WallpaperGridItem({
           backgroundColor: theme.card,
           borderColor: theme.border,
           borderCurve: 'continuous',
-          borderRadius: 18,
+          borderRadius: 12,
           borderWidth: 1,
           overflow: 'hidden',
         }}
@@ -151,12 +152,11 @@ function WallpaperGridItem({
           hitSlop={8}
           testID={`favorite-wallpaper-${item.id}`}
         >
-          <ThemedText
-            style={{ color: item.favorite ? theme.accent : theme.mutedText }}
-            variant="body"
-          >
-            {item.favorite ? '♥' : '♡'}
-          </ThemedText>
+          <AppIcon
+            color={item.favorite ? theme.text : theme.mutedText}
+            name={item.favorite ? 'favorite-filled' : 'favorite'}
+            size={18}
+          />
         </Pressable>
       </View>
     </Pressable>

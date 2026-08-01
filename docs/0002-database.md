@@ -36,16 +36,30 @@
 - `db.ts` 用全局单例避免 dev 热重载重复连接。
 - `Wallpaper.deviceId`
   是未登录 MVP 设备历史的可空归属字段；0006 已为其建索引，0013 登录后可将其绑定到 `userId`。
-- 脚本：`prisma migrate dev`、`prisma generate`、`prisma db seed`（在 `package.json` 配
-  `prisma.seed`）。
+- 根目录提供 `db:generate`、`db:migrate`、`db:deploy`、`db:reset`、`db:seed`、
+  `db:push`、`db:status`、`db:studio`；命令在 `apps/server` 中运行并读取其 `.env`。
+- `db:migrate` 用于本地创建并应用迁移；`db:deploy` 只应用已有迁移，供部署使用； `db:reset`
+  会清空数据库并重新应用迁移和种子数据，执行前保留 Prisma 的交互确认。
 
 ## 独立测试
 
 - 本地起 Postgres（Docker 或本机），配置 `DATABASE_URL`。
-- `npx prisma migrate dev` 生成迁移并建表；`npx prisma db seed` 写入预设。
-- `npx prisma studio` 查看 `preset` 表确有种子数据，列名为 snake_case，每表含
+- 在根目录运行 `bun run db:migrate -- --name <migration-name>` 生成迁移并建表； `bun run db:seed`
+  写入预设。
+- `bun run db:studio` 查看 `preset` 表确有种子数据，列名为 snake_case，每表含
   `created_at/updated_at`。
 - 写一个一次性脚本 `prisma.preset.findMany()` 能查到数据。
+
+## 生产数据库迁移
+
+- `.github/workflows/deploy-database.yml` 仅支持从 GitHub Actions 手动触发，并只执行
+  `bun run db:deploy` 应用已提交的迁移。
+- 在仓库 `Settings > Environments` 创建 `production` Environment，为其配置 `DATABASE_URL`
+  Secret；建议限制部署分支为默认分支并启用 Required reviewers。
+- 合并 schema 与 migration 到默认分支后，打开
+  `Actions > Deploy production database schema`，选择默认分支，输入 `deploy-production` 后运行。
+- 工作流不会执行 `db:reset`、`db:push` 或
+  `db:seed`；生产迁移使用固定并发组，避免多个迁移同时修改数据库。
 
 ## 完成标准 (DoD)
 

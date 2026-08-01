@@ -28,7 +28,7 @@ Hono），提供统一配置、日志、错误处理、CORS 与健康检查，�
 - 依赖：`hono`、`@hono/node-server`、`zod`、`tsx`、`typescript`、`@types/node`。
 - `env.ts` 校验：
   - 基础：`PORT`、`DATABASE_URL`
-  - Clerk：`CLERK_SECRET_KEY`、`CLERK_PUBLISHABLE_KEY`、`CLERK_JWT_ISSUER`（或 JWKS 配置）
+  - Clerk：`CLERK_SECRET_KEY`、`CLERK_PUBLISHABLE_KEY`
   - R2：`R2_ACCOUNT_ID`、`R2_BUCKET`、`R2_ACCESS_KEY_ID`、`R2_SECRET_ACCESS_KEY`、`R2_ENDPOINT`、`R2_PUBLIC_BASE_URL`（可选）
   - Codex：`CODEX_PROVIDER_ENABLED`、`CODEX_MODEL`、`CODEX_WORKDIR`、`CODEX_IMAGE_TIMEOUT_MS`
 - `.env.example` 列全所有 key（值留空），`.env` 加入 `.gitignore`。

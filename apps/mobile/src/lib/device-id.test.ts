@@ -1,6 +1,11 @@
+import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
 import { getAnonymousDeviceId } from './device-id';
+
+jest.mock('expo-crypto', () => ({
+  randomUUID: jest.fn(() => '12345678-1234-4234-8234-123456789abc'),
+}));
 
 jest.mock('expo-secure-store', () => ({
   getItemAsync: jest.fn(),
@@ -15,8 +20,9 @@ describe('getAnonymousDeviceId', () => {
     const first = await getAnonymousDeviceId();
     const second = await getAnonymousDeviceId();
 
-    expect(first).toMatch(/^anonymous-/);
+    expect(first).toBe('anonymous-12345678-1234-4234-8234-123456789abc');
     expect(second).toBe(first);
+    expect(Crypto.randomUUID).toHaveBeenCalledTimes(1);
     expect(getItemAsync).toHaveBeenCalledTimes(1);
     expect(setItemAsync).toHaveBeenCalledWith('lumina.anonymous-device-id', first);
   });

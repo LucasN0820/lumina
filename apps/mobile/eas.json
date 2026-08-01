@@ -5,6 +5,7 @@
   },
   "build": {
     "development": {
+      "bun": "1.3.11",
       "developmentClient": true,
       "distribution": "internal",
       "env": {
@@ -16,6 +17,7 @@
       }
     },
     "preview": {
+      "bun": "1.3.11",
       "distribution": "internal",
       "env": {
         "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1",
@@ -26,6 +28,7 @@
       }
     },
     "production": {
+      "bun": "1.3.11",
       "env": {
         "EAS_USE_CACHE": "1"
       }

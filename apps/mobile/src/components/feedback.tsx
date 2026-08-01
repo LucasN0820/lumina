@@ -1,13 +1,25 @@
-import { ActivityIndicator, Pressable, type DimensionValue, View } from 'react-native';
+import { ActivityIndicator, type DimensionValue, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
+import { AppIcon } from '@/components/ui/app-icon';
+import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/use-theme';
 
 export function LoadingState({ label = '加载中…' }: { label?: string }) {
   const theme = useTheme();
 
   return (
-    <View style={{ alignItems: 'center', flexDirection: 'row', gap: 8 }}>
+    <View
+      style={{
+        alignItems: 'center',
+        backgroundColor: theme.muted,
+        borderCurve: 'continuous',
+        borderRadius: 10,
+        flexDirection: 'row',
+        gap: 10,
+        padding: 12,
+      }}
+    >
       <ActivityIndicator color={theme.accent} />
       <ThemedText selectable variant="body">
         {label}
@@ -20,16 +32,22 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   const theme = useTheme();
 
   return (
-    <View style={{ gap: 8 }}>
-      <ThemedText selectable style={{ color: theme.error }} variant="body">
+    <View
+      style={{
+        backgroundColor: theme.muted,
+        borderColor: theme.border,
+        borderCurve: 'continuous',
+        borderRadius: 10,
+        borderWidth: 1,
+        gap: 10,
+        padding: 12,
+      }}
+    >
+      <ThemedText selectable style={{ color: theme.error }} variant="caption">
         {message}
       </ThemedText>
       {onRetry ? (
-        <Pressable accessibilityRole="button" onPress={onRetry} style={{ alignSelf: 'flex-start' }}>
-          <ThemedText style={{ color: theme.accent }} variant="body">
-            重试
-          </ThemedText>
-        </Pressable>
+        <Button icon="refresh" label="重试" onPress={onRetry} variant="secondary" />
       ) : null}
     </View>
   );
@@ -51,7 +69,19 @@ export function EmptyState({
   const theme = useTheme();
 
   return (
-    <View style={{ alignItems: 'center', gap: 10, paddingVertical: 32 }}>
+    <View style={{ alignItems: 'center', gap: 12, paddingHorizontal: 24, paddingVertical: 48 }}>
+      <View
+        style={{
+          alignItems: 'center',
+          backgroundColor: theme.muted,
+          borderRadius: 999,
+          height: 52,
+          justifyContent: 'center',
+          width: 52,
+        }}
+      >
+        <AppIcon color={theme.mutedText} name="image" size={24} />
+      </View>
       <ThemedText selectable variant="subtitle">
         {title}
       </ThemedText>
@@ -59,15 +89,12 @@ export function EmptyState({
         {description}
       </ThemedText>
       {onAction && actionLabel ? (
-        <Pressable
-          accessibilityRole="button"
+        <Button
+          icon="sparkles"
+          label={actionLabel}
           onPress={onAction}
           testID={actionTestId ?? 'empty-state-action'}
-        >
-          <ThemedText style={{ color: theme.accent }} variant="body">
-            {actionLabel}
-          </ThemedText>
-        </Pressable>
+        />
       ) : null}
     </View>
   );
@@ -86,7 +113,7 @@ export function Skeleton({
     <View
       accessibilityLabel="加载占位"
       style={{
-        backgroundColor: theme.border,
+        backgroundColor: theme.muted,
         borderCurve: 'continuous',
         borderRadius: 8,
         height,

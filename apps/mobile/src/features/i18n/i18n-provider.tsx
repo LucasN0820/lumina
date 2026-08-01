@@ -1,67 +1,45 @@
 import { I18nProvider } from '@lingui/react';
-import { createMobileI18n, mobileLocaleStorageKey } from '@lumina/i18n/mobile';
-import { defaultLocale, resolveLocale, type AppLocale } from '@lumina/i18n';
-import { getLocales } from 'expo-localization';
-import * as SecureStore from 'expo-secure-store';
-import { createContext, use, useEffect, useState, type ReactNode } from 'react';
-import type { I18n } from '@lingui/core';
+import { useEffect, type ReactNode } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 
-type LocaleContextValue = {
-  locale: AppLocale;
-  setLocale: (locale: AppLocale) => Promise<void>;
-};
-
-const LocaleContext = createContext<LocaleContextValue | undefined>(undefined);
+import { useLocaleStore } from '@/stores/locale-store';
 
 export function MobileI18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setActiveLocale] = useState<AppLocale>(defaultLocale);
-  const [i18n, setI18n] = useState<I18n | null>(null);
+  const i18n = useLocaleStore((state) => state.i18n);
+  const initializationError = useLocaleStore((state) => state.initializationError);
+  const initialize = useLocaleStore((state) => state.initialize);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function initialize() {
-      const storedLocale = await SecureStore.getItemAsync(mobileLocaleStorageKey);
-      const nextLocale = resolveLocale(storedLocale ?? getLocales()[0].languageTag);
-      const nextI18n = await createMobileI18n(nextLocale);
-
-      if (isMounted) {
-        setActiveLocale(nextLocale);
-        setI18n(nextI18n);
-      }
-    }
-
     void initialize();
+  }, [initialize]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  async function setLocale(nextLocale: AppLocale) {
-    const nextI18n = await createMobileI18n(nextLocale);
-    await SecureStore.setItemAsync(mobileLocaleStorageKey, nextLocale);
-    setActiveLocale(nextLocale);
-    setI18n(nextI18n);
+  if (initializationError) {
+    return (
+      <View
+        style={{ alignItems: 'center', flex: 1, gap: 8, justifyContent: 'center', padding: 24 }}
+      >
+        <Text style={{ color: '#18181B', fontSize: 16, fontWeight: '600' }}>Lumina 无法初始化</Text>
+        <Text selectable style={{ color: '#71717A', textAlign: 'center' }}>
+          {initializationError.message}
+        </Text>
+      </View>
+    );
   }
 
   if (!i18n) {
-    return null;
+    return (
+      <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+        <ActivityIndicator color="#18181B" />
+      </View>
+    );
   }
 
-  return (
-    <LocaleContext value={{ locale, setLocale }}>
-      <I18nProvider i18n={i18n}>{children}</I18nProvider>
-    </LocaleContext>
-  );
+  return <I18nProvider i18n={i18n}>{children}</I18nProvider>;
 }
 
-export function useAppLocale(): LocaleContextValue {
-  const context = use(LocaleContext);
+export function useAppLocale() {
+  const locale = useLocaleStore((state) => state.locale);
+  const setLocale = useLocaleStore((state) => state.setLocale);
 
-  if (!context) {
-    throw new Error('useAppLocale must be used inside MobileI18nProvider.');
-  }
-
-  return context;
+  return { locale, setLocale };
 }

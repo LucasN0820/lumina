@@ -70,6 +70,11 @@ apps/landing/*
 !apps/landing/package.json
 apps/server/*
 !apps/server/package.json
+# Bun runs lifecycle scripts for every included workspace during EAS installs.
+# Keep the minimal Prisma inputs required by @lumina/server's postinstall.
+!apps/server/prisma.config.ts
+!apps/server/prisma
+!apps/server/prisma/schema.prisma
 config/
 AGENTS.md
 CLAUDE.md

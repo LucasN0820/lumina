@@ -41,12 +41,12 @@ export function PresetGrid({ onSelect, selectedPresetId }: PresetGridProps) {
                   backgroundColor: theme.card,
                   borderColor: selected ? theme.accent : theme.border,
                   borderCurve: 'continuous',
-                  borderRadius: 16,
+                  borderRadius: 12,
                   borderWidth: selected ? 2 : 1,
                   gap: 8,
                   overflow: 'hidden',
-                  padding: 8,
-                  width: '47%',
+                  padding: 7,
+                  width: '48%',
                 }}
                 testID={`preset-${preset.id}`}
               >
@@ -55,7 +55,7 @@ export function PresetGrid({ onSelect, selectedPresetId }: PresetGridProps) {
                     accessibilityLabel={`${preset.name} preset cover`}
                     contentFit="cover"
                     source={preset.coverImageUrl}
-                    style={{ borderRadius: 10, height: 72, width: '100%' }}
+                    style={{ borderRadius: 8, height: 96, width: '100%' }}
                   />
                 ) : null}
                 <ThemedText numberOfLines={1} variant="body">

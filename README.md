@@ -33,4 +33,5 @@ vp staged
 
 The mobile workspace can also be run directly with `bun --filter=@lumina/mobile run android`. The
 server health endpoint is available at `http://localhost:3000/health` when the server runs. The
-landing page can be run directly with `bun --filter=@lumina/landing run dev`.
+landing page can be run directly with `bun --filter=@lumina/landing run dev` and is available at
+`http://localhost:3001` in development.

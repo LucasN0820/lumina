@@ -1,11 +1,6 @@
-import { useState } from 'react';
 import { ScrollView } from 'react-native';
 
-import {
-  ChipsSelector,
-  type CreateChipField,
-  type CreateChipValues,
-} from '@/features/create/chips-selector';
+import { ChipsSelector, type CreateChipField } from '@/features/create/chips-selector';
 import { GenerateButton } from '@/features/create/generate-button';
 import { IdeaInput } from '@/features/create/idea-input';
 import { PresetGrid } from '@/features/create/preset-grid';
@@ -15,23 +10,28 @@ import { ExistingImageEditor } from '@/features/edit/ExistingImageEditor';
 import { ErrorState, LoadingState } from '@/components/feedback';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { SectionHeading } from '@/components/ui/section-heading';
 import { useGenerate } from '@/hooks/use-generate';
 import { useDeviceSize } from '@/lib/useDeviceSize';
-import type { GenerationQuality } from '@/lib/api';
+import { useCreateStore } from '@/stores/create-store';
 
 export default function CreateTab() {
   const deviceSize = useDeviceSize();
-  const [idea, setIdea] = useState('');
-  const [presetId, setPresetId] = useState<string>();
-  const [chipValues, setChipValues] = useState<CreateChipValues>({});
-  const [quality, setQuality] = useState<GenerationQuality>('draft');
+  const idea = useCreateStore((state) => state.idea);
+  const presetId = useCreateStore((state) => state.presetId);
+  const chipValues = useCreateStore((state) => state.chipValues);
+  const quality = useCreateStore((state) => state.quality);
+  const setIdea = useCreateStore((state) => state.setIdea);
+  const setPresetId = useCreateStore((state) => state.setPresetId);
+  const setChip = useCreateStore((state) => state.setChip);
+  const setQuality = useCreateStore((state) => state.setQuality);
   const generation = useGenerate();
   const trimmedIdea = idea.trim();
   const generationSucceeded =
     generation.job?.status === 'succeeded' && Boolean(generation.job.resultImageUrl);
 
   function updateChip(field: CreateChipField, value: string | undefined) {
-    setChipValues((current) => ({ ...current, [field]: value }));
+    setChip(field, value);
   }
 
   function generateWallpaper() {
@@ -47,19 +47,21 @@ export default function CreateTab() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ gap: 16, padding: 24 }}
+      contentContainerStyle={{ gap: 18, paddingHorizontal: 20, paddingVertical: 24 }}
       contentInsetAdjustmentBehavior="automatic"
+      keyboardShouldPersistTaps="handled"
     >
       {generationSucceeded && generation.job ? (
         <ResultView job={generation.job} onRegenerate={generation.regenerate} />
       ) : (
         <>
-          <ThemedView variant="card" style={{ gap: 8 }}>
-            <ThemedText variant="title">开始创作</ThemedText>
-            <ThemedText variant="body">选择预设，补充灵感，生成一张适合你屏幕的壁纸。</ThemedText>
-          </ThemedView>
+          <SectionHeading
+            description="选择视觉方向，写下此刻的灵感。其余交给 Lumina。"
+            eyebrow="Lumina studio"
+            title="把一个念头，变成你的壁纸"
+          />
 
-          <ThemedView variant="card" style={{ gap: 16 }}>
+          <ThemedView variant="card" style={{ gap: 20 }}>
             <PresetGrid onSelect={setPresetId} selectedPresetId={presetId} />
             <ChipsSelector onChange={updateChip} values={chipValues} />
             <IdeaInput onChangeText={setIdea} value={idea} />
@@ -82,13 +84,13 @@ export default function CreateTab() {
 
           <ExistingImageEditor deviceSize={deviceSize} />
 
-          <ThemedView variant="card" style={{ gap: 8 }}>
-            <ThemedText variant="subtitle">推荐出图尺寸</ThemedText>
-            <ThemedText variant="body">
+          <ThemedView
+            variant="card"
+            style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <ThemedText variant="caption">为此设备优化</ThemedText>
+            <ThemedText style={{ fontVariant: ['tabular-nums'] }} variant="label">
               {deviceSize.targetWidth} × {deviceSize.targetHeight}
-            </ThemedText>
-            <ThemedText variant="caption">
-              当前屏幕像素：{deviceSize.pixelWidth} × {deviceSize.pixelHeight}
             </ThemedText>
           </ThemedView>
         </>

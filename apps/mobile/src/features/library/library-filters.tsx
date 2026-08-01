@@ -70,14 +70,17 @@ function FilterChip({
         backgroundColor: selected ? theme.accent : theme.surface,
         borderColor: selected ? theme.accent : theme.border,
         borderCurve: 'continuous',
-        borderRadius: 999,
+        borderRadius: 9,
         borderWidth: 1,
         paddingHorizontal: 12,
         paddingVertical: 8,
       }}
       testID={`library-filter-${label}`}
     >
-      <ThemedText style={{ color: selected ? theme.surface : theme.text }} variant="caption">
+      <ThemedText
+        style={{ color: selected ? theme.accentForeground : theme.text }}
+        variant="caption"
+      >
         {label}
       </ThemedText>
     </Pressable>

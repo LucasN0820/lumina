@@ -1,13 +1,15 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
+import { useEffect } from 'react';
+import { TextInput, View } from 'react-native';
 
 import { ErrorState, LoadingState } from '@/components/feedback';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Button } from '@/components/ui/button';
 import { ResultView } from '@/features/create/result-view';
 import { useGenerate } from '@/hooks/use-generate';
 import { useTheme } from '@/hooks/use-theme';
+import { useCreateStore } from '@/stores/create-store';
 import type { WallpaperSize } from '@/lib/useDeviceSize';
 
 import { EditModePicker, type ExistingImageMode } from './EditModePicker';
@@ -19,10 +21,13 @@ type ExistingImageEditorProps = {
 };
 
 export function ExistingImageEditor({ deviceSize }: ExistingImageEditorProps) {
-  const [instruction, setInstruction] = useState('');
-  const [mode, setMode] = useState<ExistingImageMode>();
-  const [sourceImageUrl, setSourceImageUrl] = useState<string>();
-  const generation = useGenerate();
+  const instruction = useCreateStore((state) => state.instruction);
+  const mode = useCreateStore((state) => state.mode);
+  const sourceImageUrl = useCreateStore((state) => state.sourceImageUrl);
+  const setInstruction = useCreateStore((state) => state.setInstruction);
+  const setMode = useCreateStore((state) => state.setMode);
+  const setSourceImageUrl = useCreateStore((state) => state.setSourceImageUrl);
+  const generation = useGenerate('edit');
   const queryClient = useQueryClient();
   const theme = useTheme();
   const hasResult =
@@ -67,11 +72,12 @@ export function ExistingImageEditor({ deviceSize }: ExistingImageEditorProps) {
           <ThemedText style={{ color: theme.mutedText }} variant="body">
             现在可以在上方创作区的预设列表中选择它，再次生成壁纸。
           </ThemedText>
-          <Pressable accessibilityRole="button" onPress={generation.regenerate}>
-            <ThemedText style={{ color: theme.accent }} variant="body">
-              再提取一种风格
-            </ThemedText>
-          </Pressable>
+          <Button
+            icon="refresh"
+            label="再提取一种风格"
+            onPress={generation.regenerate}
+            variant="secondary"
+          />
         </ThemedView>
       );
     }
@@ -93,7 +99,7 @@ export function ExistingImageEditor({ deviceSize }: ExistingImageEditorProps) {
             style={{
               borderColor: theme.border,
               borderCurve: 'continuous',
-              borderRadius: 12,
+              borderRadius: 11,
               borderWidth: 1,
               color: theme.text,
               minHeight: 80,
@@ -140,25 +146,5 @@ function ActionButton({
   label: string;
   onPress: () => void;
 }) {
-  const theme = useTheme();
-  return (
-    <Pressable
-      accessibilityRole="button"
-      disabled={disabled}
-      onPress={onPress}
-      style={{
-        alignSelf: 'flex-start',
-        backgroundColor: theme.accent,
-        borderCurve: 'continuous',
-        borderRadius: 14,
-        opacity: disabled ? 0.6 : 1,
-        paddingHorizontal: 16,
-        paddingVertical: 11,
-      }}
-    >
-      <ThemedText style={{ color: theme.surface }} variant="body">
-        {label}
-      </ThemedText>
-    </Pressable>
-  );
+  return <Button disabled={disabled} label={label} onPress={onPress} />;
 }

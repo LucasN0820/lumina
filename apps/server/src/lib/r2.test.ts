@@ -65,12 +65,13 @@ describe('R2Storage', () => {
     expect(command.input).toMatchObject({
       Body: image,
       Bucket: 'lumina-images',
+      ContentLength: image.byteLength,
       ContentType: 'image/png',
       Key: 'wallpapers/202607/image.png',
     });
   });
 
-  it('streams a remote image into a put command', async () => {
+  it('buffers a remote image so R2 receives a known content length', async () => {
     const { client, send } = createClient();
     const fetch = vi
       .fn<typeof globalThis.fetch>()
@@ -90,7 +91,9 @@ describe('R2Storage', () => {
     const command = send.mock.calls[0]?.[0];
     expect(command).toBeInstanceOf(PutObjectCommand);
     expect(command.input).toMatchObject({
+      Body: Buffer.from('image bytes'),
       Bucket: 'lumina-images',
+      ContentLength: Buffer.byteLength('image bytes'),
       ContentType: 'image/webp',
       Key: 'wallpapers/202607/image.webp',
     });
@@ -114,7 +117,29 @@ describe('R2Storage', () => {
       throw new Error('Expected the upload to send a PutObjectCommand.');
     }
     expect(command.input.Body).toBeTruthy();
+    expect(command.input.ContentLength).toBe(Buffer.byteLength('image bytes'));
     await rm(folder, { force: true, recursive: true });
+  });
+
+  it('rejects an oversized remote image before uploading it', async () => {
+    const { client, send } = createClient();
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(
+      new Response('too large', {
+        headers: { 'content-length': String(65 * 1024 * 1024) },
+      }),
+    );
+    const storage = createR2Storage(config, { client, fetch });
+
+    await expect(
+      storage.uploadFromUrl(
+        'https://provider.example.com/oversized.png',
+        'wallpapers/202607/oversized.png',
+      ),
+    ).rejects.toMatchObject({
+      code: 'R2_DOWNLOAD_FAILED',
+      message: 'The remote image exceeds the 64 MiB limit.',
+    });
+    expect(send).not.toHaveBeenCalled();
   });
 
   it('uses a signed GET URL for private buckets and signs browser PUT uploads', async () => {

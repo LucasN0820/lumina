@@ -99,6 +99,7 @@ export type ApiClientOptions = {
   baseUrl?: string;
   fetchImpl?: FetchLike;
   getToken?: ApiTokenProvider;
+  timeoutMs?: number;
 };
 
 export type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
@@ -126,6 +127,7 @@ export function createApiClient({
   baseUrl,
   fetchImpl = defaultFetch,
   getToken = async () => defaultTokenProvider?.(),
+  timeoutMs = 20_000,
 }: ApiClientOptions = {}) {
   return async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     if (!baseUrl) {
@@ -138,10 +140,37 @@ export function createApiClient({
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }
-    const response = await fetchImpl(`${baseUrl}${path.startsWith('/') ? path : `/${path}`}`, {
-      ...init,
-      headers,
-    });
+    const controller = new AbortController();
+    const abortFromCaller = () => controller.abort();
+    init?.signal?.addEventListener('abort', abortFromCaller, { once: true });
+    const timeout = setTimeout(() => {
+      controller.abort();
+    }, timeoutMs);
+    let response: Response;
+
+    try {
+      response = await fetchImpl(`${baseUrl}${path.startsWith('/') ? path : `/${path}`}`, {
+        ...init,
+        headers,
+        signal: controller.signal,
+      });
+    } catch (reason) {
+      if (init?.signal?.aborted) {
+        throw new ApiError('请求已取消。', 0, 'REQUEST_ABORTED');
+      }
+      if (controller.signal.aborted) {
+        throw new ApiError('请求超时，请检查网络后重试。', 0, 'REQUEST_TIMEOUT');
+      }
+      throw new ApiError(
+        reason instanceof Error ? reason.message : '无法连接服务器，请检查网络后重试。',
+        0,
+        'NETWORK_ERROR',
+      );
+    } finally {
+      clearTimeout(timeout);
+      init?.signal?.removeEventListener('abort', abortFromCaller);
+    }
+
     const payload = await parseJson(response);
 
     if (!response.ok) {
@@ -260,9 +289,17 @@ export function bindDevice(
 }
 
 async function parseJson(response: Response): Promise<unknown> {
+  const text = await response.text();
+  if (!text) {
+    return undefined;
+  }
+
   try {
-    return await response.json();
+    return JSON.parse(text) as unknown;
   } catch {
+    if (!response.ok) {
+      return undefined;
+    }
     throw new ApiError(
       'The server returned invalid JSON.',
       response.status,

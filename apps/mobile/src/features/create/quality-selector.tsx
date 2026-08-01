@@ -33,7 +33,7 @@ export function QualitySelector({ onChange, value }: QualitySelectorProps) {
                 backgroundColor: selected ? theme.accent : theme.surface,
                 borderColor: selected ? theme.accent : theme.border,
                 borderCurve: 'continuous',
-                borderRadius: 14,
+                borderRadius: 11,
                 borderWidth: 1,
                 flex: 1,
                 gap: 3,
@@ -41,11 +41,14 @@ export function QualitySelector({ onChange, value }: QualitySelectorProps) {
               }}
               testID={`quality-${option.value}`}
             >
-              <ThemedText style={{ color: selected ? theme.surface : theme.text }} variant="body">
+              <ThemedText
+                style={{ color: selected ? theme.accentForeground : theme.text }}
+                variant="body"
+              >
                 {option.label}
               </ThemedText>
               <ThemedText
-                style={{ color: selected ? theme.surface : theme.mutedText }}
+                style={{ color: selected ? theme.accentForeground : theme.mutedText }}
                 variant="caption"
               >
                 {option.description}

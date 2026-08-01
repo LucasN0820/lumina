@@ -1,53 +1,44 @@
-import { Tabs } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
 import { useLingui } from '@lingui/react/macro';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 import { useTheme } from '@/hooks/use-theme';
+import { tabIcons } from '@/navigation/tab-icons';
 
 export default function TabLayout() {
   const theme = useTheme();
   const { t } = useLingui();
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShadowVisible: false,
-        headerStyle: { backgroundColor: theme.background },
-        headerTintColor: theme.text,
-        headerTitleStyle: { color: theme.text, fontFamily: theme.fontFamily, fontWeight: '700' },
-        sceneStyle: { backgroundColor: theme.background },
-        tabBarActiveTintColor: theme.accent,
-        tabBarInactiveTintColor: theme.mutedText,
-        tabBarStyle: { backgroundColor: theme.surface, borderTopColor: theme.border },
-      }}
+    <NativeTabs
+      backgroundColor={theme.surface}
+      disableTransparentOnScrollEdge
+      iconColor={{ default: theme.mutedText, selected: theme.text }}
+      indicatorColor={theme.muted}
+      labelStyle={{ color: theme.mutedText, fontFamily: theme.fontFamily, fontSize: 11 }}
+      labelVisibilityMode="labeled"
+      minimizeBehavior="onScrollDown"
+      rippleColor={theme.muted}
+      tabBarRespectsIMEInsets
+      tintColor={theme.text}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: t({ id: 'mobile.tab.create', message: 'Create' }),
-          tabBarIcon: ({ color, size }) => (
-            <SymbolView name="sparkles" size={size} tintColor={color} weight="semibold" />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="library"
-        options={{
-          title: t({ id: 'mobile.tab.library', message: 'Library' }),
-          tabBarIcon: ({ color, size }) => (
-            <SymbolView name="photo.on.rectangle" size={size} tintColor={color} weight="semibold" />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: t({ id: 'mobile.tab.profile', message: 'Profile' }),
-          tabBarIcon: ({ color, size }) => (
-            <SymbolView name="person.crop.circle" size={size} tintColor={color} weight="semibold" />
-          ),
-        }}
-      />
-    </Tabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon {...tabIcons.index} />
+        <NativeTabs.Trigger.Label>
+          {t({ id: 'mobile.tab.create', message: 'Create' })}
+        </NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="library">
+        <NativeTabs.Trigger.Icon {...tabIcons.library} />
+        <NativeTabs.Trigger.Label>
+          {t({ id: 'mobile.tab.library', message: 'Library' })}
+        </NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <NativeTabs.Trigger.Icon {...tabIcons.profile} />
+        <NativeTabs.Trigger.Label>
+          {t({ id: 'mobile.tab.profile', message: 'Profile' })}
+        </NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }

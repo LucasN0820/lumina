@@ -17,7 +17,13 @@ export function ThemedView({ style, variant = 'surface', ...props }: ThemedViewP
           backgroundColor: variant === 'card' ? theme.card : theme.surface,
           borderCurve: 'continuous',
           ...(variant === 'card'
-            ? { borderColor: theme.border, borderRadius: 20, borderWidth: 1, padding: 20 }
+            ? {
+                borderColor: theme.border,
+                borderRadius: 16,
+                borderWidth: 1,
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.035)',
+                padding: 18,
+              }
             : {}),
         },
         style,

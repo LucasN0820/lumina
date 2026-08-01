@@ -2,6 +2,7 @@ import { Modal, Platform, Pressable, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/use-theme';
 
 import { useApplyWallpaper } from './useApplyWallpaper';
@@ -34,21 +35,12 @@ export function ApplySheet({ imageUrl, onDismiss, visible }: ApplySheetProps) {
     }
   }
 
-  const buttonStyle = {
-    alignItems: 'center' as const,
-    backgroundColor: theme.accent,
-    borderCurve: 'continuous' as const,
-    borderRadius: 14,
-    minHeight: 48,
-    justifyContent: 'center' as const,
-    paddingHorizontal: 16,
-  };
   const disabled = isApplying || Boolean(activeAction);
 
   return (
     <Modal animationType="slide" onRequestClose={onDismiss} transparent visible={visible}>
       <View
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.35)', flex: 1, justifyContent: 'flex-end' }}
+        style={{ backgroundColor: theme.overlay, flex: 1, justifyContent: 'flex-end' }}
         testID="apply-sheet-backdrop"
       >
         <ThemedView
@@ -56,7 +48,12 @@ export function ApplySheet({ imageUrl, onDismiss, visible }: ApplySheetProps) {
           style={{
             borderBottomLeftRadius: 0,
             borderBottomRightRadius: 0,
-            gap: 12,
+            borderLeftWidth: 0,
+            borderRightWidth: 0,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            gap: 14,
+            padding: 24,
             paddingBottom: 36,
           }}
         >
@@ -73,47 +70,43 @@ export function ApplySheet({ imageUrl, onDismiss, visible }: ApplySheetProps) {
                   ['both', '设为桌面和锁屏'],
                 ] as const
               ).map(([target, label]) => (
-                <Pressable
-                  accessibilityRole="button"
+                <Button
                   disabled={disabled}
+                  fullWidth
+                  label={isApplying ? '正在应用…' : label}
+                  loading={isApplying}
                   key={target}
                   onPress={() => void runAction(() => applyWallpaper(target))}
-                  style={[buttonStyle, disabled ? { opacity: 0.55 } : undefined]}
                   testID={`apply-wallpaper-${target}`}
-                >
-                  <ThemedText style={{ color: theme.surface }} variant="body">
-                    {isApplying ? '正在应用…' : label}
-                  </ThemedText>
-                </Pressable>
+                  variant={target === 'both' ? 'primary' : 'secondary'}
+                />
               ))}
-              <Pressable
-                accessibilityRole="button"
+              <Button
                 disabled={disabled}
+                fullWidth
+                icon="share"
+                label={activeAction === 'share' ? '正在打开分享…' : '系统分享'}
+                loading={activeAction === 'share'}
                 onPress={() => void runAction(shareWallpaper)}
-                style={[buttonStyle, disabled ? { opacity: 0.55 } : undefined]}
                 testID="share-wallpaper"
-              >
-                <ThemedText style={{ color: theme.surface }} variant="body">
-                  {activeAction === 'share' ? '正在打开分享…' : '系统分享'}
-                </ThemedText>
-              </Pressable>
+                variant="secondary"
+              />
             </>
           ) : (
             <ThemedText style={{ color: theme.mutedText }} variant="caption">
               iOS 不支持由应用直接设置系统壁纸。保存后请在系统照片中设为壁纸。
             </ThemedText>
           )}
-          <Pressable
-            accessibilityRole="button"
+          <Button
             disabled={disabled}
+            fullWidth
+            icon="download"
+            label={activeAction === 'save' ? '正在保存…' : '存到相册'}
+            loading={activeAction === 'save'}
             onPress={() => void runAction(saveWallpaper)}
-            style={[buttonStyle, disabled ? { opacity: 0.55 } : undefined]}
             testID="save-wallpaper"
-          >
-            <ThemedText style={{ color: theme.surface }} variant="body">
-              {activeAction === 'save' ? '正在保存…' : '存到相册'}
-            </ThemedText>
-          </Pressable>
+            variant={isAndroid ? 'secondary' : 'primary'}
+          />
           {error ? (
             <ThemedText style={{ color: theme.error }} testID="apply-sheet-error" variant="caption">
               {error.message}

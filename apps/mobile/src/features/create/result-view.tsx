@@ -3,6 +3,7 @@ import { Pressable, useWindowDimensions, View } from 'react-native';
 
 import { WallpaperPreview, type WallpaperPreviewMode } from '@/components/WallpaperPreview';
 import { ThemedText } from '@/components/themed-text';
+import { Button } from '@/components/ui/button';
 import { ApplySheet } from '@/features/apply/ApplySheet';
 import { useTheme } from '@/hooks/use-theme';
 import type { GenerationJob } from '@/lib/api';
@@ -26,11 +27,13 @@ export function ResultView({ job, onRegenerate }: ResultViewProps) {
   const previewHeight = Math.round(previewWidth * ((job.height ?? 2) / (job.width ?? 1)));
 
   return (
-    <View style={{ alignItems: 'center', gap: 16 }}>
-      <ThemedText variant="title">你的壁纸已生成</ThemedText>
-      <ThemedText selectable style={{ color: theme.mutedText }} variant="caption">
-        {job.quality === 'draft' ? '快速预览 · 低分辨率' : '高清出图 · 2K+ 全分辨率'}
-      </ThemedText>
+    <View style={{ alignItems: 'center', gap: 18 }}>
+      <View style={{ alignItems: 'center', gap: 4 }}>
+        <ThemedText variant="title">壁纸已就绪</ThemedText>
+        <ThemedText selectable style={{ color: theme.mutedText }} variant="caption">
+          {job.quality === 'draft' ? '快速预览 · 低分辨率' : '高清出图 · 2K+ 全分辨率'}
+        </ThemedText>
+      </View>
       <View style={{ flexDirection: 'row', gap: 8 }}>
         {(
           [
@@ -50,7 +53,7 @@ export function ResultView({ job, onRegenerate }: ResultViewProps) {
                 backgroundColor: selected ? theme.accent : theme.surface,
                 borderColor: selected ? theme.accent : theme.border,
                 borderCurve: 'continuous',
-                borderRadius: 999,
+                borderRadius: 9,
                 borderWidth: 1,
                 paddingHorizontal: 16,
                 paddingVertical: 9,
@@ -58,7 +61,7 @@ export function ResultView({ job, onRegenerate }: ResultViewProps) {
               testID={`preview-mode-${nextMode}`}
             >
               <ThemedText
-                style={{ color: selected ? theme.surface : theme.text }}
+                style={{ color: selected ? theme.accentForeground : theme.text }}
                 variant="caption"
               >
                 {label}
@@ -73,27 +76,21 @@ export function ResultView({ job, onRegenerate }: ResultViewProps) {
         mode={mode}
         width={previewWidth}
       />
-      <Pressable accessibilityRole="button" onPress={onRegenerate} testID="regenerate-button">
-        <ThemedText style={{ color: theme.accent }} variant="body">
-          重新生成
-        </ThemedText>
-      </Pressable>
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => setIsApplySheetVisible(true)}
-        style={{
-          backgroundColor: theme.accent,
-          borderCurve: 'continuous',
-          borderRadius: 14,
-          paddingHorizontal: 20,
-          paddingVertical: 12,
-        }}
-        testID="open-apply-sheet"
-      >
-        <ThemedText style={{ color: theme.surface }} variant="body">
-          应用、保存或分享
-        </ThemedText>
-      </Pressable>
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        <Button
+          icon="refresh"
+          label="重新生成"
+          onPress={onRegenerate}
+          testID="regenerate-button"
+          variant="secondary"
+        />
+        <Button
+          icon="download"
+          label="应用与保存"
+          onPress={() => setIsApplySheetVisible(true)}
+          testID="open-apply-sheet"
+        />
+      </View>
       <ApplySheet
         imageUrl={job.resultImageUrl}
         onDismiss={() => setIsApplySheetVisible(false)}

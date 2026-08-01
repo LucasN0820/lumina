@@ -1,6 +1,7 @@
-import { Pressable, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
+import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/use-theme';
 
 type StyleToPresetFormProps = {
@@ -42,27 +43,15 @@ export function StyleToPresetForm({
         testID="style-preset-instruction"
         value={instruction}
       />
-      <Pressable
-        accessibilityRole="button"
+      <Button
         disabled={isSubmitting}
+        label={isSubmitting ? '正在提取…' : '保存自定义预设'}
+        loading={isSubmitting}
         onPress={() =>
           onSubmit(instruction || 'Extract a reusable wallpaper style from this image.')
         }
-        style={{
-          alignSelf: 'flex-start',
-          backgroundColor: theme.accent,
-          borderCurve: 'continuous',
-          borderRadius: 14,
-          opacity: isSubmitting ? 0.6 : 1,
-          paddingHorizontal: 16,
-          paddingVertical: 11,
-        }}
         testID="extract-style-preset"
-      >
-        <ThemedText style={{ color: theme.surface }} variant="body">
-          {isSubmitting ? '正在提取…' : '保存自定义预设'}
-        </ThemedText>
-      </Pressable>
+      />
     </View>
   );
 }

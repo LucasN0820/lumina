@@ -37,7 +37,7 @@ export function EditModePicker({ onSelect, selectedMode }: EditModePickerProps) 
                 backgroundColor: selected ? theme.accent : theme.surface,
                 borderColor: selected ? theme.accent : theme.border,
                 borderCurve: 'continuous',
-                borderRadius: 14,
+                borderRadius: 11,
                 borderWidth: 1,
                 gap: 2,
                 padding: 12,
@@ -45,11 +45,14 @@ export function EditModePicker({ onSelect, selectedMode }: EditModePickerProps) 
               }}
               testID={`edit-mode-${mode.value}`}
             >
-              <ThemedText style={{ color: selected ? theme.surface : theme.text }} variant="body">
+              <ThemedText
+                style={{ color: selected ? theme.accentForeground : theme.text }}
+                variant="body"
+              >
                 {mode.label}
               </ThemedText>
               <ThemedText
-                style={{ color: selected ? theme.surface : theme.mutedText }}
+                style={{ color: selected ? theme.accentForeground : theme.mutedText }}
                 variant="caption"
               >
                 {mode.description}

@@ -17,7 +17,7 @@ describe('WallpaperPreview', () => {
   it('renders a cover image with the lock screen overlays by default', () => {
     const screen = render(<WallpaperPreview height={360} image={image} width={180} />);
 
-    expect(screen.getByTestId('wallpaper-preview')).toHaveStyle({ height: 366, width: 186 });
+    expect(screen.getByTestId('wallpaper-preview')).toHaveStyle({ height: 364, width: 184 });
     expect(screen.getByTestId('wallpaper-preview-image')).toHaveProp('contentFit', 'cover');
     expect(screen.getByTestId('preview-status-bar')).toBeTruthy();
     expect(screen.getByTestId('preview-lock-clock')).toBeTruthy();

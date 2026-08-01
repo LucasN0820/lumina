@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { bindDevice } from '@/lib/api';
 import { getAnonymousDeviceId } from '@/lib/device-id';
 
+import { normalizeAuthError } from './auth-error';
+
 WebBrowser.maybeCompleteAuthSession();
 
 export function useAuth() {
@@ -22,11 +24,11 @@ export function useAuth() {
       return;
     }
 
+    lastBoundUserId.current = userId;
     setIsSyncingHistory(true);
     setBindError(undefined);
     try {
       await bindDevice(await getAnonymousDeviceId(), getToken);
-      lastBoundUserId.current = userId;
     } catch (reason) {
       setBindError(reason instanceof Error ? reason : new Error('设备历史同步失败。'));
     } finally {
@@ -46,24 +48,33 @@ export function useAuth() {
     setAuthError(undefined);
     setIsSigningIn(true);
     try {
-      const { createdSessionId, setActive } = await startSSOFlow({ strategy: 'oauth_google' });
+      const { authSessionResult, createdSessionId, setActive } = await startSSOFlow({
+        strategy: 'oauth_google',
+      });
+      if (authSessionResult?.type === 'cancel' || authSessionResult?.type === 'dismiss') {
+        return;
+      }
       if (!createdSessionId || !setActive) {
         throw new Error('Google 登录未完成。');
       }
 
       await setActive({ session: createdSessionId });
     } catch (reason) {
-      setAuthError(reason instanceof Error ? reason : new Error('Google 登录失败。'));
+      setAuthError(normalizeAuthError(reason));
     } finally {
       setIsSigningIn(false);
     }
   }, [startSSOFlow]);
 
   const signOutFromApp = useCallback(async () => {
-    await signOut();
-    lastBoundUserId.current = null;
     setAuthError(undefined);
-    setBindError(undefined);
+    try {
+      await signOut();
+      lastBoundUserId.current = null;
+      setBindError(undefined);
+    } catch (reason) {
+      setAuthError(normalizeAuthError(reason));
+    }
   }, [signOut]);
 
   return {

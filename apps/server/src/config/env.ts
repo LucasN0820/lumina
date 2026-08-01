@@ -21,8 +21,6 @@ const envSchema = z
     DATABASE_URL: nonEmptyString,
     CLERK_SECRET_KEY: nonEmptyString,
     CLERK_PUBLISHABLE_KEY: nonEmptyString,
-    CLERK_JWT_ISSUER: nonEmptyString.optional(),
-    CLERK_JWKS_URL: nonEmptyString.optional(),
     R2_ACCOUNT_ID: nonEmptyString,
     R2_BUCKET: nonEmptyString,
     R2_ACCESS_KEY_ID: nonEmptyString,
@@ -43,14 +41,6 @@ const envSchema = z
     CORS_ORIGIN: z.string().optional(),
   })
   .superRefine((env, context) => {
-    if (!env.CLERK_JWT_ISSUER && !env.CLERK_JWKS_URL) {
-      context.addIssue({
-        code: 'custom',
-        message: 'Set CLERK_JWT_ISSUER or CLERK_JWKS_URL.',
-        path: ['CLERK_JWT_ISSUER'],
-      });
-    }
-
     if (env.SILICONFLOW_PROVIDER_ENABLED && !env.SILICONFLOW_API_KEY) {
       context.addIssue({
         code: 'custom',

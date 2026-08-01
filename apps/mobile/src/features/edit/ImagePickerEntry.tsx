@@ -1,10 +1,11 @@
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import { ErrorState, LoadingState } from '@/components/feedback';
 import { ThemedText } from '@/components/themed-text';
+import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/use-theme';
 import { uploadSourceImage } from '@/lib/api';
 
@@ -23,25 +24,24 @@ export function ImagePickerEntry({ onUploaded, sourceImageUrl }: ImagePickerEntr
 
   async function chooseImage() {
     setError(undefined);
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      mediaTypes: ['images'],
-      quality: 1,
-    });
-    if (result.canceled || !result.assets[0]) {
-      return;
-    }
-
-    const asset = result.assets[0];
-    const contentType = asset.mimeType ?? 'image/jpeg';
-    if (!supportedContentTypes.has(contentType)) {
-      setError(new Error('请选择 JPEG、PNG 或 WebP 图片。'));
-      return;
-    }
-
-    setLocalUri(asset.uri);
-    setIsUploading(true);
     try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        mediaTypes: ['images'],
+        quality: 1,
+      });
+      if (result.canceled || !result.assets[0]) {
+        return;
+      }
+
+      const asset = result.assets[0];
+      const contentType = asset.mimeType ?? 'image/jpeg';
+      if (!supportedContentTypes.has(contentType)) {
+        throw new Error('请选择 JPEG、PNG 或 WebP 图片。');
+      }
+
+      setLocalUri(asset.uri);
+      setIsUploading(true);
       onUploaded(
         await uploadSourceImage(
           asset.uri,
@@ -49,7 +49,12 @@ export function ImagePickerEntry({ onUploaded, sourceImageUrl }: ImagePickerEntr
         ),
       );
     } catch (reason) {
-      setError(reason instanceof Error ? reason : new Error('图片上传失败，请重试。'));
+      const nextError = reason instanceof Error ? reason : new Error('图片上传失败，请重试。');
+      setError(
+        nextError.message.includes('native module')
+          ? new Error('图片组件未安装完整，请安装最新的开发版本。')
+          : nextError,
+      );
     } finally {
       setIsUploading(false);
     }
@@ -71,25 +76,15 @@ export function ImagePickerEntry({ onUploaded, sourceImageUrl }: ImagePickerEntr
       ) : null}
       {isUploading ? <LoadingState label="正在安全上传图片…" /> : null}
       {error ? <ErrorState message={error.message} onRetry={() => void chooseImage()} /> : null}
-      <Pressable
-        accessibilityRole="button"
+      <Button
         disabled={isUploading}
+        icon="upload"
+        label={sourceImageUrl ? '更换图片' : '选择图片'}
+        loading={isUploading}
         onPress={() => void chooseImage()}
-        style={{
-          alignSelf: 'flex-start',
-          backgroundColor: theme.accent,
-          borderCurve: 'continuous',
-          borderRadius: 14,
-          opacity: isUploading ? 0.6 : 1,
-          paddingHorizontal: 16,
-          paddingVertical: 11,
-        }}
         testID="pick-source-image"
-      >
-        <ThemedText style={{ color: theme.surface }} variant="body">
-          {sourceImageUrl ? '更换图片' : '选择图片'}
-        </ThemedText>
-      </Pressable>
+        variant="secondary"
+      />
     </View>
   );
 }

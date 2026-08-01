@@ -1,7 +1,5 @@
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
-import { Readable } from 'node:stream';
-import type { ReadableStream } from 'node:stream/web';
 
 import {
   GetObjectCommand,
@@ -13,6 +11,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const DEFAULT_EXPIRY_SECONDS = 60 * 15;
 const DEFAULT_CONTENT_TYPE = 'application/octet-stream';
+const MAX_REMOTE_IMAGE_BYTES = 64 * 1024 * 1024;
 const MAX_EXPIRY_SECONDS = 60 * 60 * 24 * 7;
 
 type SignedUrlOptions = {
@@ -110,13 +109,13 @@ export class R2Storage {
   }
 
   async uploadBuffer(buffer: Buffer, key: string, contentType: string): Promise<R2Object> {
-    return this.upload(key, buffer, contentType);
+    return this.upload(key, buffer, contentType, buffer.byteLength);
   }
 
   async uploadFile(filePath: string, key: string, contentType: string): Promise<R2Object> {
     try {
-      await stat(filePath);
-      return await this.upload(key, createReadStream(filePath), contentType);
+      const file = await stat(filePath);
+      return await this.upload(key, createReadStream(filePath), contentType, file.size);
     } catch (error) {
       throw asStorageError('R2_UPLOAD_FAILED', `Failed to upload file at ${filePath}.`, error);
     }
@@ -132,26 +131,24 @@ export class R2Storage {
     try {
       response = await this.fetcher(sourceUrl);
     } catch (error) {
-      throw asStorageError(
-        'R2_DOWNLOAD_FAILED',
-        `Failed to download ${sourceUrl.toString()}.`,
-        error,
-      );
+      throw asStorageError('R2_DOWNLOAD_FAILED', 'Failed to download the remote image.', error);
     }
 
     if (!response.ok || !response.body) {
       throw new R2StorageError(
         'R2_DOWNLOAD_FAILED',
-        `Failed to download ${sourceUrl.toString()}: HTTP ${response.status}.`,
+        `Failed to download the remote image: HTTP ${response.status}.`,
       );
     }
 
     const sourceContentType = response.headers.get('content-type')?.split(';', 1)[0];
+    const buffer = await readResponseBuffer(response, MAX_REMOTE_IMAGE_BYTES);
 
     return this.upload(
       key,
-      Readable.fromWeb(response.body as unknown as ReadableStream),
+      buffer,
       contentType ?? sourceContentType ?? DEFAULT_CONTENT_TYPE,
+      buffer.byteLength,
     );
   }
 
@@ -191,6 +188,7 @@ export class R2Storage {
     key: string,
     body: NonNullable<PutObjectCommandInput['Body']>,
     contentType: string,
+    contentLength: number,
   ): Promise<R2Object> {
     const validatedKey = validateObjectKey(key);
     const validatedContentType = validateContentType(contentType);
@@ -200,6 +198,7 @@ export class R2Storage {
         new PutObjectCommand({
           Body: body,
           Bucket: this.config.bucket,
+          ContentLength: contentLength,
           ContentType: validatedContentType,
           Key: validatedKey,
         }),
@@ -229,6 +228,57 @@ export class R2Storage {
       throw asStorageError('R2_SIGNING_FAILED', 'Failed to create an R2 signed URL.', error);
     }
   }
+}
+
+async function readResponseBuffer(response: Response, maxBytes: number): Promise<Buffer> {
+  const declaredLength = parseContentLength(response.headers.get('content-length'));
+  if (declaredLength !== undefined && declaredLength > maxBytes) {
+    throw remoteImageTooLarge(maxBytes);
+  }
+
+  const reader = response.body?.getReader();
+  if (!reader) {
+    throw new R2StorageError('R2_DOWNLOAD_FAILED', 'The remote image response has no body.');
+  }
+
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  try {
+    let chunk = await reader.read();
+    while (!chunk.done) {
+      const { value } = chunk;
+      totalBytes += value.byteLength;
+      if (totalBytes > maxBytes) {
+        await reader.cancel();
+        throw remoteImageTooLarge(maxBytes);
+      }
+      chunks.push(value);
+      chunk = await reader.read();
+    }
+  } catch (error) {
+    throw asStorageError('R2_DOWNLOAD_FAILED', 'Failed to read the remote image.', error);
+  } finally {
+    reader.releaseLock();
+  }
+
+  return Buffer.concat(chunks, totalBytes);
+}
+
+function parseContentLength(value: string | null): number | undefined {
+  if (!value || !/^\d+$/.test(value)) {
+    return undefined;
+  }
+
+  const length = Number(value);
+  return Number.isSafeInteger(length) ? length : undefined;
+}
+
+function remoteImageTooLarge(maxBytes: number): R2StorageError {
+  return new R2StorageError(
+    'R2_DOWNLOAD_FAILED',
+    `The remote image exceeds the ${Math.floor(maxBytes / 1024 / 1024)} MiB limit.`,
+  );
 }
 
 export function createR2Storage(config: R2Config, dependencies?: R2StorageDependencies): R2Storage {

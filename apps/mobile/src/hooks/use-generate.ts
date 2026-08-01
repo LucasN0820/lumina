@@ -6,105 +6,100 @@ import {
   getGenerationJob,
   type GenerateRequest,
   type GenerationJob,
-  ApiError,
 } from '@/lib/api';
 import { getAnonymousDeviceId } from '@/lib/device-id';
+import { useGenerationStore, type GenerationScope } from '@/stores/generation-store';
 
 const terminalStatuses = new Set<GenerationJob['status']>(['failed', 'succeeded']);
-const clientCooldownMs = 5_000;
-
 function isTerminal(job: GenerationJob | undefined): boolean {
   return job ? terminalStatuses.has(job.status) : false;
 }
 
-export function useGenerate() {
-  const [jobId, setJobId] = useState<string>();
-  const [lastRequest, setLastRequest] = useState<GenerateRequest>();
-  const [cooldownUntil, setCooldownUntil] = useState<number>();
+export function useGenerate(scope: GenerationScope = 'create') {
+  const session = useGenerationStore((state) => state.sessions[scope]);
+  const setClientError = useGenerationStore((state) => state.setClientError);
+  const setJobId = useGenerationStore((state) => state.setJobId);
+  const start = useGenerationStore((state) => state.start);
   const [now, setNow] = useState(Date.now);
-  const [clientError, setClientError] = useState<Error>();
   const createMutation = useMutation({
     mutationFn: async (request: GenerateRequest) =>
       createGeneration({
         ...request,
         deviceId: request.deviceId ?? (await getAnonymousDeviceId()),
       }),
-    onSuccess: ({ jobId: nextJobId }) => setJobId(nextJobId),
+    onError: (reason) =>
+      setClientError(
+        scope,
+        reason instanceof Error ? reason : new Error('Unable to start wallpaper generation.'),
+      ),
+    onSuccess: ({ jobId: nextJobId }) => setJobId(scope, nextJobId),
   });
   const jobQuery = useQuery({
-    enabled: Boolean(jobId),
+    enabled: Boolean(session.jobId),
     queryFn: () => {
-      if (!jobId) {
+      if (!session.jobId) {
         throw new Error('A generation job id is required.');
       }
 
-      return getGenerationJob(jobId);
+      return getGenerationJob(session.jobId);
     },
-    queryKey: ['generation-job', jobId],
+    queryKey: ['generation-job', session.jobId],
     refetchInterval: (query) => (isTerminal(query.state.data) ? false : 1_000),
   });
   const jobFailure =
     jobQuery.data?.status === 'failed'
       ? new Error(jobQuery.data.error ?? 'Wallpaper generation failed. Please try again.')
       : undefined;
-  const error = clientError ?? createMutation.error ?? jobQuery.error ?? jobFailure;
-  const cooldownSeconds = cooldownUntil ? Math.max(0, Math.ceil((cooldownUntil - now) / 1_000)) : 0;
+  const error = session.clientError ?? createMutation.error ?? jobQuery.error ?? jobFailure;
+  const cooldownSeconds = session.cooldownUntil
+    ? Math.max(0, Math.ceil((session.cooldownUntil - now) / 1_000))
+    : 0;
 
   useEffect(() => {
-    if (!cooldownUntil || cooldownUntil <= Date.now()) {
+    if (!session.cooldownUntil || session.cooldownUntil <= Date.now()) {
       return;
     }
 
     const timer = setInterval(() => setNow(Date.now()), 250);
     return () => clearInterval(timer);
-  }, [cooldownUntil]);
+  }, [session.cooldownUntil]);
 
   const generate = useCallback(
     (request: GenerateRequest) => {
-      if (cooldownUntil && cooldownUntil > Date.now()) {
-        setClientError(
-          new ApiError(
-            `Please wait ${Math.ceil((cooldownUntil - Date.now()) / 1_000)} seconds.`,
-            429,
-            'RATE_LIMITED',
-          ),
-        );
+      const startedAt = Date.now();
+      if (!start(scope, request, startedAt)) {
         return;
       }
 
-      setClientError(undefined);
-      setCooldownUntil(Date.now() + clientCooldownMs);
-      setNow(Date.now());
-      setLastRequest(request);
-      setJobId(undefined);
+      setNow(startedAt);
       createMutation.mutate(request);
     },
-    [cooldownUntil, createMutation],
+    [createMutation, scope, start],
   );
 
   const regenerate = useCallback(() => {
-    if (lastRequest) {
-      generate(lastRequest);
+    if (session.lastRequest) {
+      generate(session.lastRequest);
     }
-  }, [generate, lastRequest]);
+  }, [generate, session.lastRequest]);
 
   const retry = useCallback(() => {
-    if (jobId && jobQuery.isError) {
+    if (session.jobId && jobQuery.isError) {
       void jobQuery.refetch();
       return;
     }
 
     regenerate();
-  }, [jobId, jobQuery, regenerate]);
+  }, [jobQuery, regenerate, session.jobId]);
 
   return {
     error,
     generate,
     isGenerating:
       createMutation.isPending ||
-      (Boolean(jobId) && !isTerminal(jobQuery.data) && !jobQuery.isError),
+      (Boolean(session.jobId) && !isTerminal(jobQuery.data) && !jobQuery.isError),
     job: jobQuery.data,
-    jobId,
+    jobId: session.jobId,
     cooldownSeconds,
     regenerate,
     retry,

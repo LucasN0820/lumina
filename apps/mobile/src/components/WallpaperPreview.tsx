@@ -37,12 +37,13 @@ export function WallpaperPreview({
         backgroundColor: theme.background,
         borderColor: theme.border,
         borderCurve: 'continuous',
-        borderRadius: cornerRadius + 6,
-        borderWidth: 3,
-        height: previewHeight + 6,
+        borderRadius: cornerRadius + 4,
+        borderWidth: 1,
+        boxShadow: '0 12px 32px rgba(0, 0, 0, 0.16)',
+        height: previewHeight + 4,
         overflow: 'hidden',
-        padding: 3,
-        width: previewWidth + 6,
+        padding: 2,
+        width: previewWidth + 4,
       }}
       testID="wallpaper-preview"
     >

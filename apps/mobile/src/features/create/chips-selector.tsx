@@ -40,7 +40,7 @@ export function ChipsSelector({ onChange, values }: ChipsSelectorProps) {
                     backgroundColor: selected ? theme.accent : theme.surface,
                     borderColor: selected ? theme.accent : theme.border,
                     borderCurve: 'continuous',
-                    borderRadius: 999,
+                    borderRadius: 9,
                     borderWidth: 1,
                     paddingHorizontal: 14,
                     paddingVertical: 9,
@@ -48,7 +48,7 @@ export function ChipsSelector({ onChange, values }: ChipsSelectorProps) {
                   testID={`chip-${field}-${option}`}
                 >
                   <ThemedText
-                    style={{ color: selected ? theme.surface : theme.text }}
+                    style={{ color: selected ? theme.accentForeground : theme.text }}
                     variant="caption"
                   >
                     {option}

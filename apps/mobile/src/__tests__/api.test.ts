@@ -28,7 +28,7 @@ describe('api client', () => {
     await expect(apiFetch<{ ok: boolean }>('health')).resolves.toEqual({ ok: true });
     expect(fetchImpl).toHaveBeenCalledWith(
       'https://api.example/health',
-      expect.objectContaining({ headers: expect.any(Headers) }),
+      expect.objectContaining({ headers: expect.any(Headers), signal: expect.any(AbortSignal) }),
     );
   });
 
@@ -48,6 +48,19 @@ describe('api client', () => {
 
     await expect(apiFetch('/jobs/missing')).rejects.toEqual(
       new ApiError('Job was not found.', 404, 'JOB_NOT_FOUND'),
+    );
+  });
+
+  it('turns connection failures into typed network errors', async () => {
+    const apiFetch = createApiClient({
+      baseUrl: 'https://api.example',
+      fetchImpl: jest
+        .fn<Promise<Response>, [RequestInfo | URL, RequestInit?]>()
+        .mockRejectedValue(new TypeError('Network request failed')),
+    });
+
+    await expect(apiFetch('/health')).rejects.toEqual(
+      new ApiError('Network request failed', 0, 'NETWORK_ERROR'),
     );
   });
 

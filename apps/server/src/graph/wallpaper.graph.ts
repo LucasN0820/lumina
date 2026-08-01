@@ -1,7 +1,7 @@
 import { END, START, StateGraph } from '@langchain/langgraph';
 
 import type { Wallpaper } from '../../prisma/generated/prisma/client.js';
-import { logger } from '../lib/logger.js';
+import { getErrorLogContext, logger } from '../lib/logger.js';
 import {
   WallpaperGraphAnnotation,
   type WallpaperGraphInput,
@@ -89,7 +89,7 @@ export async function runWallpaperGraph(
     }
     logger.error('wallpaper graph failed', {
       durationMs: Math.round(performance.now() - startedAt),
-      error: message,
+      ...getErrorLogContext(error),
       wallpaperId,
     });
     throw error;
