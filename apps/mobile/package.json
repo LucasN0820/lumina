@@ -69,10 +69,16 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/test/setup-i18n.ts"
+    ],
     "testMatch": [
       "<rootDir>/src/**/*.test.ts",
       "<rootDir>/src/**/*.test.tsx"
     ],
+    "transform": {
+      "^.+\\.mjs$": "babel-jest"
+    },
     "transformIgnorePatterns": []
   }
 }

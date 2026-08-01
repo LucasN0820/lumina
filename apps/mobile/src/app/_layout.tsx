@@ -1,15 +1,17 @@
 import { ClerkProvider } from '@clerk/expo';
-import { QueryClientProvider } from '@tanstack/react-query';
 import { Host } from '@expo/ui';
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { Stack } from 'expo-router/stack';
 import { StatusBar } from 'expo-status-bar';
-import { Text, useColorScheme, View } from 'react-native';
+import { useColorScheme } from 'react-native';
 
 import { ApiTokenBridge } from '@/features/auth/ApiTokenBridge';
 import { MobileI18nProvider } from '@/features/i18n/i18n-provider';
+import { useTheme } from '@/hooks/use-theme';
 import { clerkTokenCache } from '@/lib/clerkTokenCache';
 import { queryClient } from '@/lib/queryClient';
-import { useTheme } from '@/hooks/use-theme';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -31,25 +33,7 @@ export default function RootLayout() {
   };
 
   if (!publishableKey) {
-    return (
-      <View
-        style={{
-          alignItems: 'center',
-          backgroundColor: appTheme.background,
-          flex: 1,
-          gap: 8,
-          justifyContent: 'center',
-          padding: 24,
-        }}
-      >
-        <Text style={{ color: appTheme.text, fontSize: 18, fontWeight: '600' }}>
-          Lumina 配置不完整
-        </Text>
-        <Text selectable style={{ color: appTheme.mutedText, textAlign: 'center' }}>
-          请配置 EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY 后重新启动应用。
-        </Text>
-      </View>
-    );
+    throw new Error('Missing EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY environment variable');
   }
 
   return (
@@ -60,9 +44,11 @@ export default function RootLayout() {
           <ThemeProvider value={navigationTheme}>
             <Host colorScheme={colorScheme} style={{ flex: 1 }}>
               <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-              </Stack>
+              <SafeAreaProvider>
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="(tabs)" />
+                </Stack>
+              </SafeAreaProvider>
             </Host>
           </ThemeProvider>
         </QueryClientProvider>

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { Modal, Platform, Pressable, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -15,6 +16,7 @@ export type ApplySheetProps = {
 };
 
 export function ApplySheet({ imageUrl, onDismiss, visible }: ApplySheetProps) {
+  const { t } = useLingui();
   const theme = useTheme();
   const { applyWallpaper, error: applyError, isApplying } = useApplyWallpaper(imageUrl);
   const {
@@ -57,23 +59,27 @@ export function ApplySheet({ imageUrl, onDismiss, visible }: ApplySheetProps) {
             paddingBottom: 36,
           }}
         >
-          <ThemedText variant="subtitle">应用壁纸</ThemedText>
+          <ThemedText variant="subtitle">
+            {t({ id: 'mobile.apply.title', message: 'Apply wallpaper' })}
+          </ThemedText>
           {isAndroid ? (
             <>
               <ThemedText style={{ color: theme.mutedText }} variant="caption">
-                选择要更换的壁纸位置。
+                {t({ id: 'mobile.apply.chooseTarget', message: 'Choose where to apply it.' })}
               </ThemedText>
               {(
                 [
-                  ['home', '设为桌面'],
-                  ['lock', '设为锁屏'],
-                  ['both', '设为桌面和锁屏'],
+                  ['home', t({ id: 'mobile.apply.home', message: 'Set as home screen' })],
+                  ['lock', t({ id: 'mobile.apply.lock', message: 'Set as lock screen' })],
+                  ['both', t({ id: 'mobile.apply.both', message: 'Set as both' })],
                 ] as const
               ).map(([target, label]) => (
                 <Button
                   disabled={disabled}
                   fullWidth
-                  label={isApplying ? '正在应用…' : label}
+                  label={
+                    isApplying ? t({ id: 'mobile.apply.applying', message: 'Applying…' }) : label
+                  }
                   loading={isApplying}
                   key={target}
                   onPress={() => void runAction(() => applyWallpaper(target))}
@@ -85,7 +91,11 @@ export function ApplySheet({ imageUrl, onDismiss, visible }: ApplySheetProps) {
                 disabled={disabled}
                 fullWidth
                 icon="share"
-                label={activeAction === 'share' ? '正在打开分享…' : '系统分享'}
+                label={
+                  activeAction === 'share'
+                    ? t({ id: 'mobile.apply.openingShare', message: 'Opening share…' })
+                    : t({ id: 'mobile.apply.share', message: 'Share' })
+                }
                 loading={activeAction === 'share'}
                 onPress={() => void runAction(shareWallpaper)}
                 testID="share-wallpaper"
@@ -94,14 +104,22 @@ export function ApplySheet({ imageUrl, onDismiss, visible }: ApplySheetProps) {
             </>
           ) : (
             <ThemedText style={{ color: theme.mutedText }} variant="caption">
-              iOS 不支持由应用直接设置系统壁纸。保存后请在系统照片中设为壁纸。
+              {t({
+                id: 'mobile.apply.iosHint',
+                message:
+                  'iOS does not allow apps to set system wallpaper directly. Save it, then set it from Photos.',
+              })}
             </ThemedText>
           )}
           <Button
             disabled={disabled}
             fullWidth
             icon="download"
-            label={activeAction === 'save' ? '正在保存…' : '存到相册'}
+            label={
+              activeAction === 'save'
+                ? t({ id: 'mobile.apply.saving', message: 'Saving…' })
+                : t({ id: 'mobile.apply.save', message: 'Save to Photos' })
+            }
             loading={activeAction === 'save'}
             onPress={() => void runAction(saveWallpaper)}
             testID="save-wallpaper"
@@ -118,7 +136,7 @@ export function ApplySheet({ imageUrl, onDismiss, visible }: ApplySheetProps) {
             style={{ alignItems: 'center', padding: 10 }}
           >
             <ThemedText style={{ color: theme.mutedText }} variant="body">
-              取消
+              {t({ id: 'mobile.common.cancel', message: 'Cancel' })}
             </ThemedText>
           </Pressable>
         </ThemedView>

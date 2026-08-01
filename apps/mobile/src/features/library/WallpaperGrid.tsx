@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import type { ReactElement } from 'react';
 import { Image } from 'expo-image';
 import { ActivityIndicator, FlatList, Pressable, View } from 'react-native';
@@ -31,6 +32,7 @@ export function WallpaperGrid({
   onSelect,
   onToggleFavorite = () => {},
 }: WallpaperGridProps) {
+  const { t } = useLingui();
   const theme = useTheme();
 
   return (
@@ -57,11 +59,14 @@ export function WallpaperGrid({
           </View>
         ) : (
           <EmptyState
-            actionLabel="去创作"
+            actionLabel={t({ id: 'mobile.library.empty.action', message: 'Create wallpaper' })}
             actionTestId="create-wallpaper-button"
-            description="去创作一张属于你的壁纸，它会自动保存在这里。"
+            description={t({
+              id: 'mobile.library.empty.description',
+              message: 'Create a wallpaper and it will be saved here automatically.',
+            })}
             onAction={onCreate}
-            title="还没有壁纸"
+            title={t({ id: 'mobile.library.empty.title', message: 'No wallpapers yet' })}
           />
         )
       }
@@ -99,12 +104,16 @@ function WallpaperGridItem({
   onPress: () => void;
   onToggleFavorite: () => void;
 }) {
+  const { i18n, t } = useLingui();
   const theme = useTheme();
   const imageUri = item.resultImageUrl;
 
   return (
     <Pressable
-      accessibilityLabel="查看壁纸详情"
+      accessibilityLabel={t({
+        id: 'mobile.library.viewDetails',
+        message: 'View wallpaper details',
+      })}
       accessibilityRole="button"
       onPress={onPress}
       style={{ flex: 1, gap: 6 }}
@@ -123,7 +132,7 @@ function WallpaperGridItem({
       >
         {imageUri ? (
           <Image
-            alt="已生成的壁纸"
+            alt={t({ id: 'mobile.library.generatedWallpaper', message: 'Generated wallpaper' })}
             cachePolicy="memory-disk"
             contentFit="cover"
             source={{ uri: imageUri }}
@@ -133,20 +142,31 @@ function WallpaperGridItem({
         ) : (
           <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center', padding: 12 }}>
             <ThemedText style={{ color: theme.mutedText, textAlign: 'center' }} variant="caption">
-              生成结果不可用
+              {t({ id: 'mobile.library.resultUnavailable', message: 'Result unavailable' })}
             </ThemedText>
           </View>
         )}
       </View>
       <ThemedText numberOfLines={1} style={{ color: theme.mutedText }} variant="caption">
-        {formatDate(item.createdAt)}
+        {formatDate(
+          item.createdAt,
+          i18n.locale,
+          t({ id: 'mobile.library.generated', message: 'Generated' }),
+        )}
       </ThemedText>
       <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
         <ThemedText numberOfLines={1} style={{ color: theme.mutedText }} variant="caption">
-          {item.category ?? '未分类'} · {item.quality === 'draft' ? '预览' : '高清'}
+          {item.category ?? t({ id: 'mobile.library.uncategorized', message: 'Uncategorized' })} ·{' '}
+          {item.quality === 'draft'
+            ? t({ id: 'mobile.library.quality.preview', message: 'Preview' })
+            : t({ id: 'mobile.library.quality.hd', message: 'HD' })}
         </ThemedText>
         <Pressable
-          accessibilityLabel={item.favorite ? '取消收藏壁纸' : '收藏壁纸'}
+          accessibilityLabel={
+            item.favorite
+              ? t({ id: 'mobile.library.unfavorite', message: 'Remove wallpaper from favorites' })
+              : t({ id: 'mobile.library.favorite', message: 'Add wallpaper to favorites' })
+          }
           accessibilityRole="button"
           onPress={onToggleFavorite}
           hitSlop={8}
@@ -163,7 +183,7 @@ function WallpaperGridItem({
   );
 }
 
-function formatDate(createdAt: string): string {
+function formatDate(createdAt: string, locale: string, fallback: string): string {
   const date = new Date(createdAt);
-  return Number.isNaN(date.getTime()) ? '已生成' : date.toLocaleDateString();
+  return Number.isNaN(date.getTime()) ? fallback : date.toLocaleDateString(locale);
 }

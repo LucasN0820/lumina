@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { Pressable, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -12,14 +13,57 @@ type ChipsSelectorProps = {
   values: CreateChipValues;
 };
 
-const chipGroups: Array<{ field: CreateChipField; label: string; options: string[] }> = [
-  { field: 'theme', label: '主题', options: ['自然', '城市', '宇宙', '抽象'] },
-  { field: 'tone', label: '色调', options: ['暖色', '冷色', '柔和', '高对比'] },
-  { field: 'mood', label: '氛围', options: ['平静', '神秘', '活力', '梦幻'] },
-];
-
 export function ChipsSelector({ onChange, values }: ChipsSelectorProps) {
+  const { t } = useLingui();
   const theme = useTheme();
+  const chipGroups: Array<{
+    field: CreateChipField;
+    label: string;
+    options: Array<{ label: string; value: string }>;
+  }> = [
+    {
+      field: 'theme',
+      label: t({ id: 'mobile.create.theme', message: 'Theme' }),
+      options: [
+        { label: t({ id: 'mobile.create.theme.nature', message: 'Nature' }), value: 'nature' },
+        { label: t({ id: 'mobile.create.theme.city', message: 'City' }), value: 'city' },
+        { label: t({ id: 'mobile.create.theme.space', message: 'Space' }), value: 'space' },
+        {
+          label: t({ id: 'mobile.create.theme.abstract', message: 'Abstract' }),
+          value: 'abstract',
+        },
+      ],
+    },
+    {
+      field: 'tone',
+      label: t({ id: 'mobile.create.tone', message: 'Color tone' }),
+      options: [
+        { label: t({ id: 'mobile.create.tone.warm', message: 'Warm' }), value: 'warm' },
+        { label: t({ id: 'mobile.create.tone.cool', message: 'Cool' }), value: 'cool' },
+        { label: t({ id: 'mobile.create.tone.soft', message: 'Soft' }), value: 'soft' },
+        {
+          label: t({ id: 'mobile.create.tone.highContrast', message: 'High contrast' }),
+          value: 'high-contrast',
+        },
+      ],
+    },
+    {
+      field: 'mood',
+      label: t({ id: 'mobile.create.mood', message: 'Mood' }),
+      options: [
+        { label: t({ id: 'mobile.create.mood.calm', message: 'Calm' }), value: 'calm' },
+        {
+          label: t({ id: 'mobile.create.mood.mysterious', message: 'Mysterious' }),
+          value: 'mysterious',
+        },
+        {
+          label: t({ id: 'mobile.create.mood.energetic', message: 'Energetic' }),
+          value: 'energetic',
+        },
+        { label: t({ id: 'mobile.create.mood.dreamy', message: 'Dreamy' }), value: 'dreamy' },
+      ],
+    },
+  ];
 
   return (
     <View style={{ gap: 14 }}>
@@ -28,14 +72,14 @@ export function ChipsSelector({ onChange, values }: ChipsSelectorProps) {
           <ThemedText variant="subtitle">{label}</ThemedText>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {options.map((option) => {
-              const selected = values[field] === option;
+              const selected = values[field] === option.value;
 
               return (
                 <Pressable
-                  key={option}
+                  key={option.value}
                   accessibilityRole="button"
                   accessibilityState={{ selected }}
-                  onPress={() => onChange(field, selected ? undefined : option)}
+                  onPress={() => onChange(field, selected ? undefined : option.value)}
                   style={{
                     backgroundColor: selected ? theme.accent : theme.surface,
                     borderColor: selected ? theme.accent : theme.border,
@@ -45,13 +89,13 @@ export function ChipsSelector({ onChange, values }: ChipsSelectorProps) {
                     paddingHorizontal: 14,
                     paddingVertical: 9,
                   }}
-                  testID={`chip-${field}-${option}`}
+                  testID={`chip-${field}-${option.value}`}
                 >
                   <ThemedText
                     style={{ color: selected ? theme.accentForeground : theme.text }}
                     variant="caption"
                   >
-                    {option}
+                    {option.label}
                   </ThemedText>
                 </Pressable>
               );

@@ -1,10 +1,11 @@
 import { tabIcons } from './tab-icons';
 
 describe('tabIcons', () => {
-  it('declares an Android Material symbol and iOS SF Symbol for every tab', () => {
-    for (const icon of Object.values(tabIcons)) {
-      expect(icon.md).toBeTruthy();
-      expect(icon.sf).toBeTruthy();
-    }
+  it('declares an app icon for every standard tab', () => {
+    expect(tabIcons).toEqual({
+      create: 'sparkles',
+      library: 'library',
+      profile: 'profile',
+    });
   });
 });

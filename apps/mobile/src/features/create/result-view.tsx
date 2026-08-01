@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { useState } from 'react';
 import { Pressable, useWindowDimensions, View } from 'react-native';
 
@@ -14,6 +15,7 @@ type ResultViewProps = {
 };
 
 export function ResultView({ job, onRegenerate }: ResultViewProps) {
+  const { t } = useLingui();
   const [mode, setMode] = useState<WallpaperPreviewMode>('lock-screen');
   const [isApplySheetVisible, setIsApplySheetVisible] = useState(false);
   const { width: windowWidth } = useWindowDimensions();
@@ -29,16 +31,26 @@ export function ResultView({ job, onRegenerate }: ResultViewProps) {
   return (
     <View style={{ alignItems: 'center', gap: 18 }}>
       <View style={{ alignItems: 'center', gap: 4 }}>
-        <ThemedText variant="title">壁纸已就绪</ThemedText>
+        <ThemedText variant="title">
+          {t({ id: 'mobile.create.result.ready', message: 'Your wallpaper is ready' })}
+        </ThemedText>
         <ThemedText selectable style={{ color: theme.mutedText }} variant="caption">
-          {job.quality === 'draft' ? '快速预览 · 低分辨率' : '高清出图 · 2K+ 全分辨率'}
+          {job.quality === 'draft'
+            ? t({
+                id: 'mobile.create.result.draft',
+                message: 'Quick preview · Low resolution',
+              })
+            : t({
+                id: 'mobile.create.result.hd',
+                message: 'High resolution · Full 2K+',
+              })}
         </ThemedText>
       </View>
       <View style={{ flexDirection: 'row', gap: 8 }}>
         {(
           [
-            ['lock-screen', '锁屏'],
-            ['home-screen', '桌面'],
+            ['lock-screen', t({ id: 'mobile.preview.lockScreen', message: 'Lock screen' })],
+            ['home-screen', t({ id: 'mobile.preview.homeScreen', message: 'Home screen' })],
           ] as const
         ).map(([nextMode, label]) => {
           const selected = mode === nextMode;
@@ -79,14 +91,14 @@ export function ResultView({ job, onRegenerate }: ResultViewProps) {
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <Button
           icon="refresh"
-          label="重新生成"
+          label={t({ id: 'mobile.create.regenerate', message: 'Regenerate' })}
           onPress={onRegenerate}
           testID="regenerate-button"
           variant="secondary"
         />
         <Button
           icon="download"
-          label="应用与保存"
+          label={t({ id: 'mobile.create.applyAndSave', message: 'Apply and save' })}
           onPress={() => setIsApplySheetVisible(true)}
           testID="open-apply-sheet"
         />

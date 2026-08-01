@@ -93,7 +93,9 @@ describe('ApplySheet', () => {
 
     fireEvent.press(screen.getByTestId('save-wallpaper'));
 
-    expect(await screen.findByText('需要相册写入权限才能保存壁纸。')).toBeTruthy();
+    expect(
+      await screen.findByText('Photo library permission is required to save wallpapers.'),
+    ).toBeTruthy();
     expect(onDismiss).not.toHaveBeenCalled();
   });
 
@@ -106,6 +108,8 @@ describe('ApplySheet', () => {
     expect(screen.getByTestId('save-wallpaper')).toBeTruthy();
     expect(screen.queryByTestId('apply-wallpaper-home')).toBeNull();
     expect(screen.queryByTestId('share-wallpaper')).toBeNull();
-    expect(screen.getByText(/iOS 不支持由应用直接设置系统壁纸/)).toBeTruthy();
+    expect(
+      screen.getByText(/iOS does not allow apps to set system wallpaper directly/),
+    ).toBeTruthy();
   });
 });

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { useCallback, useState } from 'react';
 
 import { Asset, requestPermissionsAsync } from 'expo-media-library';
@@ -8,6 +9,7 @@ import { downloadWallpaper } from './local-wallpaper';
 export type SaveAndShareAction = 'save' | 'share' | undefined;
 
 export function useSaveAndShare(imageUrl: string) {
+  const { t } = useLingui();
   const [error, setError] = useState<Error>();
   const [activeAction, setActiveAction] = useState<SaveAndShareAction>();
 
@@ -18,19 +20,32 @@ export function useSaveAndShare(imageUrl: string) {
     try {
       const permission = await requestPermissionsAsync();
       if (permission.status !== 'granted') {
-        throw new Error('需要相册写入权限才能保存壁纸。');
+        throw new Error(
+          t({
+            id: 'mobile.apply.photoPermission',
+            message: 'Photo library permission is required to save wallpapers.',
+          }),
+        );
       }
 
       const localUri = await downloadWallpaper(imageUrl);
       await Asset.create(localUri);
     } catch (cause) {
-      const nextError = cause instanceof Error ? cause : new Error('保存壁纸失败，请稍后重试。');
+      const nextError =
+        cause instanceof Error
+          ? cause
+          : new Error(
+              t({
+                id: 'mobile.apply.saveFailed',
+                message: 'Could not save the wallpaper. Try again later.',
+              }),
+            );
       setError(nextError);
       throw nextError;
     } finally {
       setActiveAction(undefined);
     }
-  }, [imageUrl]);
+  }, [imageUrl, t]);
 
   const shareWallpaper = useCallback(async () => {
     setError(undefined);
@@ -38,19 +53,32 @@ export function useSaveAndShare(imageUrl: string) {
 
     try {
       if (!(await isAvailableAsync())) {
-        throw new Error('当前设备不支持系统分享。');
+        throw new Error(
+          t({
+            id: 'mobile.apply.shareUnavailable',
+            message: 'Sharing is unavailable on this device.',
+          }),
+        );
       }
 
       const localUri = await downloadWallpaper(imageUrl);
       await shareAsync(localUri);
     } catch (cause) {
-      const nextError = cause instanceof Error ? cause : new Error('分享壁纸失败，请稍后重试。');
+      const nextError =
+        cause instanceof Error
+          ? cause
+          : new Error(
+              t({
+                id: 'mobile.apply.shareFailed',
+                message: 'Could not share the wallpaper. Try again later.',
+              }),
+            );
       setError(nextError);
       throw nextError;
     } finally {
       setActiveAction(undefined);
     }
-  }, [imageUrl]);
+  }, [imageUrl, t]);
 
   return { activeAction, error, saveWallpaper, shareWallpaper };
 }

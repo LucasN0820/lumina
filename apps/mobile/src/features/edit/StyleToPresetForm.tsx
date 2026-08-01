@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -17,18 +18,27 @@ export function StyleToPresetForm({
   onChangeInstruction,
   onSubmit,
 }: StyleToPresetFormProps) {
+  const { t } = useLingui();
   const theme = useTheme();
 
   return (
     <View style={{ gap: 10 }}>
-      <ThemedText variant="subtitle">提取风格</ThemedText>
+      <ThemedText variant="subtitle">
+        {t({ id: 'mobile.edit.style.title', message: 'Extract style' })}
+      </ThemedText>
       <ThemedText style={{ color: theme.mutedText }} variant="caption">
-        会分析色彩、构图和材质，并自动在创作页保存一个仅自己可见的预设。
+        {t({
+          id: 'mobile.edit.style.description',
+          message: 'Analyze color, composition, and texture to save a private creative preset.',
+        })}
       </ThemedText>
       <TextInput
         editable={!isSubmitting}
         onChangeText={onChangeInstruction}
-        placeholder="可选：补充你希望保留的特点"
+        placeholder={t({
+          id: 'mobile.edit.style.placeholder',
+          message: 'Optional: describe the details you want to preserve',
+        })}
         placeholderTextColor={theme.mutedText}
         style={{
           borderColor: theme.border,
@@ -45,7 +55,11 @@ export function StyleToPresetForm({
       />
       <Button
         disabled={isSubmitting}
-        label={isSubmitting ? '正在提取…' : '保存自定义预设'}
+        label={
+          isSubmitting
+            ? t({ id: 'mobile.edit.style.extracting', message: 'Extracting…' })
+            : t({ id: 'mobile.edit.style.save', message: 'Save custom preset' })
+        }
         loading={isSubmitting}
         onPress={() =>
           onSubmit(instruction || 'Extract a reusable wallpaper style from this image.')

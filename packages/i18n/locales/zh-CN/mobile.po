@@ -14,67 +14,730 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: apps/mobile/src/app/(tabs)/profile.tsx
-msgid "mobile.profile.anonymous"
-msgstr "当前为匿名使用。登录后可同步设备历史并跨设备访问壁纸。"
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.applying"
+msgstr "正在应用…"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.both"
+msgstr "同时设为锁屏和主屏幕"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.chooseTarget"
+msgstr "选择要应用的位置。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/useApplyWallpaper.ts
+msgid "mobile.apply.failed"
+msgstr "无法应用壁纸，请稍后重试。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.home"
+msgstr "设为主屏幕"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.iosHint"
+msgstr "iOS 不支持由应用直接设置系统壁纸。请先保存，再从照片中进行设置。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.lock"
+msgstr "设为锁屏"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.openingShare"
+msgstr "正在打开分享…"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/useSaveAndShare.ts
+msgid "mobile.apply.photoPermission"
+msgstr "需要相册写入权限才能保存壁纸。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.save"
+msgstr "保存到照片"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/useSaveAndShare.ts
+msgid "mobile.apply.saveFailed"
+msgstr "无法保存壁纸，请稍后重试。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.saving"
+msgstr "正在保存…"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.share"
+msgstr "分享"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/useSaveAndShare.ts
+msgid "mobile.apply.shareFailed"
+msgstr "无法分享壁纸，请稍后重试。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/useSaveAndShare.ts
+msgid "mobile.apply.shareUnavailable"
+msgstr "此设备不支持分享。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.apply.title"
+msgstr "应用壁纸"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/apply/ApplySheet.tsx
+msgid "mobile.common.cancel"
+msgstr "取消"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/components/feedback.tsx
+msgid "mobile.common.loading"
+msgstr "正在加载…"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/components/feedback.tsx
+msgid "mobile.common.loadingPlaceholder"
+msgstr "加载占位内容"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/components/feedback.tsx
+msgid "mobile.common.retry"
+msgstr "重试"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/result-view.tsx
+msgid "mobile.create.applyAndSave"
+msgstr "应用并保存"
+
+#. js-lingui-explicit-id
+#. placeholder {0}: generation.cooldownSeconds
+#: apps/mobile/src/screens/home.tsx
+msgid "mobile.create.cooldown"
+msgstr "为避免重复请求，请在 {0} 秒后重试。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/generate-button.tsx
+msgid "mobile.create.generate"
+msgstr "生成壁纸"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/screens/home.tsx
+msgid "mobile.create.generating"
+msgstr "正在生成壁纸…"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/generate-button.tsx
+msgid "mobile.create.generatingShort"
+msgstr "正在生成…"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/idea-input.tsx
+msgid "mobile.create.idea"
+msgstr "描述你的想法"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/idea-input.tsx
+msgid "mobile.create.idea.accessibility"
+msgstr "壁纸创意"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/idea-input.tsx
+msgid "mobile.create.idea.placeholder"
+msgstr "例如：雨夜中的霓虹都市"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.loadingPresets"
+msgstr "正在加载预设…"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.mood"
+msgstr "氛围"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.mood.calm"
+msgstr "宁静"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.mood.dreamy"
+msgstr "梦幻"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.mood.energetic"
+msgstr "活力"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.mood.mysterious"
+msgstr "神秘"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/screens/home.tsx
+msgid "mobile.create.optimizedForDevice"
+msgstr "已针对当前设备优化"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.abstract.category"
+msgstr "抽象艺术"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.abstract.name"
+msgstr "抽象"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.anime.category"
+msgstr "动漫艺术"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.anime.name"
+msgstr "动漫"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.cinematic.category"
+msgstr "电影感艺术"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.cinematic.name"
+msgstr "电影感"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.cyberpunk.category"
+msgstr "赛博朋克艺术"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.cyberpunk.name"
+msgstr "赛博朋克"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.editorial.category"
+msgstr "编辑风艺术"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.editorial.name"
+msgstr "编辑风"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.minimal.category"
+msgstr "极简艺术"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.minimal.name"
+msgstr "极简"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.nature.category"
+msgstr "自然艺术"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.preset.nature.name"
+msgstr "自然"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.presetCover"
+msgstr "{0} 预设封面"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/quality-selector.tsx
+msgid "mobile.create.quality"
+msgstr "输出质量"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/quality-selector.tsx
+msgid "mobile.create.quality.draft"
+msgstr "快速预览"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/quality-selector.tsx
+msgid "mobile.create.quality.draft.description"
+msgstr "生成更快、分辨率较低，适合快速调整创意"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/quality-selector.tsx
+msgid "mobile.create.quality.hd"
+msgstr "高清"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/quality-selector.tsx
+msgid "mobile.create.quality.hd.description"
+msgstr "完整 2K+ 分辨率，适合保存和应用"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/result-view.tsx
+msgid "mobile.create.regenerate"
+msgstr "重新生成"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/result-view.tsx
+msgid "mobile.create.result.draft"
+msgstr "快速预览 · 低分辨率"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/result-view.tsx
+msgid "mobile.create.result.hd"
+msgstr "高清 · 完整 2K+"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/result-view.tsx
+msgid "mobile.create.result.ready"
+msgstr "你的壁纸已生成"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/preset-grid.tsx
+msgid "mobile.create.selectPreset"
+msgstr "选择预设"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.theme"
+msgstr "主题"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.theme.abstract"
+msgstr "抽象"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.theme.city"
+msgstr "城市"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.theme.nature"
+msgstr "自然"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.theme.space"
+msgstr "太空"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.tone"
+msgstr "色调"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.tone.cool"
+msgstr "冷色"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.tone.highContrast"
+msgstr "高对比度"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.tone.soft"
+msgstr "柔和"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/chips-selector.tsx
+msgid "mobile.create.tone.warm"
+msgstr "暖色"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/EditModePicker.tsx
+msgid "mobile.edit.chooseMode"
+msgstr "选择操作"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ExistingImageEditor.tsx
+msgid "mobile.edit.enhanceWallpaper"
+msgstr "增强壁纸"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ExistingImageEditor.tsx
+msgid "mobile.edit.extendToScreen"
+msgstr "扩展到屏幕比例"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ExistingImageEditor.tsx
+msgid "mobile.edit.extractAnotherStyle"
+msgstr "提取另一种风格"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ImagePickerEntry.tsx
+msgid "mobile.edit.image.change"
+msgstr "更换图片"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ImagePickerEntry.tsx
+msgid "mobile.edit.image.choose"
+msgstr "选择图片"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ImagePickerEntry.tsx
+msgid "mobile.edit.image.description"
+msgstr "选择一张图片进行扩展、增强、编辑，或将其转为可复用的风格。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ImagePickerEntry.tsx
+msgid "mobile.edit.image.moduleMissing"
+msgstr "图片模块不完整，请安装最新的开发构建。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ImagePickerEntry.tsx
+msgid "mobile.edit.image.selected"
+msgstr "已选择的源图片"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ImagePickerEntry.tsx
+msgid "mobile.edit.image.title"
+msgstr "从图片开始"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ImagePickerEntry.tsx
+msgid "mobile.edit.image.unsupported"
+msgstr "请选择 JPEG、PNG 或 WebP 图片。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ImagePickerEntry.tsx
+msgid "mobile.edit.image.uploadFailed"
+msgstr "图片上传失败，请重试。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ImagePickerEntry.tsx
+msgid "mobile.edit.image.uploading"
+msgstr "正在安全上传图片…"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ExistingImageEditor.tsx
+msgid "mobile.edit.instructions"
+msgstr "你想做哪些修改？"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ExistingImageEditor.tsx
+msgid "mobile.edit.instructions.placeholder"
+msgstr "例如：把天空变成晚霞，同时保留人物和建筑"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/EditModePicker.tsx
+msgid "mobile.edit.mode.edit"
+msgstr "编辑"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/EditModePicker.tsx
+msgid "mobile.edit.mode.edit.description"
+msgstr "使用提示词修改"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/EditModePicker.tsx
+msgid "mobile.edit.mode.outpaint"
+msgstr "扩展"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/EditModePicker.tsx
+msgid "mobile.edit.mode.outpaint.description"
+msgstr "填满整个屏幕"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/EditModePicker.tsx
+msgid "mobile.edit.mode.style"
+msgstr "提取风格"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/EditModePicker.tsx
+msgid "mobile.edit.mode.style.description"
+msgstr "保存为创意预设"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/EditModePicker.tsx
+msgid "mobile.edit.mode.upscale"
+msgstr "增强"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/EditModePicker.tsx
+msgid "mobile.edit.mode.upscale.description"
+msgstr "提升清晰度和细节"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ExistingImageEditor.tsx
+msgid "mobile.edit.presetSaved"
+msgstr "自定义预设已保存"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ExistingImageEditor.tsx
+msgid "mobile.edit.presetSaved.description"
+msgstr "可从上方预设列表中选择它，继续生成其他壁纸。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ExistingImageEditor.tsx
+msgid "mobile.edit.processing"
+msgstr "正在处理图片…"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/ExistingImageEditor.tsx
+msgid "mobile.edit.start"
+msgstr "开始编辑"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/StyleToPresetForm.tsx
+msgid "mobile.edit.style.description"
+msgstr "分析色彩、构图和纹理，并保存为你的私有创意预设。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/StyleToPresetForm.tsx
+msgid "mobile.edit.style.extracting"
+msgstr "正在提取…"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/StyleToPresetForm.tsx
+msgid "mobile.edit.style.placeholder"
+msgstr "可选：描述你希望保留的细节"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/StyleToPresetForm.tsx
+msgid "mobile.edit.style.save"
+msgstr "保存自定义预设"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/edit/StyleToPresetForm.tsx
+msgid "mobile.edit.style.title"
+msgstr "提取风格"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.library.actionsPending"
+msgstr "应用和分享功能即将推出"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.library.actionsPending.description"
+msgstr "功能上线后，可选择锁屏、主屏幕和分享操作。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/screens/library.tsx
+msgid "mobile.library.applySaveShare"
+msgstr "应用、保存或分享"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.library.back"
+msgstr "返回图库"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/PresetManager.tsx
+msgid "mobile.library.customPresets"
+msgstr "自定义预设"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/PresetManager.tsx
+msgid "mobile.library.customPresets.description"
+msgstr "从喜爱的壁纸中提取的风格会显示在这里。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/PresetManager.tsx
+msgid "mobile.library.customPresets.empty"
+msgstr "暂无自定义预设"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.empty.action"
+msgstr "创建壁纸"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.empty.description"
+msgstr "创建壁纸后，它会自动保存在这里。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.empty.title"
+msgstr "还没有壁纸"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.favorite"
+msgstr "将壁纸添加到收藏"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/library-filters.tsx
+msgid "mobile.library.filter.all"
+msgstr "全部"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/library-filters.tsx
+msgid "mobile.library.filter.favorites"
+msgstr "收藏"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.generated"
+msgstr "已生成"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.generatedWallpaper"
+msgstr "生成的壁纸"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.library.mode.edit"
+msgstr "编辑"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.library.mode.outpaint"
+msgstr "扩展"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.library.mode.style"
+msgstr "风格迁移"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.library.mode.text2img"
+msgstr "文字创作"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.library.mode.upscale"
+msgstr "高清放大"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.library.noPreview"
+msgstr "此壁纸没有预览图。"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.quality.hd"
+msgstr "高清"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.quality.preview"
+msgstr "预览"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.resultUnavailable"
+msgstr "结果不可用"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.uncategorized"
+msgstr "未分类"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.unfavorite"
+msgstr "从收藏中移除壁纸"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/library/WallpaperGrid.tsx
+msgid "mobile.library.viewDetails"
+msgstr "查看壁纸详情"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/result-view.tsx
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.preview.homeScreen"
+msgstr "主屏幕"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/features/create/result-view.tsx
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
+msgid "mobile.preview.lockScreen"
+msgstr "锁屏"
 
 #. js-lingui-explicit-id
 #: apps/mobile/src/app/(tabs)/profile.tsx
-msgid "mobile.profile.clerkConnected"
-msgstr "已通过 Clerk 登录"
+#~ msgid "mobile.profile.anonymous"
+#~ msgstr "当前为匿名使用。登录后可同步设备历史并跨设备访问壁纸。"
 
 #. js-lingui-explicit-id
+#: apps/mobile/src/app/(tabs)/profile.tsx
+#~ msgid "mobile.profile.clerkConnected"
+#~ msgstr "已通过 Clerk 登录"
+
 #. placeholder {0}: googleAccount.emailAddress
-#: apps/mobile/src/app/(tabs)/profile.tsx
-msgid "mobile.profile.googleConnected"
-msgstr "Google 已连接：{0}"
-
 #. js-lingui-explicit-id
 #: apps/mobile/src/app/(tabs)/profile.tsx
+#~ msgid "mobile.profile.googleConnected"
+#~ msgstr "Google 已连接：{0}"
+
+#. js-lingui-explicit-id
+#: apps/mobile/src/screens/profile.tsx
 msgid "mobile.profile.language"
 msgstr "语言"
 
 #. js-lingui-explicit-id
-#: apps/mobile/src/app/(tabs)/profile.tsx
+#: apps/mobile/src/screens/profile.tsx
 msgid "mobile.profile.restoring"
 msgstr "正在恢复登录状态…"
 
 #. js-lingui-explicit-id
-#: apps/mobile/src/app/(tabs)/profile.tsx
+#: apps/mobile/src/screens/profile.tsx
 msgid "mobile.profile.signedIn"
 msgstr "已登录"
 
 #. js-lingui-explicit-id
-#: apps/mobile/src/app/(tabs)/profile.tsx
+#: apps/mobile/src/screens/profile.tsx
 msgid "mobile.profile.signIn"
 msgstr "登录并同步"
 
 #. js-lingui-explicit-id
-#: apps/mobile/src/app/(tabs)/profile.tsx
+#: apps/mobile/src/screens/profile.tsx
 msgid "mobile.profile.signOut"
 msgstr "退出登录"
 
 #. js-lingui-explicit-id
-#: apps/mobile/src/app/(tabs)/profile.tsx
+#: apps/mobile/src/screens/profile.tsx
 msgid "mobile.profile.syncing"
 msgstr "正在同步设备历史…"
 
 #. js-lingui-explicit-id
 #: apps/mobile/src/app/(tabs)/profile.tsx
-msgid "mobile.profile.title"
-msgstr "我的"
+#~ msgid "mobile.profile.title"
+#~ msgstr "我的"
 
 #. js-lingui-explicit-id
 #: apps/mobile/src/app/(tabs)/_layout.tsx
+#: apps/mobile/src/app/(tabs)/(create)/_layout.tsx
 msgid "mobile.tab.create"
 msgstr "创作"
 
 #. js-lingui-explicit-id
 #: apps/mobile/src/app/(tabs)/_layout.tsx
+#: apps/mobile/src/app/(tabs)/library/_layout.tsx
+#: apps/mobile/src/features/library/WallpaperDetail.tsx
 msgid "mobile.tab.library"
 msgstr "壁纸库"
 
 #. js-lingui-explicit-id
 #: apps/mobile/src/app/(tabs)/_layout.tsx
+#: apps/mobile/src/app/(tabs)/profile/_layout.tsx
 msgid "mobile.tab.profile"
 msgstr "我的"

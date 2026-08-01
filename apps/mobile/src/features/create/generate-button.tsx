@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro';
+
 import { Button } from '@/components/ui/button';
 
 type GenerateButtonProps = {
@@ -7,12 +9,18 @@ type GenerateButtonProps = {
 };
 
 export function GenerateButton({ disabled, isGenerating, onPress }: GenerateButtonProps) {
+  const { t } = useLingui();
+
   return (
     <Button
       disabled={disabled}
       fullWidth
       icon="sparkles"
-      label={isGenerating ? '正在生成…' : '生成壁纸'}
+      label={
+        isGenerating
+          ? t({ id: 'mobile.create.generatingShort', message: 'Generating…' })
+          : t({ id: 'mobile.create.generate', message: 'Generate wallpaper' })
+      }
       loading={isGenerating}
       onPress={onPress}
       testID="generate-button"

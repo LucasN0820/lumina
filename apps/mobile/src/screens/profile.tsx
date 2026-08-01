@@ -7,13 +7,12 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { AppIcon } from '@/components/ui/app-icon';
 import { Button } from '@/components/ui/button';
-import { SectionHeading } from '@/components/ui/section-heading';
 import { LoginSheet } from '@/features/auth/LoginSheet';
 import { useAuth } from '@/features/auth/useAuth';
 import { useAppLocale } from '@/features/i18n/i18n-provider';
 import { useTheme } from '@/hooks/use-theme';
 
-export default function ProfileTab() {
+export function ProfileScreen() {
   const [isLoginVisible, setIsLoginVisible] = useState(false);
   const { locale, setLocale } = useAppLocale();
   const theme = useTheme();
@@ -48,12 +47,6 @@ export default function ProfileTab() {
       contentContainerStyle={{ gap: 18, paddingHorizontal: 20, paddingVertical: 24 }}
       contentInsetAdjustmentBehavior="automatic"
     >
-      <SectionHeading
-        description="管理身份、同步状态和应用偏好。"
-        eyebrow="Workspace"
-        title={t({ id: 'mobile.profile.title', message: 'Profile' })}
-      />
-
       <ThemedView variant="card" style={{ gap: 18 }}>
         <View style={{ alignItems: 'center', flexDirection: 'row', gap: 12 }}>
           {user?.imageUrl ? (

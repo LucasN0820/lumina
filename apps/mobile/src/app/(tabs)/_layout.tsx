@@ -1,6 +1,7 @@
 import { useLingui } from '@lingui/react/macro';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { Tabs } from 'expo-router';
 
+import { AppIcon } from '@/components/ui/app-icon';
 import { useTheme } from '@/hooks/use-theme';
 import { tabIcons } from '@/navigation/tab-icons';
 
@@ -9,36 +10,45 @@ export default function TabLayout() {
   const { t } = useLingui();
 
   return (
-    <NativeTabs
-      backgroundColor={theme.surface}
-      disableTransparentOnScrollEdge
-      iconColor={{ default: theme.mutedText, selected: theme.text }}
-      indicatorColor={theme.muted}
-      labelStyle={{ color: theme.mutedText, fontFamily: theme.fontFamily, fontSize: 11 }}
-      labelVisibilityMode="labeled"
-      minimizeBehavior="onScrollDown"
-      rippleColor={theme.muted}
-      tabBarRespectsIMEInsets
-      tintColor={theme.text}
+    <Tabs
+      initialRouteName="(create)"
+      screenOptions={{
+        headerShown: false,
+        sceneStyle: { backgroundColor: theme.background },
+        tabBarActiveTintColor: theme.text,
+        tabBarHideOnKeyboard: true,
+        tabBarInactiveTintColor: theme.mutedText,
+        tabBarLabelStyle: { fontFamily: theme.fontFamily, fontSize: 11 },
+        tabBarStyle: { backgroundColor: theme.surface, borderTopColor: theme.border },
+      }}
     >
-      <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Icon {...tabIcons.index} />
-        <NativeTabs.Trigger.Label>
-          {t({ id: 'mobile.tab.create', message: 'Create' })}
-        </NativeTabs.Trigger.Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="library">
-        <NativeTabs.Trigger.Icon {...tabIcons.library} />
-        <NativeTabs.Trigger.Label>
-          {t({ id: 'mobile.tab.library', message: 'Library' })}
-        </NativeTabs.Trigger.Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile">
-        <NativeTabs.Trigger.Icon {...tabIcons.profile} />
-        <NativeTabs.Trigger.Label>
-          {t({ id: 'mobile.tab.profile', message: 'Profile' })}
-        </NativeTabs.Trigger.Label>
-      </NativeTabs.Trigger>
-    </NativeTabs>
+      <Tabs.Screen
+        name="(create)"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <AppIcon color={color} name={tabIcons.create} size={size} />
+          ),
+          title: t({ id: 'mobile.tab.create', message: 'Create' }),
+        }}
+      />
+      <Tabs.Screen
+        name="library"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <AppIcon color={color} name={tabIcons.library} size={size} />
+          ),
+          title: t({ id: 'mobile.tab.library', message: 'Library' }),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <AppIcon color={color} name={tabIcons.profile} size={size} />
+          ),
+          title: t({ id: 'mobile.tab.profile', message: 'Profile' }),
+        }}
+      />
+    </Tabs>
   );
 }

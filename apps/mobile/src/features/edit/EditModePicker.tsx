@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { Pressable, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -11,19 +12,43 @@ type EditModePickerProps = {
   selectedMode?: ExistingImageMode;
 };
 
-const modes: Array<{ description: string; label: string; value: ExistingImageMode }> = [
-  { description: '填满当前屏幕比例', label: '扩图', value: 'outpaint' },
-  { description: '增强清晰度与细节', label: '优化', value: 'upscale' },
-  { description: '按说明修改画面', label: '编辑', value: 'edit' },
-  { description: '保存为创作预设', label: '提取风格', value: 'style' },
-];
-
 export function EditModePicker({ onSelect, selectedMode }: EditModePickerProps) {
+  const { t } = useLingui();
   const theme = useTheme();
+  const modes: Array<{ description: string; label: string; value: ExistingImageMode }> = [
+    {
+      description: t({ id: 'mobile.edit.mode.outpaint.description', message: 'Fill your screen' }),
+      label: t({ id: 'mobile.edit.mode.outpaint', message: 'Extend' }),
+      value: 'outpaint',
+    },
+    {
+      description: t({
+        id: 'mobile.edit.mode.upscale.description',
+        message: 'Enhance clarity and detail',
+      }),
+      label: t({ id: 'mobile.edit.mode.upscale', message: 'Enhance' }),
+      value: 'upscale',
+    },
+    {
+      description: t({ id: 'mobile.edit.mode.edit.description', message: 'Change with a prompt' }),
+      label: t({ id: 'mobile.edit.mode.edit', message: 'Edit' }),
+      value: 'edit',
+    },
+    {
+      description: t({
+        id: 'mobile.edit.mode.style.description',
+        message: 'Save as a creative preset',
+      }),
+      label: t({ id: 'mobile.edit.mode.style', message: 'Extract style' }),
+      value: 'style',
+    },
+  ];
 
   return (
     <View style={{ gap: 10 }}>
-      <ThemedText variant="subtitle">选择处理方式</ThemedText>
+      <ThemedText variant="subtitle">
+        {t({ id: 'mobile.edit.chooseMode', message: 'Choose an action' })}
+      </ThemedText>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
         {modes.map((mode) => {
           const selected = selectedMode === mode.value;

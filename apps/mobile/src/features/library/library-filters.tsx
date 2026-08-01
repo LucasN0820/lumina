@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { Pressable, ScrollView, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -18,28 +19,32 @@ export function LibraryFilters({
   onFavoritesOnlyChange,
   selectedCategory,
 }: LibraryFiltersProps) {
+  const { t } = useLingui();
   const theme = useTheme();
-  const options = ['全部', ...categories];
+  const allLabel = t({ id: 'mobile.library.filter.all', message: 'All' });
+  const options = [
+    { label: allLabel, value: undefined },
+    ...categories.map((value) => ({ label: value, value })),
+  ];
 
   return (
     <View style={{ gap: 8 }}>
       <ScrollView horizontal>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           {options.map((option) => {
-            const category = option === '全部' ? undefined : option;
-            const selected = selectedCategory === category;
+            const selected = selectedCategory === option.value;
             return (
               <FilterChip
-                key={option}
-                label={option}
-                onPress={() => onCategoryChange(category)}
+                key={option.value ?? 'all'}
+                label={option.label}
+                onPress={() => onCategoryChange(option.value)}
                 selected={selected}
                 theme={theme}
               />
             );
           })}
           <FilterChip
-            label="已收藏"
+            label={t({ id: 'mobile.library.filter.favorites', message: 'Favorites' })}
             onPress={() => onFavoritesOnlyChange(!favoritesOnly)}
             selected={favoritesOnly}
             theme={theme}

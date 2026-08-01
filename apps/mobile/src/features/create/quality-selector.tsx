@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { Pressable, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -9,17 +10,37 @@ type QualitySelectorProps = {
   value: GenerationQuality;
 };
 
-const qualityOptions: Array<{ description: string; label: string; value: GenerationQuality }> = [
-  { description: '更快、低分辨率，适合迭代想法', label: '快速预览', value: 'draft' },
-  { description: '2K+ 全分辨率，适合保存和应用', label: '高清出图', value: 'hd' },
-];
-
 export function QualitySelector({ onChange, value }: QualitySelectorProps) {
+  const { t } = useLingui();
   const theme = useTheme();
+  const qualityOptions: Array<{
+    description: string;
+    label: string;
+    value: GenerationQuality;
+  }> = [
+    {
+      description: t({
+        id: 'mobile.create.quality.draft.description',
+        message: 'Faster and lower resolution, ideal for iterating on ideas',
+      }),
+      label: t({ id: 'mobile.create.quality.draft', message: 'Quick preview' }),
+      value: 'draft',
+    },
+    {
+      description: t({
+        id: 'mobile.create.quality.hd.description',
+        message: 'Full 2K+ resolution, ideal for saving and applying',
+      }),
+      label: t({ id: 'mobile.create.quality.hd', message: 'High resolution' }),
+      value: 'hd',
+    },
+  ];
 
   return (
     <View style={{ gap: 8 }}>
-      <ThemedText variant="subtitle">出图质量</ThemedText>
+      <ThemedText variant="subtitle">
+        {t({ id: 'mobile.create.quality', message: 'Output quality' })}
+      </ThemedText>
       <View style={{ flexDirection: 'row', gap: 8 }}>
         {qualityOptions.map((option) => {
           const selected = option.value === value;

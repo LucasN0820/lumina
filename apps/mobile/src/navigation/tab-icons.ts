@@ -1,5 +1,7 @@
+import type { AppIconName } from '@/components/ui/app-icon';
+
 export const tabIcons = {
-  index: { md: 'auto_awesome', sf: 'sparkles' },
-  library: { md: 'photo_library', sf: 'photo.on.rectangle' },
-  profile: { md: 'account_circle', sf: 'person.crop.circle' },
-} as const;
+  create: 'sparkles',
+  library: 'library',
+  profile: 'profile',
+} as const satisfies Record<'create' | 'library' | 'profile', AppIconName>;

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { TextInput, View } from 'react-native';
@@ -21,6 +22,7 @@ type ExistingImageEditorProps = {
 };
 
 export function ExistingImageEditor({ deviceSize }: ExistingImageEditorProps) {
+  const { t } = useLingui();
   const instruction = useCreateStore((state) => state.instruction);
   const mode = useCreateStore((state) => state.mode);
   const sourceImageUrl = useCreateStore((state) => state.sourceImageUrl);
@@ -68,13 +70,18 @@ export function ExistingImageEditor({ deviceSize }: ExistingImageEditorProps) {
     if (isStyleComplete) {
       return (
         <ThemedView variant="card" style={{ gap: 10 }}>
-          <ThemedText variant="subtitle">自定义预设已保存</ThemedText>
+          <ThemedText variant="subtitle">
+            {t({ id: 'mobile.edit.presetSaved', message: 'Custom preset saved' })}
+          </ThemedText>
           <ThemedText style={{ color: theme.mutedText }} variant="body">
-            现在可以在上方创作区的预设列表中选择它，再次生成壁纸。
+            {t({
+              id: 'mobile.edit.presetSaved.description',
+              message: 'Select it from the preset list above to generate another wallpaper.',
+            })}
           </ThemedText>
           <Button
             icon="refresh"
-            label="再提取一种风格"
+            label={t({ id: 'mobile.edit.extractAnotherStyle', message: 'Extract another style' })}
             onPress={generation.regenerate}
             variant="secondary"
           />
@@ -90,11 +97,16 @@ export function ExistingImageEditor({ deviceSize }: ExistingImageEditorProps) {
       {sourceImageUrl ? <EditModePicker onSelect={setMode} selectedMode={mode} /> : null}
       {mode === 'edit' ? (
         <View style={{ gap: 10 }}>
-          <ThemedText variant="subtitle">如何修改？</ThemedText>
+          <ThemedText variant="subtitle">
+            {t({ id: 'mobile.edit.instructions', message: 'What would you like to change?' })}
+          </ThemedText>
           <TextInput
             multiline
             onChangeText={setInstruction}
-            placeholder="例如：把天空改成日落，保留建筑和人物"
+            placeholder={t({
+              id: 'mobile.edit.instructions.placeholder',
+              message: 'For example: turn the sky into a sunset and keep the people and buildings',
+            })}
             placeholderTextColor={theme.mutedText}
             style={{
               borderColor: theme.border,
@@ -109,7 +121,7 @@ export function ExistingImageEditor({ deviceSize }: ExistingImageEditorProps) {
           />
           <ActionButton
             disabled={!instruction.trim() || generation.isGenerating}
-            label="开始编辑"
+            label={t({ id: 'mobile.edit.start', message: 'Start editing' })}
             onPress={() => run('edit')}
           />
         </View>
@@ -125,11 +137,19 @@ export function ExistingImageEditor({ deviceSize }: ExistingImageEditorProps) {
       {mode === 'outpaint' || mode === 'upscale' ? (
         <ActionButton
           disabled={generation.isGenerating}
-          label={mode === 'outpaint' ? '扩展到屏幕比例' : '优化为高清壁纸'}
+          label={
+            mode === 'outpaint'
+              ? t({ id: 'mobile.edit.extendToScreen', message: 'Extend to screen ratio' })
+              : t({ id: 'mobile.edit.enhanceWallpaper', message: 'Enhance wallpaper' })
+          }
           onPress={() => run(mode)}
         />
       ) : null}
-      {generation.isGenerating ? <LoadingState label="正在处理图片，请稍候…" /> : null}
+      {generation.isGenerating ? (
+        <LoadingState
+          label={t({ id: 'mobile.edit.processing', message: 'Processing your image…' })}
+        />
+      ) : null}
       {generation.error ? (
         <ErrorState message={generation.error.message} onRetry={generation.retry} />
       ) : null}

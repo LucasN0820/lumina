@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { ActivityIndicator, type DimensionValue, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -5,7 +6,8 @@ import { AppIcon } from '@/components/ui/app-icon';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/use-theme';
 
-export function LoadingState({ label = '加载中…' }: { label?: string }) {
+export function LoadingState({ label }: { label?: string }) {
+  const { t } = useLingui();
   const theme = useTheme();
 
   return (
@@ -22,13 +24,14 @@ export function LoadingState({ label = '加载中…' }: { label?: string }) {
     >
       <ActivityIndicator color={theme.accent} />
       <ThemedText selectable variant="body">
-        {label}
+        {label ?? t({ id: 'mobile.common.loading', message: 'Loading…' })}
       </ThemedText>
     </View>
   );
 }
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const { t } = useLingui();
   const theme = useTheme();
 
   return (
@@ -47,7 +50,12 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
         {message}
       </ThemedText>
       {onRetry ? (
-        <Button icon="refresh" label="重试" onPress={onRetry} variant="secondary" />
+        <Button
+          icon="refresh"
+          label={t({ id: 'mobile.common.retry', message: 'Retry' })}
+          onPress={onRetry}
+          variant="secondary"
+        />
       ) : null}
     </View>
   );
@@ -107,11 +115,15 @@ export function Skeleton({
   height?: number;
   width?: DimensionValue;
 }) {
+  const { t } = useLingui();
   const theme = useTheme();
 
   return (
     <View
-      accessibilityLabel="加载占位"
+      accessibilityLabel={t({
+        id: 'mobile.common.loadingPlaceholder',
+        message: 'Loading placeholder',
+      })}
       style={{
         backgroundColor: theme.muted,
         borderCurve: 'continuous',

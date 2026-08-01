@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -9,12 +10,15 @@ type IdeaInputProps = {
 };
 
 export function IdeaInput({ onChangeText, value }: IdeaInputProps) {
+  const { t } = useLingui();
   const theme = useTheme();
 
   return (
     <View style={{ gap: 8 }}>
       <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <ThemedText variant="subtitle">一句话灵感</ThemedText>
+        <ThemedText variant="subtitle">
+          {t({ id: 'mobile.create.idea', message: 'Describe your idea' })}
+        </ThemedText>
         <ThemedText
           style={{ color: theme.mutedText, fontVariant: ['tabular-nums'] }}
           variant="caption"
@@ -23,10 +27,16 @@ export function IdeaInput({ onChangeText, value }: IdeaInputProps) {
         </ThemedText>
       </View>
       <TextInput
-        accessibilityLabel="Wallpaper idea"
+        accessibilityLabel={t({
+          id: 'mobile.create.idea.accessibility',
+          message: 'Wallpaper idea',
+        })}
         maxLength={1_000}
         onChangeText={onChangeText}
-        placeholder="例如：雨夜的霓虹城市"
+        placeholder={t({
+          id: 'mobile.create.idea.placeholder',
+          message: 'For example: a neon city on a rainy night',
+        })}
         placeholderTextColor={theme.mutedText}
         multiline
         returnKeyType="default"

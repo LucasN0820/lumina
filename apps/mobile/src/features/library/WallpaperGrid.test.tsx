@@ -25,7 +25,7 @@ describe('WallpaperGrid', () => {
     const onCreate = jest.fn();
     const screen = render(<WallpaperGrid {...commonProps} items={[]} onCreate={onCreate} />);
 
-    expect(screen.getByText('还没有壁纸')).toBeTruthy();
+    expect(screen.getByText('No wallpapers yet')).toBeTruthy();
     fireEvent.press(screen.getByTestId('create-wallpaper-button'));
     expect(onCreate).toHaveBeenCalledTimes(1);
   });

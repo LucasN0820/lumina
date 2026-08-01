@@ -1,5 +1,9 @@
+import { useLingui } from '@lingui/react/macro';
 import { ScrollView } from 'react-native';
 
+import { ErrorState, LoadingState } from '@/components/feedback';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 import { ChipsSelector, type CreateChipField } from '@/features/create/chips-selector';
 import { GenerateButton } from '@/features/create/generate-button';
 import { IdeaInput } from '@/features/create/idea-input';
@@ -7,15 +11,12 @@ import { PresetGrid } from '@/features/create/preset-grid';
 import { QualitySelector } from '@/features/create/quality-selector';
 import { ResultView } from '@/features/create/result-view';
 import { ExistingImageEditor } from '@/features/edit/ExistingImageEditor';
-import { ErrorState, LoadingState } from '@/components/feedback';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { SectionHeading } from '@/components/ui/section-heading';
 import { useGenerate } from '@/hooks/use-generate';
 import { useDeviceSize } from '@/lib/useDeviceSize';
 import { useCreateStore } from '@/stores/create-store';
 
-export default function CreateTab() {
+export function HomeScreen() {
+  const { t } = useLingui();
   const deviceSize = useDeviceSize();
   const idea = useCreateStore((state) => state.idea);
   const presetId = useCreateStore((state) => state.presetId);
@@ -55,21 +56,25 @@ export default function CreateTab() {
         <ResultView job={generation.job} onRegenerate={generation.regenerate} />
       ) : (
         <>
-          <SectionHeading
-            description="选择视觉方向，写下此刻的灵感。其余交给 Lumina。"
-            eyebrow="Lumina studio"
-            title="把一个念头，变成你的壁纸"
-          />
-
           <ThemedView variant="card" style={{ gap: 20 }}>
             <PresetGrid onSelect={setPresetId} selectedPresetId={presetId} />
             <ChipsSelector onChange={updateChip} values={chipValues} />
             <IdeaInput onChangeText={setIdea} value={idea} />
             <QualitySelector onChange={setQuality} value={quality} />
-            {generation.isGenerating ? <LoadingState label="正在生成壁纸，请稍候…" /> : null}
+            {generation.isGenerating ? (
+              <LoadingState
+                label={t({
+                  id: 'mobile.create.generating',
+                  message: 'Generating your wallpaper…',
+                })}
+              />
+            ) : null}
             {generation.cooldownSeconds > 0 && !generation.isGenerating ? (
               <ThemedText selectable variant="caption">
-                为避免重复请求，请在 {generation.cooldownSeconds} 秒后再次出图。
+                {t({
+                  id: 'mobile.create.cooldown',
+                  message: `To avoid duplicate requests, try again in ${generation.cooldownSeconds} seconds.`,
+                })}
               </ThemedText>
             ) : null}
             {generation.error ? (
@@ -88,7 +93,9 @@ export default function CreateTab() {
             variant="card"
             style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}
           >
-            <ThemedText variant="caption">为此设备优化</ThemedText>
+            <ThemedText variant="caption">
+              {t({ id: 'mobile.create.optimizedForDevice', message: 'Optimized for this device' })}
+            </ThemedText>
             <ThemedText style={{ fontVariant: ['tabular-nums'] }} variant="label">
               {deviceSize.targetWidth} × {deviceSize.targetHeight}
             </ThemedText>

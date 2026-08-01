@@ -1,18 +1,19 @@
-import { View } from 'react-native';
+import { useLingui } from '@lingui/react/macro';
 import { useRouter } from 'expo-router';
+import { View } from 'react-native';
 
 import { ErrorState } from '@/components/feedback';
 import { Button } from '@/components/ui/button';
-import { SectionHeading } from '@/components/ui/section-heading';
 import { ApplySheet } from '@/features/apply/ApplySheet';
 import { PresetManager } from '@/features/library/PresetManager';
-import { LibraryFilters } from '@/features/library/library-filters';
 import { WallpaperDetail } from '@/features/library/WallpaperDetail';
 import { WallpaperGrid } from '@/features/library/WallpaperGrid';
+import { LibraryFilters } from '@/features/library/library-filters';
 import { useWallpapers } from '@/features/library/use-wallpapers';
 import { useLibraryStore } from '@/stores/library-store';
 
-export default function LibraryTab() {
+export function LibraryScreen() {
+  const { t } = useLingui();
   const router = useRouter();
   const selectedWallpaper = useLibraryStore((state) => state.selectedWallpaper);
   const isApplySheetVisible = useLibraryStore((state) => state.isApplySheetVisible);
@@ -43,7 +44,10 @@ export default function LibraryTab() {
             <>
               <Button
                 icon="download"
-                label="应用、保存或分享"
+                label={t({
+                  id: 'mobile.library.applySaveShare',
+                  message: 'Apply, save, or share',
+                })}
                 onPress={() => setApplySheetVisible(true)}
               />
               <ApplySheet
@@ -72,11 +76,6 @@ export default function LibraryTab() {
       <WallpaperGrid
         header={
           <View style={{ gap: 12 }}>
-            <SectionHeading
-              description="所有生成结果都会自动归档。收藏、预览，随时重新使用。"
-              eyebrow="Archive"
-              title="你的壁纸库"
-            />
             <LibraryFilters
               categories={categories}
               favoritesOnly={favoritesOnly}

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import type { ReactNode } from 'react';
 import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 
@@ -22,11 +23,19 @@ export function WallpaperDetail({
   previewMode,
   wallpaper,
 }: WallpaperDetailProps) {
+  const { t } = useLingui();
   const { width: windowWidth } = useWindowDimensions();
   const theme = useTheme();
   const previewWidth = Math.max(180, Math.min(windowWidth - 48, 320));
   const ratio = wallpaper.width && wallpaper.height ? wallpaper.height / wallpaper.width : 16 / 9;
   const previewHeight = Math.round(previewWidth * ratio);
+  const modeLabels: Record<string, string> = {
+    edit: t({ id: 'mobile.library.mode.edit', message: 'Edit' }),
+    outpaint: t({ id: 'mobile.library.mode.outpaint', message: 'Extend' }),
+    style: t({ id: 'mobile.library.mode.style', message: 'Style transfer' }),
+    text2img: t({ id: 'mobile.library.mode.text2img', message: 'Text creation' }),
+    upscale: t({ id: 'mobile.library.mode.upscale', message: 'Upscale' }),
+  };
 
   return (
     <ScrollView
@@ -35,17 +44,20 @@ export function WallpaperDetail({
     >
       <View style={{ alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'space-between' }}>
         <Pressable
-          accessibilityLabel="返回壁纸库"
+          accessibilityLabel={t({ id: 'mobile.library.back', message: 'Back to library' })}
           accessibilityRole="button"
           onPress={onClose}
           style={{ alignItems: 'center', flexDirection: 'row', gap: 6, paddingVertical: 6 }}
           testID="close-wallpaper-detail"
         >
           <AppIcon color={theme.text} name="arrow-left" />
-          <ThemedText variant="body">壁纸库</ThemedText>
+          <ThemedText variant="body">
+            {t({ id: 'mobile.tab.library', message: 'Library' })}
+          </ThemedText>
         </Pressable>
         <ThemedText style={{ color: theme.mutedText }} variant="caption">
-          {formatMode(wallpaper.mode)}
+          {modeLabels[wallpaper.mode] ??
+            t({ id: 'mobile.library.generated', message: 'Generated' })}
         </ThemedText>
       </View>
 
@@ -67,15 +79,20 @@ export function WallpaperDetail({
             width: previewWidth,
           }}
         >
-          <ThemedText variant="body">此壁纸没有可预览的图像。</ThemedText>
+          <ThemedText variant="body">
+            {t({
+              id: 'mobile.library.noPreview',
+              message: 'This wallpaper has no preview image.',
+            })}
+          </ThemedText>
         </View>
       )}
 
       <View style={{ flexDirection: 'row', gap: 8 }}>
         {(
           [
-            ['lock-screen', '锁屏'],
-            ['home-screen', '桌面'],
+            ['lock-screen', t({ id: 'mobile.preview.lockScreen', message: 'Lock screen' })],
+            ['home-screen', t({ id: 'mobile.preview.homeScreen', message: 'Home screen' })],
           ] as const
         ).map(([mode, label]) => {
           const selected = mode === previewMode;
@@ -109,23 +126,17 @@ export function WallpaperDetail({
 
       {actionSlot ?? (
         <View style={{ alignItems: 'center', gap: 4 }} testID="apply-sheet-placeholder">
-          <ThemedText variant="body">应用与分享功能准备中</ThemedText>
+          <ThemedText variant="body">
+            {t({ id: 'mobile.library.actionsPending', message: 'Apply and share coming soon' })}
+          </ThemedText>
           <ThemedText style={{ color: theme.mutedText, textAlign: 'center' }} variant="caption">
-            设备应用模块就绪后，可在这里选择锁屏、桌面和分享操作。
+            {t({
+              id: 'mobile.library.actionsPending.description',
+              message: 'Choose lock screen, home screen, and sharing actions when available.',
+            })}
           </ThemedText>
         </View>
       )}
     </ScrollView>
   );
-}
-
-function formatMode(mode: string): string {
-  const labels: Record<string, string> = {
-    edit: '编辑',
-    outpaint: '扩图',
-    style: '风格迁移',
-    text2img: '文字创作',
-    upscale: '超分辨率',
-  };
-  return labels[mode] ?? '已生成';
 }

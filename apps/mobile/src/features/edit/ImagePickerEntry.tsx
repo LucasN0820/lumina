@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -17,6 +18,7 @@ type ImagePickerEntryProps = {
 const supportedContentTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 export function ImagePickerEntry({ onUploaded, sourceImageUrl }: ImagePickerEntryProps) {
+  const { t } = useLingui();
   const [error, setError] = useState<Error>();
   const [isUploading, setIsUploading] = useState(false);
   const [localUri, setLocalUri] = useState<string>();
@@ -37,7 +39,9 @@ export function ImagePickerEntry({ onUploaded, sourceImageUrl }: ImagePickerEntr
       const asset = result.assets[0];
       const contentType = asset.mimeType ?? 'image/jpeg';
       if (!supportedContentTypes.has(contentType)) {
-        throw new Error('请选择 JPEG、PNG 或 WebP 图片。');
+        throw new Error(
+          t({ id: 'mobile.edit.image.unsupported', message: 'Choose a JPEG, PNG, or WebP image.' }),
+        );
       }
 
       setLocalUri(asset.uri);
@@ -49,10 +53,23 @@ export function ImagePickerEntry({ onUploaded, sourceImageUrl }: ImagePickerEntr
         ),
       );
     } catch (reason) {
-      const nextError = reason instanceof Error ? reason : new Error('图片上传失败，请重试。');
+      const nextError =
+        reason instanceof Error
+          ? reason
+          : new Error(
+              t({
+                id: 'mobile.edit.image.uploadFailed',
+                message: 'Image upload failed. Try again.',
+              }),
+            );
       setError(
         nextError.message.includes('native module')
-          ? new Error('图片组件未安装完整，请安装最新的开发版本。')
+          ? new Error(
+              t({
+                id: 'mobile.edit.image.moduleMissing',
+                message: 'The image module is incomplete. Install the latest development build.',
+              }),
+            )
           : nextError,
       );
     } finally {
@@ -62,24 +79,40 @@ export function ImagePickerEntry({ onUploaded, sourceImageUrl }: ImagePickerEntr
 
   return (
     <View style={{ gap: 10 }}>
-      <ThemedText variant="subtitle">从已有图开始</ThemedText>
+      <ThemedText variant="subtitle">
+        {t({ id: 'mobile.edit.image.title', message: 'Start with an image' })}
+      </ThemedText>
       <ThemedText style={{ color: theme.mutedText }} variant="caption">
-        从相册选一张图片，上传后可扩图、优化、修改或提取风格。
+        {t({
+          id: 'mobile.edit.image.description',
+          message: 'Choose an image to extend, enhance, edit, or turn into a reusable style.',
+        })}
       </ThemedText>
       {localUri || sourceImageUrl ? (
         <Image
-          accessibilityLabel="Selected source image"
+          accessibilityLabel={t({
+            id: 'mobile.edit.image.selected',
+            message: 'Selected source image',
+          })}
           contentFit="cover"
           source={localUri ?? sourceImageUrl}
           style={{ borderRadius: 14, height: 180, width: '100%' }}
         />
       ) : null}
-      {isUploading ? <LoadingState label="正在安全上传图片…" /> : null}
+      {isUploading ? (
+        <LoadingState
+          label={t({ id: 'mobile.edit.image.uploading', message: 'Uploading image securely…' })}
+        />
+      ) : null}
       {error ? <ErrorState message={error.message} onRetry={() => void chooseImage()} /> : null}
       <Button
         disabled={isUploading}
         icon="upload"
-        label={sourceImageUrl ? '更换图片' : '选择图片'}
+        label={
+          sourceImageUrl
+            ? t({ id: 'mobile.edit.image.change', message: 'Change image' })
+            : t({ id: 'mobile.edit.image.choose', message: 'Choose image' })
+        }
         loading={isUploading}
         onPress={() => void chooseImage()}
         testID="pick-source-image"
